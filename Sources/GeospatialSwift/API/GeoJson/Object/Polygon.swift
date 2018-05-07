@@ -1,0 +1,131 @@
+internal typealias Polygon = GeoJson.Polygon
+
+public protocol GeoJsonPolygon: GeoJsonClosedGeometry {
+    var linearRings: [GeoJsonLineString] { get }
+    var area: Double { get }
+}
+
+extension GeoJson {
+    /**
+     Creates a GeoJsonPolygon
+     */
+    public func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? {
+        return Polygon(logger: logger, geodesicCalculator: geodesicCalculator, linearRings: linearRings)
+    }
+    
+    public final class Polygon: GeoJsonPolygon {
+        public let type: GeoJsonObjectType = .polygon
+        public var geoJsonCoordinates: [Any] { return linearRings.map { $0.geoJsonCoordinates } }
+        
+        public var description: String {
+            return """
+            Polygon: \(
+            """
+            (\n\(linearRings.enumerated().map { "\($0 == 0 ? "Main Ring" : "Negative Ring \($0)") - \($1)" }.joined(separator: ",\n"))
+            """
+            .replacingOccurrences(of: "\n", with: "\n\t")
+            )\n)
+            """
+        }
+        
+        private let logger: LoggerProtocol
+        private let geodesicCalculator: GeodesicCalculatorProtocol
+        
+        public let linearRings: [GeoJsonLineString]
+        
+        public var points: [GeoJsonPoint] {
+            return linearRings.flatMap { $0.points }
+        }
+        
+        public var boundingBox: GeoJsonBoundingBox {
+            return BoundingBox.best(linearRings.map { $0.boundingBox })!
+        }
+        
+        public var centroid: GeodesicPoint {
+            return geodesicCalculator.centroid(polygonRings: linearRings)
+        }
+        
+        public var area: Double {
+            return geodesicCalculator.area(polygonRings: linearRings)
+        }
+        
+        internal convenience init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, coordinatesJson: [Any]) {
+            guard let linearRingsJson = coordinatesJson as? [[Any]] else { logger.error("A valid Polygon must have valid coordinates"); return nil }
+            
+            var linearRings = [GeoJsonLineString]()
+            for linearRingJson in linearRingsJson {
+                if let linearRing = LineString(logger: logger, geodesicCalculator: geodesicCalculator, coordinatesJson: linearRingJson) {
+                    linearRings.append(linearRing)
+                } else {
+                    logger.error("Invalid linear ring (LineString) in Polygon"); return nil
+                }
+            }
+            
+            self.init(logger: logger, geodesicCalculator: geodesicCalculator, linearRings: linearRings)
+        }
+        
+        // TODO: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
+        // TODO: More strict additions:
+        
+        // TODO: Check for validity beyond geoJson specification of geometries - Perhaps this will set an isValid flag or an invalidReasonEnum on the GeoJsonObject itself rather than failing.
+        
+        //Checking winding order is valid
+        //Checking geometry is_valid
+        //Checking geometry is_simple
+        //Triangle that reprojection to tile coordinates will cause winding order reversed
+        //Polygon that will be reprojected into tile coordinates as a line
+        //Polygon with "spike"
+        //Polygon with hole that has a "spike"
+        //Polygon with large number of points repeated
+        //Polygon where area threshold removes geometry AFTER clipping
+        //Bowtie Polygon where two points touch
+        
+        // Polygon with reversed winding order
+        // Polygon with hole where hole has invalid winding order
+        //    o  A linear ring MUST follow the right-hand rule with respect to the
+        //    area it bounds, i.e., exterior rings are counterclockwise, and
+        //    holes are clockwise.
+        // TODO: Can run contains on all interior polygon points to be contained in the exterior polygon and NOT contains in other interior polygons.
+        // Polygon where hole intersects with same point as exterior edge point
+        // Polygon where hole extends past edge of polygon
+        //    o  For Polygons with more than one of these rings, the first MUST be
+        //    the exterior ring, and any others MUST be interior rings.  The
+        //    exterior ring bounds the surface, and the interior rings (if
+        //    present) bound holes within the surface.
+        fileprivate init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, linearRings: [GeoJsonLineString]) {
+            guard linearRings.count >= 1 else { logger.error("A valid Polygon must have at least one LinearRing"); return nil }
+            
+            self.logger = logger
+            self.geodesicCalculator = geodesicCalculator
+            
+            // TODO: Save up errors to present which rings were incorrect.
+            for linearRing in linearRings {
+                guard linearRing.points.first! == linearRing.points.last! else { logger.error("A valid Polygon LinearRing must have the first and last points equal"); return nil }
+                
+                guard linearRing.points.count >= 4 else { logger.error("A valid Polygon LinearRing must have at least 4 points"); return nil }
+            }
+            
+            self.linearRings = linearRings
+        }
+        
+        public func edgeDistance(to point: GeodesicPoint, errorDistance: Double) -> Double {
+            return linearRings.map { $0.distance(to: point, errorDistance: errorDistance) }.min()!
+        }
+        
+        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {
+            if contains(point, errorDistance: errorDistance) { return 0 }
+            
+            return edgeDistance(to: point, errorDistance: errorDistance)
+        }
+        
+        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool {
+            let contains = geodesicCalculator.contains(point: point, polygonRings: linearRings)
+            
+            if errorDistance < 0 && contains { return edgeDistance(to: point, errorDistance: 0) >= -errorDistance }
+            
+            if errorDistance > 0 { return contains || edgeDistance(to: point, errorDistance: 0) <= errorDistance }
+            
+            return contains
+        }
+    }
+}
