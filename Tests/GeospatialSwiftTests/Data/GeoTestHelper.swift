@@ -2,9 +2,7 @@
 
 // swiftlint:disable force_cast
 class GeoTestHelper {
-    static private let logger = MockLogger()
-    static private let geodesicCalculator = GeodesicCalculator(logger: MockLogger())
-    static private let geoJson = GeoJson(logger: logger, geodesicCalculator: geodesicCalculator)
+    static private let geoJson = GeoJson()
     
     static func parse(_ geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObject {
         return geoJson.parse(geoJson: geoJsonDictionary)!

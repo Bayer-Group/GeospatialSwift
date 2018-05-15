@@ -12,10 +12,10 @@ extension GeoJson {
      Creates a GeoJsonLineString
      */
     public func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString? {
-        return LineString(logger: logger, geodesicCalculator: geodesicCalculator, points: points)
+        return LineString(points: points)
     }
     
-    public final class LineString: GeoJsonLineString {
+    public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
         public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
         
@@ -30,9 +30,6 @@ extension GeoJson {
             """
         }
         
-        private let logger: LoggerProtocol
-        private let geodesicCalculator: GeodesicCalculatorProtocol
-        
         public let points: [GeoJsonPoint]
         
         public var boundingBox: GeoJsonBoundingBox {
@@ -44,35 +41,32 @@ extension GeoJson {
         }
         
         public var centroid: GeodesicPoint {
-            return geodesicCalculator.centroid(linePoints: points)
+            return Calculator.centroid(linePoints: points)
         }
         
         public var length: Double {
-            return geodesicCalculator.length(lineSegments: segments)
+            return Calculator.length(lineSegments: segments)
         }
         
         public let segments: [GeoJsonLineSegment]
         
-        internal convenience init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, coordinatesJson: [Any]) {
-            guard let pointsJson = coordinatesJson as? [[Any]] else { logger.error("A valid LineString must have valid coordinates"); return nil }
+        internal init?(coordinatesJson: [Any]) {
+            guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid LineString must have valid coordinates"); return nil }
             
             var points = [GeoJsonPoint]()
             for pointJson in pointsJson {
-                if let point = Point(logger: logger, geodesicCalculator: geodesicCalculator, coordinatesJson: pointJson) {
+                if let point = Point(coordinatesJson: pointJson) {
                     points.append(point)
                 } else {
-                    logger.error("Invalid Point in LineString"); return nil
+                    Log.warning("Invalid Point in LineString"); return nil
                 }
             }
             
-            self.init(logger: logger, geodesicCalculator: geodesicCalculator, points: points)
+            self.init(points: points)
         }
         
-        fileprivate init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, points: [GeoJsonPoint]) {
-            guard points.count >= 2 else { logger.error("A valid LineString must have at least two Points"); return nil }
-            
-            self.logger = logger
-            self.geodesicCalculator = geodesicCalculator
+        fileprivate init?(points: [GeoJsonPoint]) {
+            guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
             self.points = points
             
@@ -95,7 +89,7 @@ extension GeoJson {
             var smallestDistance = Double.greatestFiniteMagnitude
             
             for lineSegment in segments {
-                let distance = geodesicCalculator.distance(point: point, lineSegment: lineSegment) - errorDistance
+                let distance = Calculator.distance(point: point, lineSegment: lineSegment) - errorDistance
                 
                 guard distance > 0 else { return 0 }
                 

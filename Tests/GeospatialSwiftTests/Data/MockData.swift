@@ -4,7 +4,7 @@ import Foundation
 
 // swiftlint:disable force_cast force_try
 final class MockData {
-    static let geoJson = GeoJson(logger: MockLogger(), geodesicCalculator: GeodesicCalculator(logger: MockLogger()))
+    static let geoJson = GeoJson()
     
     static let geoJsonTestData: [GeoJsonDictionary] = { return json(jsonString: geoJsonTestJson)["geoJsonObjects"] as! [GeoJsonDictionary] }()
     static let wktTestData: [GeoJsonDictionary] = { return json(jsonString: wktTestJson)["wktObjects"] as! [GeoJsonDictionary] }()

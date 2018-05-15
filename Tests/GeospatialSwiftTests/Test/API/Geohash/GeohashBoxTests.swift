@@ -3,9 +3,6 @@ import XCTest
 @testable import GeospatialSwift
 
 class GeohashBoxTests: XCTestCase {
-    var logger: MockLogger!
-    
-    var geodesicCalculator: GeodesicCalculatorProtocol!
     var geohashCoder: GeohashCoderProtocol!
     
     private(set) var simpleGeohashBox: GeohashBox!
@@ -24,10 +21,7 @@ class GeohashBoxTests: XCTestCase {
     //    -90.422587, 38.7016155  -90.4225445, 38.7016585
     
     override func setUp() {
-        logger = MockLogger()
-        
-        geodesicCalculator = GeodesicCalculator(logger: logger)
-        geohashCoder = GeohashCoder(logger: logger, geodesicCalculator: geodesicCalculator)
+        geohashCoder = GeohashCoder()
         
         let boundingCoordinates = (minLongitude: -90.422587, minLatitude: 38.7016155, maxLongitude: -90.4225445, maxLatitude: 38.7016585)
         

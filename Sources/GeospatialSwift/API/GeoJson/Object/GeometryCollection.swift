@@ -7,10 +7,10 @@ extension GeoJson {
      Creates a GeoJsonGeometryCollection
      */
     public func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeoJsonGeometryCollection {
-        return GeometryCollection(logger: logger, geometries: geometries)
+        return GeometryCollection(geometries: geometries)
     }
     
-    public final class GeometryCollection: GeoJsonGeometryCollection {
+    public struct GeometryCollection: GeoJsonGeometryCollection {
         public let type: GeoJsonObjectType = .geometryCollection
         public var geoJson: GeoJsonDictionary { return ["type": type.rawValue, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
         
@@ -25,27 +25,23 @@ extension GeoJson {
             """
         }
         
-        private let logger: LoggerProtocol
-        
         public let objectGeometries: [GeoJsonGeometry]?
         public let objectBoundingBox: GeoJsonBoundingBox?
         
-        internal convenience init?(logger: LoggerProtocol, geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
-            guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { logger.error("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
+        internal init?(geoJsonDictionary: GeoJsonDictionary) {
+            guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
             
             var geometries = [GeoJsonGeometry]()
             for geometryJson in geometriesJson {
-                guard let geometry = geoJsonParser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { logger.error("Invalid Geometry for GeometryCollection"); return nil }
+                guard let geometry = parser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Invalid Geometry for GeometryCollection"); return nil }
                 
                 geometries.append(geometry)
             }
             
-            self.init(logger: logger, geometries: geometries)
+            self.init(geometries: geometries)
         }
         
-        fileprivate init(logger: LoggerProtocol, geometries: [GeoJsonGeometry]?) {
-            self.logger = logger
-            
+        fileprivate init(geometries: [GeoJsonGeometry]?) {
             self.objectGeometries = geometries
             
             #if swift(>=4.1)

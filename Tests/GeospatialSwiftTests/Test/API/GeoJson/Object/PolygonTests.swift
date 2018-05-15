@@ -327,7 +327,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(1.0, 2.0, 3), GeoTestHelper.point(1.9, 2.5, 4), GeoTestHelper.point(1.9, 2.9, 5), GeoTestHelper.point(1.5, 2.5, 3), GeoTestHelper.point(1.0, 2.0, 3)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        let calculator = GeodesicCalculator(logger: MockLogger())
+        let calculator = GeodesicCalculator()
         let mainRingCentroid = calculator.centroid(linearRingSegments: mainRing.segments)
         let negativeRingCentroid = calculator.centroid(linearRingSegments: negativeRing.segments)
         let mainRingArea = calculator.area(polygonRings: [mainRing])
@@ -344,7 +344,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.05, 0.05, 3), GeoTestHelper.point(100.5, 0.05), GeoTestHelper.point(100.5, 0.95, 5), GeoTestHelper.point(100.05, 0.95, 3), GeoTestHelper.point(100.05, 0.05, 3)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        let calculator = GeodesicCalculator(logger: MockLogger())
+        let calculator = GeodesicCalculator()
         let mainRingCentroid = calculator.centroid(linearRingSegments: mainRing.segments)
         let negativeRingCentroid = calculator.centroid(linearRingSegments: negativeRing.segments)
         let mainRingArea = calculator.area(polygonRings: [mainRing])
@@ -361,7 +361,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.2, 0.2), GeoTestHelper.point(100.8, 0.2), GeoTestHelper.point(100.8, 0.8), GeoTestHelper.point(100.2, 0.8), GeoTestHelper.point(100.2, 0.2)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        let calculator = GeodesicCalculator(logger: MockLogger())
+        let calculator = GeodesicCalculator()
         let mainRingCentroid = calculator.centroid(linearRingSegments: mainRing.segments)
         let negativeRingCentroid = calculator.centroid(linearRingSegments: negativeRing.segments)
         let mainRingArea = calculator.area(polygonRings: [mainRing])

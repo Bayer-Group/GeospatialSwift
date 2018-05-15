@@ -13,9 +13,6 @@ public protocol GeohashCoderProtocol {
 }
 
 public struct GeohashCoder: GeohashCoderProtocol {
-    internal let logger: LoggerProtocol
-    internal let geodesicCalculator: GeodesicCalculatorProtocol
-    
     /**
      Returns a geohash associated to the coordinate
      
@@ -111,7 +108,7 @@ extension GeohashCoder {
         
         var geohash = ""
         
-        let point = geodesicCalculator.normalize(point: point)
+        let point = Calculator.normalize(point: point)
         
         repeat {
             switch parity {
@@ -177,7 +174,7 @@ extension GeohashCoder {
         var parity = Parity.even
         
         for character in geohash {
-            guard let bitmap = decimalToBase32Map.index(of: character) else { logger.error("Invalid geohash: \(geohash)"); return nil }
+            guard let bitmap = decimalToBase32Map.index(of: character) else { Log.warning("Invalid geohash: \(geohash)"); return nil }
             
             var mask = Int(base32BitflowInit)
             

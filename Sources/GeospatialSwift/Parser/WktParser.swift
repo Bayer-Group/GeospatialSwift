@@ -6,12 +6,11 @@ internal protocol WktParserProtocol {
 
 // TODO: Forced unwrapping leads to exceptions when WKT is invalid.
 internal struct WktParser: WktParserProtocol {
-    let logger: LoggerProtocol
     let geoJson: GeoJsonProtocol
     
     func geoJsonObject(from wkt: String) -> GeoJsonObject? {
-        guard let startRange = wkt.range(of: "(") else { logger.error("Malformed WKT: \(wkt)"); return nil }
-        guard let endRange = wkt.range(of: ")", options: .backwards) else { logger.error("Malformed WKT: \(wkt)"); return nil }
+        guard let startRange = wkt.range(of: "(") else { Log.warning("Malformed WKT: \(wkt)"); return nil }
+        guard let endRange = wkt.range(of: ")", options: .backwards) else { Log.warning("Malformed WKT: \(wkt)"); return nil }
         
         let range = startRange.upperBound..<endRange.lowerBound
         let data = String(wkt[range])
@@ -42,13 +41,13 @@ internal struct WktParser: WktParserProtocol {
                 } else if wkt.uppercased().hasPrefix("POLYGON") {
                     return try parsePolygonString(data)
                 } else {
-                    logger.error("Unsupported Geometry type: \(wkt)")
+                    Log.warning("Unsupported Geometry type: \(wkt)")
                     
                     return nil
                 }
             }
         } catch {
-            logger.error("Could not parse geometry: \(wkt)")
+            Log.warning("Could not parse geometry: \(wkt)")
             
             return nil
         }

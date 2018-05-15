@@ -10,10 +10,10 @@ extension GeoJson {
      Creates a GeoJsonPolygon
      */
     public func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? {
-        return Polygon(logger: logger, geodesicCalculator: geodesicCalculator, linearRings: linearRings)
+        return Polygon(linearRings: linearRings)
     }
     
-    public final class Polygon: GeoJsonPolygon {
+    public struct Polygon: GeoJsonPolygon {
         public let type: GeoJsonObjectType = .polygon
         public var geoJsonCoordinates: [Any] { return linearRings.map { $0.geoJsonCoordinates } }
         
@@ -28,9 +28,6 @@ extension GeoJson {
             """
         }
         
-        private let logger: LoggerProtocol
-        private let geodesicCalculator: GeodesicCalculatorProtocol
-        
         public let linearRings: [GeoJsonLineString]
         
         public var points: [GeoJsonPoint] {
@@ -42,26 +39,26 @@ extension GeoJson {
         }
         
         public var centroid: GeodesicPoint {
-            return geodesicCalculator.centroid(polygonRings: linearRings)
+            return Calculator.centroid(polygonRings: linearRings)
         }
         
         public var area: Double {
-            return geodesicCalculator.area(polygonRings: linearRings)
+            return Calculator.area(polygonRings: linearRings)
         }
         
-        internal convenience init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, coordinatesJson: [Any]) {
-            guard let linearRingsJson = coordinatesJson as? [[Any]] else { logger.error("A valid Polygon must have valid coordinates"); return nil }
+        internal init?(coordinatesJson: [Any]) {
+            guard let linearRingsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid Polygon must have valid coordinates"); return nil }
             
             var linearRings = [GeoJsonLineString]()
             for linearRingJson in linearRingsJson {
-                if let linearRing = LineString(logger: logger, geodesicCalculator: geodesicCalculator, coordinatesJson: linearRingJson) {
+                if let linearRing = LineString(coordinatesJson: linearRingJson) {
                     linearRings.append(linearRing)
                 } else {
-                    logger.error("Invalid linear ring (LineString) in Polygon"); return nil
+                    Log.warning("Invalid linear ring (LineString) in Polygon"); return nil
                 }
             }
             
-            self.init(logger: logger, geodesicCalculator: geodesicCalculator, linearRings: linearRings)
+            self.init(linearRings: linearRings)
         }
         
         // TODO: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
@@ -92,17 +89,14 @@ extension GeoJson {
         //    the exterior ring, and any others MUST be interior rings.  The
         //    exterior ring bounds the surface, and the interior rings (if
         //    present) bound holes within the surface.
-        fileprivate init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, linearRings: [GeoJsonLineString]) {
-            guard linearRings.count >= 1 else { logger.error("A valid Polygon must have at least one LinearRing"); return nil }
-            
-            self.logger = logger
-            self.geodesicCalculator = geodesicCalculator
+        fileprivate init?(linearRings: [GeoJsonLineString]) {
+            guard linearRings.count >= 1 else { Log.warning("A valid Polygon must have at least one LinearRing"); return nil }
             
             // TODO: Save up errors to present which rings were incorrect.
             for linearRing in linearRings {
-                guard linearRing.points.first! == linearRing.points.last! else { logger.error("A valid Polygon LinearRing must have the first and last points equal"); return nil }
+                guard linearRing.points.first! == linearRing.points.last! else { Log.warning("A valid Polygon LinearRing must have the first and last points equal"); return nil }
                 
-                guard linearRing.points.count >= 4 else { logger.error("A valid Polygon LinearRing must have at least 4 points"); return nil }
+                guard linearRing.points.count >= 4 else { Log.warning("A valid Polygon LinearRing must have at least 4 points"); return nil }
             }
             
             self.linearRings = linearRings
@@ -119,7 +113,7 @@ extension GeoJson {
         }
         
         public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool {
-            let contains = geodesicCalculator.contains(point: point, polygonRings: linearRings)
+            let contains = Calculator.contains(point: point, polygonRings: linearRings)
             
             if errorDistance < 0 && contains { return edgeDistance(to: point, errorDistance: 0) >= -errorDistance }
             

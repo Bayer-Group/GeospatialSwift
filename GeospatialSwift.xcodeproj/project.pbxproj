@@ -7,6 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E53D4D620AB5CC40006F1E1 /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4D520AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E53D4D720AB5CC70006F1E1 /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4C820AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E53D4D820AB5CCB0006F1E1 /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4CB20AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E53D4D920AB5CCF0006F1E1 /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4D020AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E53D4DC20AB5D370006F1E1 /* Timber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4DB20AB5D370006F1E1 /* Timber.swift */; };
+		1E53D4DD20AB5D370006F1E1 /* Timber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4DB20AB5D370006F1E1 /* Timber.swift */; };
+		1E53D4DE20AB5D370006F1E1 /* Timber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4DB20AB5D370006F1E1 /* Timber.swift */; };
+		1E53D4DF20AB5D370006F1E1 /* Timber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4DB20AB5D370006F1E1 /* Timber.swift */; };
+		1E53D4E120AB5DF30006F1E1 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4E020AB5DF30006F1E1 /* Bundle.swift */; };
+		1E53D4E220AB5DF30006F1E1 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4E020AB5DF30006F1E1 /* Bundle.swift */; };
+		1E53D4E320AB5DF30006F1E1 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4E020AB5DF30006F1E1 /* Bundle.swift */; };
+		1E53D4E420AB5DF30006F1E1 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E53D4E020AB5DF30006F1E1 /* Bundle.swift */; };
+		1E53D4E820AB64390006F1E1 /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E520AB64390006F1E1 /* Package.resolved */; };
+		1E53D4E920AB64390006F1E1 /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E520AB64390006F1E1 /* Package.resolved */; };
+		1E53D4EA20AB64390006F1E1 /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E520AB64390006F1E1 /* Package.resolved */; };
+		1E53D4EB20AB64390006F1E1 /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E520AB64390006F1E1 /* Package.resolved */; };
+		1E53D4EC20AB64390006F1E1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E620AB64390006F1E1 /* .swiftlint.yml */; };
+		1E53D4ED20AB64390006F1E1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E620AB64390006F1E1 /* .swiftlint.yml */; };
+		1E53D4EE20AB64390006F1E1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E620AB64390006F1E1 /* .swiftlint.yml */; };
+		1E53D4EF20AB64390006F1E1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E620AB64390006F1E1 /* .swiftlint.yml */; };
+		1E53D4F020AB64390006F1E1 /* .swift-version in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E720AB64390006F1E1 /* .swift-version */; };
+		1E53D4F120AB64390006F1E1 /* .swift-version in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E720AB64390006F1E1 /* .swift-version */; };
+		1E53D4F220AB64390006F1E1 /* .swift-version in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E720AB64390006F1E1 /* .swift-version */; };
+		1E53D4F320AB64390006F1E1 /* .swift-version in Resources */ = {isa = PBXBuildFile; fileRef = 1E53D4E720AB64390006F1E1 /* .swift-version */; };
+		1E54975520AB683000FE50EC /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4D520AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E54975720AB683500FE50EC /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4CB20AB5CB00006F1E1 /* TimberSwift.framework */; };
+		1E54976220AB6DEC00FE50EC /* TimberSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E53D4C820AB5CB00006F1E1 /* TimberSwift.framework */; };
 		1E6CC19E20A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */; };
 		1E6CC19F20A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */; };
 		1E6CC1A020A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */; };
@@ -17,8 +44,6 @@
 		1E7CB7222093A91400ECC023 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789A209394DE0097A986 /* MockData.swift */; };
 		1E7CB7232093A91400ECC023 /* WktTestJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789B209394DE0097A986 /* WktTestJson.swift */; };
 		1E7CB7242093A91400ECC023 /* GeoTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789C209394DE0097A986 /* GeoTestHelper.swift */; };
-		1E7CB7252093A91400ECC023 /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787C209394DE0097A986 /* MockGeodesicCalculator.swift */; };
-		1E7CB7262093A91400ECC023 /* MockLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787D209394DE0097A986 /* MockLogger.swift */; };
 		1E7CB7282093A91400ECC023 /* MockGeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7893209394DE0097A986 /* MockGeohashCoder.swift */; };
 		1E7CB7292093A91400ECC023 /* MockGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7884209394DE0097A986 /* MockGeoJson.swift */; };
 		1E7CB72A2093A91400ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7887209394DE0097A986 /* MockGeoJsonCoordinatesGeometry.swift */; };
@@ -56,8 +81,6 @@
 		1E7CB74A2093A91600ECC023 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789A209394DE0097A986 /* MockData.swift */; };
 		1E7CB74B2093A91600ECC023 /* WktTestJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789B209394DE0097A986 /* WktTestJson.swift */; };
 		1E7CB74C2093A91600ECC023 /* GeoTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789C209394DE0097A986 /* GeoTestHelper.swift */; };
-		1E7CB74D2093A91600ECC023 /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787C209394DE0097A986 /* MockGeodesicCalculator.swift */; };
-		1E7CB74E2093A91600ECC023 /* MockLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787D209394DE0097A986 /* MockLogger.swift */; };
 		1E7CB7502093A91600ECC023 /* MockGeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7893209394DE0097A986 /* MockGeohashCoder.swift */; };
 		1E7CB7512093A91600ECC023 /* MockGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7884209394DE0097A986 /* MockGeoJson.swift */; };
 		1E7CB7522093A91600ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7887209394DE0097A986 /* MockGeoJsonCoordinatesGeometry.swift */; };
@@ -95,8 +118,6 @@
 		1E7CB7722093A91700ECC023 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789A209394DE0097A986 /* MockData.swift */; };
 		1E7CB7732093A91700ECC023 /* WktTestJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789B209394DE0097A986 /* WktTestJson.swift */; };
 		1E7CB7742093A91700ECC023 /* GeoTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B789C209394DE0097A986 /* GeoTestHelper.swift */; };
-		1E7CB7752093A91700ECC023 /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787C209394DE0097A986 /* MockGeodesicCalculator.swift */; };
-		1E7CB7762093A91700ECC023 /* MockLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B787D209394DE0097A986 /* MockLogger.swift */; };
 		1E7CB7782093A91700ECC023 /* MockGeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7893209394DE0097A986 /* MockGeohashCoder.swift */; };
 		1E7CB7792093A91700ECC023 /* MockGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7884209394DE0097A986 /* MockGeoJson.swift */; };
 		1E7CB77A2093A91700ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7887209394DE0097A986 /* MockGeoJsonCoordinatesGeometry.swift */; };
@@ -130,10 +151,6 @@
 		1E7CB7962093A91700ECC023 /* PointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7876209394DE0097A986 /* PointTests.swift */; };
 		1E7CB7972093A91700ECC023 /* GeohashCoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7878209394DE0097A986 /* GeohashCoderTests.swift */; };
 		1E7CB7982093A91700ECC023 /* GeohashBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7879209394DE0097A986 /* GeohashBoxTests.swift */; };
-		1E9090B920939EA400DAEF11 /* GeospatialSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9090B020939EA300DAEF11 /* GeospatialSwift.framework */; };
-		1E9090EB20939F2800DAEF11 /* GeospatialSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9090E220939F2700DAEF11 /* GeospatialSwift.framework */; };
-		1E90910720939F5C00DAEF11 /* GeospatialSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9090FE20939F5C00DAEF11 /* GeospatialSwift.framework */; };
-		1E9091272093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091292093A3EE00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -151,12 +168,10 @@
 		1E9091362093A3EE00DAEF11 /* MultiLineString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783E209394D20097A986 /* MultiLineString.swift */; };
 		1E9091372093A3EE00DAEF11 /* MultiPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783F209394D20097A986 /* MultiPolygon.swift */; };
 		1E9091382093A3EE00DAEF11 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7827209394D20097A986 /* GeodesicCalculator.swift */; };
-		1E9091392093A3EE00DAEF11 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7831209394D20097A986 /* Logger.swift */; };
 		1E90913A2093A3EE00DAEF11 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782C209394D20097A986 /* Array.swift */; };
 		1E90913C2093A3EE00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E90913D2093A3EE00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E90913E2093A3EE00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E90913F2093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091412093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -174,12 +189,10 @@
 		1E90914E2093A3EF00DAEF11 /* MultiLineString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783E209394D20097A986 /* MultiLineString.swift */; };
 		1E90914F2093A3EF00DAEF11 /* MultiPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783F209394D20097A986 /* MultiPolygon.swift */; };
 		1E9091502093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7827209394D20097A986 /* GeodesicCalculator.swift */; };
-		1E9091512093A3EF00DAEF11 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7831209394D20097A986 /* Logger.swift */; };
 		1E9091522093A3EF00DAEF11 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782C209394D20097A986 /* Array.swift */; };
 		1E9091542093A3EF00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E9091552093A3EF00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E9091562093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E9091572093A3EF00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091592093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -197,12 +210,10 @@
 		1E9091662093A3EF00DAEF11 /* MultiLineString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783E209394D20097A986 /* MultiLineString.swift */; };
 		1E9091672093A3EF00DAEF11 /* MultiPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783F209394D20097A986 /* MultiPolygon.swift */; };
 		1E9091682093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7827209394D20097A986 /* GeodesicCalculator.swift */; };
-		1E9091692093A3EF00DAEF11 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7831209394D20097A986 /* Logger.swift */; };
 		1E90916A2093A3EF00DAEF11 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782C209394D20097A986 /* Array.swift */; };
 		1E90916C2093A3EF00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E90916D2093A3EF00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E90916E2093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E90916F2093A3F000DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091712093A3F000DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -220,7 +231,6 @@
 		1E90917E2093A3F000DAEF11 /* MultiLineString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783E209394D20097A986 /* MultiLineString.swift */; };
 		1E90917F2093A3F000DAEF11 /* MultiPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B783F209394D20097A986 /* MultiPolygon.swift */; };
 		1E9091802093A3F000DAEF11 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7827209394D20097A986 /* GeodesicCalculator.swift */; };
-		1E9091812093A3F000DAEF11 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7831209394D20097A986 /* Logger.swift */; };
 		1E9091822093A3F000DAEF11 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782C209394D20097A986 /* Array.swift */; };
 		1E9091842093A3F000DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E9091852093A3F000DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
@@ -252,6 +262,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E53D4A420AB5BD80006F1E1 /* Cartfile.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
+		1E53D4A520AB5BD90006F1E1 /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		1E53D4C820AB5CB00006F1E1 /* TimberSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TimberSwift.framework; sourceTree = "<group>"; };
+		1E53D4CB20AB5CB00006F1E1 /* TimberSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TimberSwift.framework; sourceTree = "<group>"; };
+		1E53D4D020AB5CB00006F1E1 /* TimberSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TimberSwift.framework; sourceTree = "<group>"; };
+		1E53D4D520AB5CB00006F1E1 /* TimberSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TimberSwift.framework; sourceTree = "<group>"; };
+		1E53D4DB20AB5D370006F1E1 /* Timber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timber.swift; sourceTree = "<group>"; };
+		1E53D4E020AB5DF30006F1E1 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		1E53D4E520AB64390006F1E1 /* Package.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Package.resolved; sourceTree = SOURCE_ROOT; };
+		1E53D4E620AB64390006F1E1 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
+		1E53D4E720AB64390006F1E1 /* .swift-version */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".swift-version"; sourceTree = SOURCE_ROOT; };
 		1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGeoJsonClosedGeometry.swift; sourceTree = "<group>"; };
 		1E7A053F2093999100A003CD /* MAINTAINERS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MAINTAINERS; sourceTree = "<group>"; };
 		1E7A05402093999100A003CD /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -264,7 +285,6 @@
 		1E8B782C209394D20097A986 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		1E8B782E209394D20097A986 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
 		1E8B782F209394D20097A986 /* GeospatialSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeospatialSwift.h; sourceTree = "<group>"; };
-		1E8B7831209394D20097A986 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		1E8B7834209394D20097A986 /* BoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingBox.swift; sourceTree = "<group>"; };
 		1E8B7835209394D20097A986 /* GeoJsonEquatables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoJsonEquatables.swift; sourceTree = "<group>"; };
 		1E8B7837209394D20097A986 /* Feature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -278,7 +298,6 @@
 		1E8B783F209394D20097A986 /* MultiPolygon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiPolygon.swift; sourceTree = "<group>"; };
 		1E8B7840209394D20097A986 /* GeoJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoJson.swift; sourceTree = "<group>"; };
 		1E8B7841209394D20097A986 /* GeodesicPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeodesicPoint.swift; sourceTree = "<group>"; };
-		1E8B7842209394D20097A986 /* ConfigurationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationModel.swift; sourceTree = "<group>"; };
 		1E8B7844209394D20097A986 /* GeohashBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashBox.swift; sourceTree = "<group>"; };
 		1E8B7845209394D20097A986 /* GeohashCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashCoder.swift; sourceTree = "<group>"; };
 		1E8B7846209394D20097A986 /* Geospatial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geospatial.swift; sourceTree = "<group>"; };
@@ -298,8 +317,6 @@
 		1E8B7876209394DE0097A986 /* PointTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointTests.swift; sourceTree = "<group>"; };
 		1E8B7878209394DE0097A986 /* GeohashCoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashCoderTests.swift; sourceTree = "<group>"; };
 		1E8B7879209394DE0097A986 /* GeohashBoxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashBoxTests.swift; sourceTree = "<group>"; };
-		1E8B787C209394DE0097A986 /* MockGeodesicCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeodesicCalculator.swift; sourceTree = "<group>"; };
-		1E8B787D209394DE0097A986 /* MockLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockLogger.swift; sourceTree = "<group>"; };
 		1E8B7881209394DE0097A986 /* MockGeoJsonGeohashBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonGeohashBox.swift; sourceTree = "<group>"; };
 		1E8B7882209394DE0097A986 /* MockGeoJsonBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonBoundingBox.swift; sourceTree = "<group>"; };
 		1E8B7883209394DE0097A986 /* MockGeoJsonGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonGeometry.swift; sourceTree = "<group>"; };
@@ -324,12 +341,12 @@
 		1E8B789C209394DE0097A986 /* GeoTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTestHelper.swift; sourceTree = "<group>"; };
 		1E8B789E209394DE0097A986 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E9090B020939EA300DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E9090B820939EA400DAEF11 /* GeospatialSwift macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GeospatialSwift macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E9090B820939EA400DAEF11 /* GeospatialSwift macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GeospatialSwift macOS Tests.xctest"; path = "../Debug/GeospatialSwift macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9090E220939F2700DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E9090EA20939F2700DAEF11 /* GeospatialSwift iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GeospatialSwift iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E9090EA20939F2700DAEF11 /* GeospatialSwift iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GeospatialSwift iOS Tests.xctest"; path = "../Debug-iphonesimulator/GeospatialSwift iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9090FE20939F5C00DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E90910620939F5C00DAEF11 /* GeospatialSwift tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GeospatialSwift tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E90911A20939F6900DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E90910620939F5C00DAEF11 /* GeospatialSwift tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GeospatialSwift tvOSTests.xctest"; path = "../Debug-appletvsimulator/GeospatialSwift tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E90911A20939F6900DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GeospatialSwift.framework; path = "../Debug-watchsimulator/GeospatialSwift.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9091262093A1E500DAEF11 /* Info tvOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info tvOS.plist"; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -339,6 +356,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4D720AB5CC70006F1E1 /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,7 +364,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E9090B920939EA400DAEF11 /* GeospatialSwift.framework in Frameworks */,
+				1E54976220AB6DEC00FE50EC /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +372,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4D620AB5CC40006F1E1 /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,7 +380,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E9090EB20939F2800DAEF11 /* GeospatialSwift.framework in Frameworks */,
+				1E54975520AB683000FE50EC /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +388,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4D820AB5CCB0006F1E1 /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +396,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E90910720939F5C00DAEF11 /* GeospatialSwift.framework in Frameworks */,
+				1E54975720AB683500FE50EC /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,18 +404,63 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4D920AB5CCF0006F1E1 /* TimberSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E53D4C620AB5CB00006F1E1 /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4C820AB5CB00006F1E1 /* TimberSwift.framework */,
+			);
+			name = Mac;
+			path = Carthage/Build/Mac;
+			sourceTree = "<group>";
+		};
+		1E53D4C920AB5CB00006F1E1 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4CB20AB5CB00006F1E1 /* TimberSwift.framework */,
+			);
+			name = tvOS;
+			path = Carthage/Build/tvOS;
+			sourceTree = "<group>";
+		};
+		1E53D4CD20AB5CB00006F1E1 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4D020AB5CB00006F1E1 /* TimberSwift.framework */,
+			);
+			name = watchOS;
+			path = Carthage/Build/watchOS;
+			sourceTree = "<group>";
+		};
+		1E53D4D120AB5CB00006F1E1 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4D520AB5CB00006F1E1 /* TimberSwift.framework */,
+			);
+			name = iOS;
+			path = Carthage/Build/iOS;
+			sourceTree = "<group>";
+		};
+		1E53D4DA20AB5CFE0006F1E1 /* Timber */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4DB20AB5D370006F1E1 /* Timber.swift */,
+			);
+			path = Timber;
+			sourceTree = "<group>";
+		};
 		1E57A3042093B523009F9B8D /* GeospatialSwift */ = {
 			isa = PBXGroup;
 			children = (
 				1E8B7832209394D20097A986 /* API */,
-				1E8B7830209394D20097A986 /* Common */,
 				1E8B7828209394D20097A986 /* Parser */,
+				1E53D4DA20AB5CFE0006F1E1 /* Timber */,
 				1E8B782B209394D20097A986 /* Extensions */,
 			);
 			path = GeospatialSwift;
@@ -412,6 +477,20 @@
 			path = GeospatialSwiftTests;
 			sourceTree = "<group>";
 		};
+		1E6C083D20AB56B8001788C3 /* XCode Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				1E53D4A520AB5BD90006F1E1 /* Cartfile */,
+				1E53D4A420AB5BD80006F1E1 /* Cartfile.resolved */,
+				1E53D4E620AB64390006F1E1 /* .swiftlint.yml */,
+				1E53D4D120AB5CB00006F1E1 /* iOS */,
+				1E53D4C620AB5CB00006F1E1 /* Mac */,
+				1E53D4C920AB5CB00006F1E1 /* tvOS */,
+				1E53D4CD20AB5CB00006F1E1 /* watchOS */,
+			);
+			name = "XCode Dependencies";
+			sourceTree = "<group>";
+		};
 		1E7A053E2093992700A003CD /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,31 +499,25 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		1E7A05482093999C00A003CD /* Deployment */ = {
+		1E7A05482093999C00A003CD /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				1E7A05402093999100A003CD /* LICENSE */,
 				OBJ_6 /* Package.swift */,
+				1E53D4E520AB64390006F1E1 /* Package.resolved */,
+				1E53D4E720AB64390006F1E1 /* .swift-version */,
 			);
-			name = Deployment;
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		1E7A0549209399E800A003CD /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
 				1E7A05422093999200A003CD /* CONTRIBUTING.md */,
+				1E7A05402093999100A003CD /* LICENSE */,
 				1E7A053F2093999100A003CD /* MAINTAINERS */,
 				1E7A05412093999200A003CD /* README.md */,
 			);
 			name = Documentation;
-			sourceTree = "<group>";
-		};
-		1E7A6CCE20978AE90063F01F /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				1E8B787D209394DE0097A986 /* MockLogger.swift */,
-			);
-			path = Common;
 			sourceTree = "<group>";
 		};
 		1E8B7825209394D20097A986 /* Sources */ = {
@@ -477,23 +550,15 @@
 			isa = PBXGroup;
 			children = (
 				1E8B782C209394D20097A986 /* Array.swift */,
+				1E53D4E020AB5DF30006F1E1 /* Bundle.swift */,
 				1E8B782E209394D20097A986 /* FloatingPoint.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		1E8B7830209394D20097A986 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				1E8B7831209394D20097A986 /* Logger.swift */,
-			);
-			path = Common;
-			sourceTree = "<group>";
-		};
 		1E8B7832209394D20097A986 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7842209394D20097A986 /* ConfigurationModel.swift */,
 				1E8B7846209394D20097A986 /* Geospatial.swift */,
 				1E8B7826209394D20097A986 /* Calculator */,
 				1E8B7843209394D20097A986 /* Geohash */,
@@ -517,15 +582,15 @@
 		1E8B7836209394D20097A986 /* Object */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7837209394D20097A986 /* Feature.swift */,
-				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
-				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				1E8B7839209394D20097A986 /* Point.swift */,
+				1E8B783A209394D20097A986 /* MultiPoint.swift */,
 				1E8B783C209394D20097A986 /* LineString.swift */,
 				1E8B783E209394D20097A986 /* MultiLineString.swift */,
-				1E8B783A209394D20097A986 /* MultiPoint.swift */,
-				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
-				1E8B7839209394D20097A986 /* Point.swift */,
 				1E8B783D209394D20097A986 /* Polygon.swift */,
+				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
+				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				1E8B7837209394D20097A986 /* Feature.swift */,
+				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -623,23 +688,13 @@
 			isa = PBXGroup;
 			children = (
 				1E8B787E209394DE0097A986 /* API */,
-				1E7A6CCE20978AE90063F01F /* Common */,
 			);
 			path = Mock;
-			sourceTree = "<group>";
-		};
-		1E8B787B209394DE0097A986 /* Calculator */ = {
-			isa = PBXGroup;
-			children = (
-				1E8B787C209394DE0097A986 /* MockGeodesicCalculator.swift */,
-			);
-			path = Calculator;
 			sourceTree = "<group>";
 		};
 		1E8B787E209394DE0097A986 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B787B209394DE0097A986 /* Calculator */,
 				1E8B7892209394DE0097A986 /* Geohash */,
 				1E8B787F209394DE0097A986 /* GeoJson */,
 			);
@@ -735,6 +790,7 @@
 				1E90911A20939F6900DAEF11 /* GeospatialSwift.framework */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		OBJ_5 = {
@@ -743,7 +799,8 @@
 				1E8B7825209394D20097A986 /* Sources */,
 				1E8B7862209394DE0097A986 /* Tests */,
 				1E7A0549209399E800A003CD /* Documentation */,
-				1E7A05482093999C00A003CD /* Deployment */,
+				1E7A05482093999C00A003CD /* Dependencies */,
+				1E6C083D20AB56B8001788C3 /* XCode Dependencies */,
 				OBJ_123 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -808,6 +865,7 @@
 				1E9090B420939EA400DAEF11 /* Sources */,
 				1E9090B520939EA400DAEF11 /* Frameworks */,
 				1E9090B620939EA400DAEF11 /* Resources */,
+				1E54975E20AB6A7D00FE50EC /* Run Script - Carthage Copy */,
 			);
 			buildRules = (
 			);
@@ -845,6 +903,7 @@
 				1E9090E620939F2700DAEF11 /* Sources */,
 				1E9090E720939F2700DAEF11 /* Frameworks */,
 				1E9090E820939F2700DAEF11 /* Resources */,
+				1E54975F20AB6AF500FE50EC /* Run Script - Carthage Copy */,
 			);
 			buildRules = (
 			);
@@ -882,6 +941,7 @@
 				1E90910220939F5C00DAEF11 /* Sources */,
 				1E90910320939F5C00DAEF11 /* Frameworks */,
 				1E90910420939F5C00DAEF11 /* Resources */,
+				1E54976120AB6AFC00FE50EC /* Run Script - Carthage Copy */,
 			);
 			buildRules = (
 			);
@@ -986,6 +1046,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4EC20AB64390006F1E1 /* .swiftlint.yml in Resources */,
+				1E53D4F020AB64390006F1E1 /* .swift-version in Resources */,
+				1E53D4E820AB64390006F1E1 /* Package.resolved in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,6 +1063,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4ED20AB64390006F1E1 /* .swiftlint.yml in Resources */,
+				1E53D4F120AB64390006F1E1 /* .swift-version in Resources */,
+				1E53D4E920AB64390006F1E1 /* Package.resolved in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1014,6 +1080,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4EE20AB64390006F1E1 /* .swiftlint.yml in Resources */,
+				1E53D4F220AB64390006F1E1 /* .swift-version in Resources */,
+				1E53D4EA20AB64390006F1E1 /* Package.resolved in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1028,12 +1097,63 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4EF20AB64390006F1E1 /* .swiftlint.yml in Resources */,
+				1E53D4F320AB64390006F1E1 /* .swift-version in Resources */,
+				1E53D4EB20AB64390006F1E1 /* Package.resolved in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1E54975E20AB6A7D00FE50EC /* Run Script - Carthage Copy */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/Mac/TimberSwift.framework",
+			);
+			name = "Run Script - Carthage Copy";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/TimberSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		1E54975F20AB6AF500FE50EC /* Run Script - Carthage Copy */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/TimberSwift.framework",
+			);
+			name = "Run Script - Carthage Copy";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/TimberSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		1E54976120AB6AFC00FE50EC /* Run Script - Carthage Copy */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/tvOS/TimberSwift.framework",
+			);
+			name = "Run Script - Carthage Copy";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/TimberSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
 		1E8BCB422093BBB30091DA81 /* Run Script - Swift Lint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1097,8 +1217,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4E120AB5DF30006F1E1 /* Bundle.swift in Sources */,
 				1E90913E2093A3EE00DAEF11 /* GeoJsonParser.swift in Sources */,
-				1E9091392093A3EE00DAEF11 /* Logger.swift in Sources */,
 				1E90913A2093A3EE00DAEF11 /* Array.swift in Sources */,
 				1E90913C2093A3EE00DAEF11 /* FloatingPoint.swift in Sources */,
 				1E90912D2093A3EE00DAEF11 /* GeoJson.swift in Sources */,
@@ -1107,6 +1227,7 @@
 				1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */,
 				1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E9091322093A3EE00DAEF11 /* MultiPoint.swift in Sources */,
+				1E53D4DC20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E90912C2093A3EE00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091382093A3EE00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E9091332093A3EE00DAEF11 /* GeometryCollection.swift in Sources */,
@@ -1119,7 +1240,6 @@
 				1E90912F2093A3EE00DAEF11 /* Feature.swift in Sources */,
 				1E9091372093A3EE00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E90912E2093A3EE00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E9091272093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1128,12 +1248,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E7CB73B2093A91400ECC023 /* WktParserTests.swift in Sources */,
-				1E7CB7252093A91400ECC023 /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7402093A91400ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7482093A91500ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB7372093A91400ECC023 /* MockGeoJsonLineString.swift in Sources */,
 				1E7CB7452093A91500ECC023 /* MultiLineStringTests.swift in Sources */,
-				1E7CB7262093A91400ECC023 /* MockLogger.swift in Sources */,
 				1E6CC1A020A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */,
 				1E7CB7212093A91400ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB72E2093A91400ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
@@ -1175,8 +1293,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4E220AB5DF30006F1E1 /* Bundle.swift in Sources */,
 				1E9091562093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */,
-				1E9091512093A3EF00DAEF11 /* Logger.swift in Sources */,
 				1E9091522093A3EF00DAEF11 /* Array.swift in Sources */,
 				1E9091542093A3EF00DAEF11 /* FloatingPoint.swift in Sources */,
 				1E9091452093A3EF00DAEF11 /* GeoJson.swift in Sources */,
@@ -1185,6 +1303,7 @@
 				1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E90914A2093A3EF00DAEF11 /* MultiPoint.swift in Sources */,
+				1E53D4DD20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091442093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091502093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90914B2093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
@@ -1197,7 +1316,6 @@
 				1E9091472093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E90914F2093A3EF00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E9091462093A3EF00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E90913F2093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1206,12 +1324,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E7CB7632093A91600ECC023 /* WktParserTests.swift in Sources */,
-				1E7CB74D2093A91600ECC023 /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7682093A91600ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7702093A91600ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB75F2093A91600ECC023 /* MockGeoJsonLineString.swift in Sources */,
 				1E7CB76D2093A91600ECC023 /* MultiLineStringTests.swift in Sources */,
-				1E7CB74E2093A91600ECC023 /* MockLogger.swift in Sources */,
 				1E6CC19F20A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */,
 				1E7CB7492093A91600ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB7562093A91600ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
@@ -1253,8 +1369,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4E320AB5DF30006F1E1 /* Bundle.swift in Sources */,
 				1E90916E2093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */,
-				1E9091692093A3EF00DAEF11 /* Logger.swift in Sources */,
 				1E90916A2093A3EF00DAEF11 /* Array.swift in Sources */,
 				1E90916C2093A3EF00DAEF11 /* FloatingPoint.swift in Sources */,
 				1E90915D2093A3EF00DAEF11 /* GeoJson.swift in Sources */,
@@ -1263,6 +1379,7 @@
 				1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E9091622093A3EF00DAEF11 /* MultiPoint.swift in Sources */,
+				1E53D4DE20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E90915C2093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091682093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E9091632093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
@@ -1275,7 +1392,6 @@
 				1E90915F2093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E9091672093A3EF00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E90915E2093A3EF00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E9091572093A3EF00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1284,12 +1400,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E7CB78B2093A91700ECC023 /* WktParserTests.swift in Sources */,
-				1E7CB7752093A91700ECC023 /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7902093A91700ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7982093A91700ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB7872093A91700ECC023 /* MockGeoJsonLineString.swift in Sources */,
 				1E7CB7952093A91700ECC023 /* MultiLineStringTests.swift in Sources */,
-				1E7CB7762093A91700ECC023 /* MockLogger.swift in Sources */,
 				1E6CC19E20A09AD20041DBA4 /* MockGeoJsonClosedGeometry.swift in Sources */,
 				1E7CB7712093A91700ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB77E2093A91700ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
@@ -1331,8 +1445,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E53D4E420AB5DF30006F1E1 /* Bundle.swift in Sources */,
 				1E9091862093A3F000DAEF11 /* GeoJsonParser.swift in Sources */,
-				1E9091812093A3F000DAEF11 /* Logger.swift in Sources */,
 				1E9091822093A3F000DAEF11 /* Array.swift in Sources */,
 				1E9091842093A3F000DAEF11 /* FloatingPoint.swift in Sources */,
 				1E9091752093A3F000DAEF11 /* GeoJson.swift in Sources */,
@@ -1341,6 +1455,7 @@
 				1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */,
 				1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */,
 				1E90917A2093A3F000DAEF11 /* MultiPoint.swift in Sources */,
+				1E53D4DF20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091742093A3F000DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091802093A3F000DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90917B2093A3F000DAEF11 /* GeometryCollection.swift in Sources */,
@@ -1353,7 +1468,6 @@
 				1E9091772093A3F000DAEF11 /* Feature.swift in Sources */,
 				1E90917F2093A3F000DAEF11 /* MultiPolygon.swift in Sources */,
 				1E9091762093A3F000DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E90916F2093A3F000DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1421,6 +1535,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1498,6 +1616,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1563,6 +1685,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1626,6 +1755,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1685,6 +1821,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1761,6 +1901,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1827,6 +1971,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1891,6 +2042,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1953,6 +2111,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2029,6 +2191,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2094,6 +2260,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2157,6 +2330,13 @@
 				DEVELOPMENT_TEAM = 557EJSX593;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/tvOS",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2220,6 +2400,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2297,6 +2481,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
