@@ -12,6 +12,7 @@ identifier_name:
   excluded:
     - id
     - Log
+    - Calculator
     - φ1
     - φ2
     - φ3

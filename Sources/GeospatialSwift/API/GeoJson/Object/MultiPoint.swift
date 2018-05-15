@@ -7,7 +7,7 @@ extension GeoJson {
      Creates a GeoJsonMultiPoint
      */
     public func multiPoint(points: [GeoJsonPoint]) -> GeoJsonMultiPoint? {
-        return MultiPoint(logger: logger, geodesicCalculator: geodesicCalculator, points: points)
+        return MultiPoint(points: points)
     }
     
     public final class MultiPoint: GeoJsonMultiPoint {
@@ -25,9 +25,6 @@ extension GeoJson {
             """
         }
         
-        private let logger: LoggerProtocol
-        private let geodesicCalculator: GeodesicCalculatorProtocol
-        
         public let points: [GeoJsonPoint]
         
         public var boundingBox: GeoJsonBoundingBox {
@@ -39,29 +36,26 @@ extension GeoJson {
         }
         
         public var centroid: GeodesicPoint {
-            return geodesicCalculator.centroid(points: points)
+            return Calculator.centroid(points: points)
         }
         
-        internal convenience init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, coordinatesJson: [Any]) {
-            guard let pointsJson = coordinatesJson as? [[Any]] else { logger.error("A valid MultiPoint must have valid coordinates"); return nil }
+        internal convenience init?(coordinatesJson: [Any]) {
+            guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPoint must have valid coordinates"); return nil }
             
             var points = [GeoJsonPoint]()
             for pointJson in pointsJson {
-                if let point = Point(logger: logger, geodesicCalculator: geodesicCalculator, coordinatesJson: pointJson) {
+                if let point = Point(coordinatesJson: pointJson) {
                     points.append(point)
                 } else {
-                    logger.error("Invalid Point in MultiPoint"); return nil
+                    Log.warning("Invalid Point in MultiPoint"); return nil
                 }
             }
             
-            self.init(logger: logger, geodesicCalculator: geodesicCalculator, points: points)
+            self.init(points: points)
         }
         
-        fileprivate init?(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol, points: [GeoJsonPoint]) {
-            guard points.count >= 1 else { logger.error("A valid MultiPoint must have at least one Point"); return nil }
-            
-            self.logger = logger
-            self.geodesicCalculator = geodesicCalculator
+        fileprivate init?(points: [GeoJsonPoint]) {
+            guard points.count >= 1 else { Log.warning("A valid MultiPoint must have at least one Point"); return nil }
             
             self.points = points
         }

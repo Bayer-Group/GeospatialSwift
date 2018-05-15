@@ -12,9 +12,9 @@ class WktParserTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        geoJson = GeoJson(logger: MockLogger(), geodesicCalculator: MockGeodesicCalculator())
+        geoJson = GeoJson()
         
-        wktParser = WktParser(logger: MockLogger(), geoJson: geoJson)
+        wktParser = WktParser(geoJson: geoJson)
     }
     
     func testEmptyWkt() {
@@ -86,7 +86,7 @@ class WktParserTests: XCTestCase {
         wktTestData.forEach { wktData in
             // TODO: Lots of Unsupported types, check WktTestData.json for names with prefix "Unsupported"
             guard !((wktData["name"] as? String)?.hasPrefix("Unsupported ") ?? false) else {
-                wktParser.logger.warning("Test Unsupported: \(wktData["name"] ?? "")")
+                Log.warning("Test Unsupported: \(wktData["name"] ?? "")")
                 return
             }
             
@@ -95,7 +95,7 @@ class WktParserTests: XCTestCase {
             
             XCTAssertNotNil(geoJsonObject)
             
-            wktParser.logger.warning("Test \(geoJsonObject == nil ? "Failed" : "Passed"): \(wktData["name"] ?? "")")
+            Log.warning("Test \(geoJsonObject == nil ? "Failed" : "Passed"): \(wktData["name"] ?? "")")
         }
     }
 }

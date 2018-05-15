@@ -36,17 +36,14 @@ open class Geospatial: GeospatialProtocol {
     /**
      Initialize the interface using a configuration to describe how the interface should react to requests.
      */
-    public init(configuration: ConfigurationModel) {
-        let logger = Logger(applicationPrefix: "🗺️ Geospatial 🗺️", minimumLogLevelShown: configuration.logLevel)
-        let geodesicCalculator = GeodesicCalculator(logger: logger)
+    public init() {
+        geoJson = GeoJson()
         
-        geoJson = GeoJson(logger: logger, geodesicCalculator: geodesicCalculator)
+        geohash = GeohashCoder()
         
-        geohash = GeohashCoder(logger: logger, geodesicCalculator: geodesicCalculator)
+        calculator = GeodesicCalculator.shared
         
-        calculator = geodesicCalculator
-        
-        wktParser = WktParser(logger: logger, geoJson: geoJson)
+        wktParser = WktParser(geoJson: geoJson)
     }
     
     /**

@@ -14,7 +14,7 @@ extension GeoJson {
      Creates a GeoJsonFeature
      */
     public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature? {
-        return Feature(logger: logger, geometry: geometry, id: id, properties: properties)
+        return Feature(geometry: geometry, id: id, properties: properties)
     }
     
     public final class Feature: GeoJsonFeature {
@@ -39,8 +39,6 @@ extension GeoJson {
             """
         }
         
-        private let logger: LoggerProtocol
-        
         public let geometry: GeoJsonGeometry?
         public let properties: GeoJsonDictionary?
         
@@ -51,24 +49,22 @@ extension GeoJson {
         internal let idDouble: Double?
         internal let idInt: Int?
         
-        internal convenience init?(logger: LoggerProtocol, geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal convenience init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
             let id = geoJsonDictionary["id"] as? String ?? (geoJsonDictionary["id"] as? Double)?.description ?? (geoJsonDictionary["id"] as? Int)?.description
             
             let properties = geoJsonDictionary["properties"] as? GeoJsonDictionary
             
-            if geoJsonDictionary["geometry"] is NSNull { self.init(logger: logger, geometry: nil, id: id, properties: properties); return }
+            if geoJsonDictionary["geometry"] is NSNull { self.init(geometry: nil, id: id, properties: properties); return }
             
-            guard let geometryJson = geoJsonDictionary["geometry"] as? GeoJsonDictionary else { logger.error("A valid Feature must have a \"geometry\" key: String : \(geoJsonDictionary)"); return nil }
+            guard let geometryJson = geoJsonDictionary["geometry"] as? GeoJsonDictionary else { Log.warning("A valid Feature must have a \"geometry\" key: String : \(geoJsonDictionary)"); return nil }
             
-            guard let geometry = geoJsonParser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { logger.error("Feature must contain a valid geometry"); return nil }
+            guard let geometry = geoJsonParser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Feature must contain a valid geometry"); return nil }
             
-            self.init(logger: logger, geometry: geometry, id: id, properties: properties)
+            self.init(geometry: geometry, id: id, properties: properties)
         }
         
-        fileprivate init?(logger: LoggerProtocol, geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) {
+        fileprivate init?(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) {
             guard id == nil || id is String || id is Double || id is Int else { return nil }
-            
-            self.logger = logger
             
             self.geometry = geometry
             self.idString = id as? String

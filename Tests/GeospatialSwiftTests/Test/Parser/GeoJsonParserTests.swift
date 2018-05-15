@@ -3,16 +3,12 @@ import XCTest
 @testable import GeospatialSwift
 
 class GeoJsonParserTests: XCTestCase {
-    var geodesicCalculator: GeodesicCalculatorProtocol!
-    
     var geoJsonParser: GeoJsonParser!
     
     override func setUp() {
         super.setUp()
         
-        geodesicCalculator = MockGeodesicCalculator()
-        
-        geoJsonParser = GeoJsonParser(logger: MockLogger(), geodesicCalculator: geodesicCalculator)
+        geoJsonParser = GeoJsonParser()
     }
     
     func testBadGeoJson() {
@@ -315,7 +311,7 @@ class GeoJsonParserTests: XCTestCase {
             XCTAssertNotNil(geoJsonObject)
             
             if geoJsonObject != nil {
-                geoJsonParser.logger.warning("Test Passed: \(geoJsonData["name"] ?? "")")
+                Log.warning("Test Passed: \(geoJsonData["name"] ?? "")")
             }
         }
     }

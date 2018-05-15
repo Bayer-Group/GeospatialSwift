@@ -3,8 +3,6 @@ import XCTest
 @testable import GeospatialSwift
 
 class BoundingBoxTests: XCTestCase {
-    var logger: MockLogger!
-    
     private(set) var simpleBoundingBox: BoundingBox!
     
     private(set) var pointBoundingBox: BoundingBox!
@@ -29,8 +27,6 @@ class BoundingBoxTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        logger = MockLogger()
         
         simpleBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 0, minLatitude: 1, maxLongitude: 2, maxLatitude: 4))
         

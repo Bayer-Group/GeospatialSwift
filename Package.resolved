@@ -1,7 +1,15 @@
 {
   "object": {
     "pins": [
-
+      {
+        "package": "TimberSwift",
+        "repositoryURL": "https://github.com/MonsantoCo/TimberSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "10da18b3fa1aad43d21c04a0485e01424461df0b",
+          "version": "0.1.0"
+        }
+      }
     ]
   },
   "version": 1

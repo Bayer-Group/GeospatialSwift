@@ -29,15 +29,17 @@ public protocol GeodesicCalculatorProtocol {
     static func normalize(point: GeodesicPoint) -> GeodesicPoint
 }
 
+internal let Calculator = GeodesicCalculator.shared
+
 /**
  All calculation input and output is based in meters. Geospatial input and output is expected in longitude/latitude and degrees.
  */
 // swiftlint:disable file_length
 public struct GeodesicCalculator: GeodesicCalculatorProtocol {
+    internal static let shared: GeodesicCalculatorProtocol = GeodesicCalculator()
+    
     // Apple uses a low number, for example this works in the point tests to match algorithms: earthRadius = 6359693.8652686905
     private let earthRadius = 6378137.0
-    
-    let logger: LoggerProtocol
     
     public func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint {
         let point1 = point1.degreesToRadians

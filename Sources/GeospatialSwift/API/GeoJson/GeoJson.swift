@@ -108,16 +108,10 @@ public protocol GeoJsonProtocol {
 }
 
 public final class GeoJson: GeoJsonProtocol {
-    internal let logger: LoggerProtocol
-    internal let geodesicCalculator: GeodesicCalculatorProtocol
-    
     private var geoJsonParser: GeoJsonParserProtocol!
     
-    internal init(logger: LoggerProtocol, geodesicCalculator: GeodesicCalculatorProtocol) {
-        self.logger = logger
-        self.geodesicCalculator = geodesicCalculator
-        
-        geoJsonParser = GeoJsonParser(logger: logger, geodesicCalculator: geodesicCalculator)
+    internal init() {
+        geoJsonParser = GeoJsonParser()
     }
     
     /**

@@ -3,9 +3,6 @@ import XCTest
 @testable import GeospatialSwift
 
 class GeohashCoderTests: XCTestCase {
-    var logger: MockLogger!
-    
-    var geodesicCalculator: GeodesicCalculatorProtocol!
     var geohashCoder: GeohashCoderProtocol!
     
     var geohashCenterPoint: SimplePoint!
@@ -24,11 +21,7 @@ class GeohashCoderTests: XCTestCase {
     //    -90.422587, 38.7016155  -90.4225445, 38.7016585
     
     override func setUp() {
-        logger = MockLogger()
-        
-        geodesicCalculator = GeodesicCalculator(logger: logger)
-        
-        geohashCoder = GeohashCoder(logger: logger, geodesicCalculator: geodesicCalculator)
+        geohashCoder = GeohashCoder()
         
         geohashCenterPoint = SimplePoint(longitude: -90.422566, latitude: 38.701637)
     }
