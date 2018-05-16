@@ -12,7 +12,7 @@ extension GeoJson {
         return MultiLineString(lineStrings: lineStrings)
     }
     
-    public final class MultiLineString: GeoJsonMultiLineString {
+    public struct MultiLineString: GeoJsonMultiLineString {
         public let type: GeoJsonObjectType = .multiLineString
         public var geoJsonCoordinates: [Any] { return lineStrings.map { $0.geoJsonCoordinates } }
         
@@ -41,7 +41,7 @@ extension GeoJson {
             return Calculator.centroid(lines: lineStrings)
         }
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let lineStringsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiLineString must have valid coordinates"); return nil }
             
             var lineStrings = [GeoJsonLineString]()

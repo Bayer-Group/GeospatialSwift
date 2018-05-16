@@ -15,7 +15,7 @@ extension GeoJson {
         return LineString(points: points)
     }
     
-    public final class LineString: GeoJsonLineString {
+    public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
         public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
         
@@ -50,7 +50,7 @@ extension GeoJson {
         
         public let segments: [GeoJsonLineSegment]
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid LineString must have valid coordinates"); return nil }
             
             var points = [GeoJsonPoint]()

@@ -13,7 +13,7 @@ extension GeoJson {
         return Polygon(linearRings: linearRings)
     }
     
-    public final class Polygon: GeoJsonPolygon {
+    public struct Polygon: GeoJsonPolygon {
         public let type: GeoJsonObjectType = .polygon
         public var geoJsonCoordinates: [Any] { return linearRings.map { $0.geoJsonCoordinates } }
         
@@ -46,7 +46,7 @@ extension GeoJson {
             return Calculator.area(polygonRings: linearRings)
         }
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let linearRingsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid Polygon must have valid coordinates"); return nil }
             
             var linearRings = [GeoJsonLineString]()

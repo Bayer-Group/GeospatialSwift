@@ -10,7 +10,7 @@ extension GeoJson {
         return GeometryCollection(geometries: geometries)
     }
     
-    public final class GeometryCollection: GeoJsonGeometryCollection {
+    public struct GeometryCollection: GeoJsonGeometryCollection {
         public let type: GeoJsonObjectType = .geometryCollection
         public var geoJson: GeoJsonDictionary { return ["type": type.rawValue, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
         
@@ -28,7 +28,7 @@ extension GeoJson {
         public let objectGeometries: [GeoJsonGeometry]?
         public let objectBoundingBox: GeoJsonBoundingBox?
         
-        internal convenience init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
             guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
             
             var geometries = [GeoJsonGeometry]()

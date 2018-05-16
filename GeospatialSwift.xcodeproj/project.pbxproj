@@ -151,7 +151,6 @@
 		1E7CB7962093A91700ECC023 /* PointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7876209394DE0097A986 /* PointTests.swift */; };
 		1E7CB7972093A91700ECC023 /* GeohashCoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7878209394DE0097A986 /* GeohashCoderTests.swift */; };
 		1E7CB7982093A91700ECC023 /* GeohashBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7879209394DE0097A986 /* GeohashBoxTests.swift */; };
-		1E9091272093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091292093A3EE00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -173,7 +172,6 @@
 		1E90913C2093A3EE00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E90913D2093A3EE00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E90913E2093A3EE00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E90913F2093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091412093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -195,7 +193,6 @@
 		1E9091542093A3EF00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E9091552093A3EF00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E9091562093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E9091572093A3EF00DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091592093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -217,7 +214,6 @@
 		1E90916C2093A3EF00DAEF11 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782E209394D20097A986 /* FloatingPoint.swift */; };
 		1E90916D2093A3EF00DAEF11 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7829209394D20097A986 /* WktParser.swift */; };
 		1E90916E2093A3EF00DAEF11 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B782A209394D20097A986 /* GeoJsonParser.swift */; };
-		1E90916F2093A3F000DAEF11 /* ConfigurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7842209394D20097A986 /* ConfigurationModel.swift */; };
 		1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091712093A3F000DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -302,7 +298,6 @@
 		1E8B783F209394D20097A986 /* MultiPolygon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiPolygon.swift; sourceTree = "<group>"; };
 		1E8B7840209394D20097A986 /* GeoJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoJson.swift; sourceTree = "<group>"; };
 		1E8B7841209394D20097A986 /* GeodesicPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeodesicPoint.swift; sourceTree = "<group>"; };
-		1E8B7842209394D20097A986 /* ConfigurationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationModel.swift; sourceTree = "<group>"; };
 		1E8B7844209394D20097A986 /* GeohashBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashBox.swift; sourceTree = "<group>"; };
 		1E8B7845209394D20097A986 /* GeohashCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeohashCoder.swift; sourceTree = "<group>"; };
 		1E8B7846209394D20097A986 /* Geospatial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geospatial.swift; sourceTree = "<group>"; };
@@ -504,21 +499,21 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		1E7A05482093999C00A003CD /* Deployment */ = {
+		1E7A05482093999C00A003CD /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				1E7A05402093999100A003CD /* LICENSE */,
 				OBJ_6 /* Package.swift */,
 				1E53D4E520AB64390006F1E1 /* Package.resolved */,
 				1E53D4E720AB64390006F1E1 /* .swift-version */,
 			);
-			name = Deployment;
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		1E7A0549209399E800A003CD /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
 				1E7A05422093999200A003CD /* CONTRIBUTING.md */,
+				1E7A05402093999100A003CD /* LICENSE */,
 				1E7A053F2093999100A003CD /* MAINTAINERS */,
 				1E7A05412093999200A003CD /* README.md */,
 			);
@@ -564,7 +559,6 @@
 		1E8B7832209394D20097A986 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7842209394D20097A986 /* ConfigurationModel.swift */,
 				1E8B7846209394D20097A986 /* Geospatial.swift */,
 				1E8B7826209394D20097A986 /* Calculator */,
 				1E8B7843209394D20097A986 /* Geohash */,
@@ -588,15 +582,15 @@
 		1E8B7836209394D20097A986 /* Object */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7837209394D20097A986 /* Feature.swift */,
-				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
-				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				1E8B7839209394D20097A986 /* Point.swift */,
+				1E8B783A209394D20097A986 /* MultiPoint.swift */,
 				1E8B783C209394D20097A986 /* LineString.swift */,
 				1E8B783E209394D20097A986 /* MultiLineString.swift */,
-				1E8B783A209394D20097A986 /* MultiPoint.swift */,
-				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
-				1E8B7839209394D20097A986 /* Point.swift */,
 				1E8B783D209394D20097A986 /* Polygon.swift */,
+				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
+				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				1E8B7837209394D20097A986 /* Feature.swift */,
+				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -796,6 +790,7 @@
 				1E90911A20939F6900DAEF11 /* GeospatialSwift.framework */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		OBJ_5 = {
@@ -804,7 +799,7 @@
 				1E8B7825209394D20097A986 /* Sources */,
 				1E8B7862209394DE0097A986 /* Tests */,
 				1E7A0549209399E800A003CD /* Documentation */,
-				1E7A05482093999C00A003CD /* Deployment */,
+				1E7A05482093999C00A003CD /* Dependencies */,
 				1E6C083D20AB56B8001788C3 /* XCode Dependencies */,
 				OBJ_123 /* Products */,
 			);
@@ -1245,7 +1240,6 @@
 				1E90912F2093A3EE00DAEF11 /* Feature.swift in Sources */,
 				1E9091372093A3EE00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E90912E2093A3EE00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E9091272093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1322,7 +1316,6 @@
 				1E9091472093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E90914F2093A3EF00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E9091462093A3EF00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E90913F2093A3EE00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1399,7 +1392,6 @@
 				1E90915F2093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E9091672093A3EF00DAEF11 /* MultiPolygon.swift in Sources */,
 				1E90915E2093A3EF00DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E9091572093A3EF00DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1476,7 +1468,6 @@
 				1E9091772093A3F000DAEF11 /* Feature.swift in Sources */,
 				1E90917F2093A3F000DAEF11 /* MultiPolygon.swift in Sources */,
 				1E9091762093A3F000DAEF11 /* GeoJsonEquatables.swift in Sources */,
-				1E90916F2093A3F000DAEF11 /* ConfigurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

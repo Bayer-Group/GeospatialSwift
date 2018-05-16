@@ -12,7 +12,7 @@ extension GeoJson {
         return MultiPolygon(polygons: polygons)
     }
     
-    public final class MultiPolygon: GeoJsonMultiPolygon {
+    public struct MultiPolygon: GeoJsonMultiPolygon {
         public let type: GeoJsonObjectType = .multiPolygon
         public var geoJsonCoordinates: [Any] { return polygons.map { $0.geoJsonCoordinates } }
         
@@ -35,7 +35,7 @@ extension GeoJson {
         
         public var centroid: GeodesicPoint { return Calculator.centroid(polygons: polygons) }
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
             
             var polygons = [GeoJsonPolygon]()

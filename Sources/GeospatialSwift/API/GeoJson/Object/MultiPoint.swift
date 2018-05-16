@@ -10,8 +10,8 @@ extension GeoJson {
         return MultiPoint(points: points)
     }
     
-    public final class MultiPoint: GeoJsonMultiPoint {
-        public let type: GeoJsonObjectType = .multiPoint
+    public struct MultiPoint: GeoJsonMultiPoint {
+        public var type: GeoJsonObjectType { return .multiPoint }
         public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
         
         public var description: String {
@@ -39,7 +39,7 @@ extension GeoJson {
             return Calculator.centroid(points: points)
         }
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPoint must have valid coordinates"); return nil }
             
             var points = [GeoJsonPoint]()

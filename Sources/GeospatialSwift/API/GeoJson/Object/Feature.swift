@@ -17,7 +17,7 @@ extension GeoJson {
         return Feature(geometry: geometry, id: id, properties: properties)
     }
     
-    public final class Feature: GeoJsonFeature {
+    public struct Feature: GeoJsonFeature {
         public let type: GeoJsonObjectType = .feature
         public var geoJson: GeoJsonDictionary {
             var geoJson: GeoJsonDictionary = ["type": type.rawValue, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
@@ -49,7 +49,7 @@ extension GeoJson {
         internal let idDouble: Double?
         internal let idInt: Int?
         
-        internal convenience init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
             let id = geoJsonDictionary["id"] as? String ?? (geoJsonDictionary["id"] as? Double)?.description ?? (geoJsonDictionary["id"] as? Int)?.description
             
             let properties = geoJsonDictionary["properties"] as? GeoJsonDictionary

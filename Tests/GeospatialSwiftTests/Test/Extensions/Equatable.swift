@@ -1,5 +1,13 @@
 @testable import GeospatialSwift
 
+extension SimplePoint: Equatable {
+    public static func == (lhs: SimplePoint, rhs: SimplePoint) -> Bool { return lhs as GeodesicPoint == rhs as GeodesicPoint }
+}
+
+extension BoundingBox: Equatable {
+    public static func == (lhs: BoundingBox, rhs: BoundingBox) -> Bool { return lhs as GeoJsonBoundingBox == rhs as GeoJsonBoundingBox }
+}
+
 extension Point: Equatable {
     public static func == (lhs: Point, rhs: Point) -> Bool { return lhs as GeoJsonObject == rhs as GeoJsonObject }
 }
@@ -34,8 +42,4 @@ extension Feature: Equatable {
 
 extension FeatureCollection: Equatable {
     public static func == (lhs: FeatureCollection, rhs: FeatureCollection) -> Bool { return lhs as GeoJsonObject == rhs as GeoJsonObject }
-}
-
-extension BoundingBox: Equatable {
-    public static func == (lhs: BoundingBox, rhs: BoundingBox) -> Bool { return lhs as GeoJsonBoundingBox == rhs as GeoJsonBoundingBox }
 }

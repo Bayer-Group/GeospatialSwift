@@ -26,8 +26,9 @@ extension GeoJson {
         return Point(longitude: longitude, latitude: latitude, altitude: altitude)
     }
     
-    public final class Point: GeoJsonPoint {
-        public let type: GeoJsonObjectType = .point
+    public struct Point: GeoJsonPoint {
+        public var type: GeoJsonObjectType { return .point }
+        
         public var geoJsonCoordinates: [Any] { return altitude != nil ? [longitude, latitude, altitude!] : [longitude, latitude] }
         
         public var normalize: GeodesicPoint { return Calculator.normalize(point: self) }
@@ -37,26 +38,22 @@ extension GeoJson {
         public let longitude: Double
         public let latitude: Double
         // TODO: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
-        public let altitude: Double?
+        public var altitude: Double?
         
         public var boundingBox: GeoJsonBoundingBox {
             return BoundingBox(boundingCoordinates: (minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude))
         }
         
-        internal convenience init?(coordinatesJson: [Any]) {
+        internal init?(coordinatesJson: [Any]) {
             guard let pointJson = (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }), pointJson.count >= 2 else { Log.warning("A valid Point must have at least 2 coordinates"); return nil }
             
             self.init(longitude: pointJson[0], latitude: pointJson[1], altitude: pointJson.count >= 3 ? pointJson[2] : nil)
         }
         
-        fileprivate init(longitude: Double, latitude: Double, altitude: Double?) {
+        internal init(longitude: Double, latitude: Double, altitude: Double? = nil) {
             self.longitude = longitude
             self.latitude = latitude
             self.altitude = altitude
-        }
-        
-        internal convenience init(longitude: Double, latitude: Double) {
-            self.init(longitude: longitude, latitude: latitude, altitude: nil)
         }
         
         // TODO: Consider Altitude? What to do if altitude is nil in some cases?

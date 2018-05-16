@@ -17,7 +17,7 @@ public enum GeoJsonObjectType: String {
  
  Does not support projected coordinates, only geographic
  */
-public protocol GeoJsonObject: class, CustomStringConvertible {
+public protocol GeoJsonObject: CustomStringConvertible {
     var type: GeoJsonObjectType { get }
     
     var objectGeometries: [GeoJsonGeometry]? { get }
@@ -107,7 +107,7 @@ public protocol GeoJsonProtocol {
     func point(longitude: Double, latitude: Double) -> GeoJsonPoint
 }
 
-public final class GeoJson: GeoJsonProtocol {
+public struct GeoJson: GeoJsonProtocol {
     private var geoJsonParser: GeoJsonParserProtocol!
     
     internal init() {
