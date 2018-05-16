@@ -28,12 +28,12 @@ extension GeoJson {
         public let objectGeometries: [GeoJsonGeometry]?
         public let objectBoundingBox: GeoJsonBoundingBox?
         
-        internal init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
             
             var geometries = [GeoJsonGeometry]()
             for geometryJson in geometriesJson {
-                guard let geometry = geoJsonParser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Invalid Geometry for GeometryCollection"); return nil }
+                guard let geometry = parser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Invalid Geometry for GeometryCollection"); return nil }
                 
                 geometries.append(geometry)
             }

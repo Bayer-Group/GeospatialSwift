@@ -49,7 +49,7 @@ extension GeoJson {
         internal let idDouble: Double?
         internal let idInt: Int?
         
-        internal init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal init?(geoJsonDictionary: GeoJsonDictionary) {
             let id = geoJsonDictionary["id"] as? String ?? (geoJsonDictionary["id"] as? Double)?.description ?? (geoJsonDictionary["id"] as? Int)?.description
             
             let properties = geoJsonDictionary["properties"] as? GeoJsonDictionary
@@ -58,7 +58,7 @@ extension GeoJson {
             
             guard let geometryJson = geoJsonDictionary["geometry"] as? GeoJsonDictionary else { Log.warning("A valid Feature must have a \"geometry\" key: String : \(geoJsonDictionary)"); return nil }
             
-            guard let geometry = geoJsonParser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Feature must contain a valid geometry"); return nil }
+            guard let geometry = parser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Feature must contain a valid geometry"); return nil }
             
             self.init(geometry: geometry, id: id, properties: properties)
         }

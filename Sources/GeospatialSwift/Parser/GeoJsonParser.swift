@@ -9,9 +9,9 @@ internal struct GeoJsonParser: GeoJsonParserProtocol {
         
         switch type {
         case .feature:
-            return Feature(geoJsonParser: self, geoJsonDictionary: geoJsonDictionary)
+            return Feature(geoJsonDictionary: geoJsonDictionary)
         case .featureCollection:
-            return FeatureCollection(geoJsonParser: self, geoJsonDictionary: geoJsonDictionary)
+            return FeatureCollection(geoJsonDictionary: geoJsonDictionary)
         default: return geometry(geoJsonDictionary: geoJsonDictionary, geoJsonObjectType: type)
         }
     }
@@ -26,7 +26,7 @@ internal extension GeoJsonParser {
     }
     
     fileprivate func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
-        if geoJsonObjectType == .geometryCollection { return GeometryCollection(geoJsonParser: self, geoJsonDictionary: geoJsonDictionary) }
+        if geoJsonObjectType == .geometryCollection { return GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
         
         guard let coordinates = geoJsonDictionary["coordinates"] as? [Any] else { Log.warning("A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array: String : \(geoJsonDictionary)"); return nil }
         

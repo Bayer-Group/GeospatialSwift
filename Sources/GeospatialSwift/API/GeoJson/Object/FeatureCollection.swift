@@ -32,12 +32,12 @@ extension GeoJson {
         public let objectGeometries: [GeoJsonGeometry]?
         public let objectBoundingBox: GeoJsonBoundingBox?
         
-        internal init?(geoJsonParser: GeoJsonParserProtocol, geoJsonDictionary: GeoJsonDictionary) {
+        internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let featuresJson = geoJsonDictionary["features"] as? [GeoJsonDictionary] else { Log.warning("A valid FeatureCollection must have a \"features\" key: String : \(geoJsonDictionary)"); return nil }
             
             var features = [GeoJsonFeature]()
             for featureJson in featuresJson {
-                if let feature = Feature(geoJsonParser: geoJsonParser, geoJsonDictionary: featureJson) {
+                if let feature = Feature(geoJsonDictionary: featureJson) {
                     features.append(feature)
                 } else {
                     Log.warning("Invalid Feature in FeatureCollection")
