@@ -66,19 +66,19 @@ class MultiPointTests: XCTestCase {
     }
     
     func testContains_OutsideErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178603)
+        let contains = multiPoint.contains(distancePoint, errorDistance: 1178422)
         
         XCTAssertEqual(contains, false)
     }
     
     func testContains_OnErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178603.883587234187871)
+        let contains = multiPoint.contains(distancePoint, errorDistance: 1178422.47118554264307)
         
         XCTAssertEqual(contains, true)
     }
     
     func testContains_InsideErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178604)
+        let contains = multiPoint.contains(distancePoint, errorDistance: 1178423)
         
         XCTAssertEqual(contains, true)
     }
@@ -113,23 +113,23 @@ class MultiPointTests: XCTestCase {
     func testDistance() {
         let distance = multiPoint.distance(to: distancePoint)
         
-        XCTAssertEqual(distance.description, "1178603.88358723")
+        XCTAssertEqual(distance.description, "1178422.47118554")
     }
     
     func testDistance_NoErrorDistance() {
         let distance = multiPoint.distance(to: distancePoint, errorDistance: 0.0)
         
-        XCTAssertEqual(distance.description, "1178603.88358723")
+        XCTAssertEqual(distance.description, "1178422.47118554")
     }
     
     func testDistance_OutsideErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178603)
+        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178422)
         
-        XCTAssertEqual(distance.description, "0.883587231626734")
+        XCTAssertEqual(distance.description, "0.47118554264307")
     }
     
     func testDistance_OnErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178603.883587234187871)
+        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178422.883587234187871)
         
         XCTAssertEqual(distance.description, "0.0")
     }
@@ -141,11 +141,13 @@ class MultiPointTests: XCTestCase {
     }
     
     func testDistance_ChooseCorrectPointForDistance() {
+//        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        
         let distance1 = multiPoint.distance(to: GeoTestHelper.simplePoint(1, 2.1, 0), errorDistance: 11000)
         let distance2 = multiPoint.distance(to: GeoTestHelper.simplePoint(2, 3.1, 0), errorDistance: 11000)
         
-        XCTAssertEqual(distance1.description, "131.949079327373")
-        XCTAssertEqual(distance2.description, "131.949079327373")
+        XCTAssertEqual(distance1.description, "102.612409978732")
+        XCTAssertEqual(distance2.description, "131.639424653114")
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
@@ -153,27 +155,6 @@ class MultiPointTests: XCTestCase {
     // swiftlint:disable force_cast
     func testPoints() {
         XCTAssertEqual(multiPoint.points.map { $0 as! Point }, points)
-    }
-    
-    func testCentroid() {
-        XCTAssertEqual(multiPoint.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.74990474937385, 2.50006181604718, 3))
-    }
-    // swiftlint:enable force_cast
-    
-    func testCentroid_Negative_To_Positive() {
-        let centroid = GeoTestHelper.multiPoint([GeoTestHelper.point(-5, -5), GeoTestHelper.point(5, 5)]).centroid
-        let expectedPoint = GeoTestHelper.simplePoint(0, 0, nil)
-        
-        AssertEqualAccuracy10(centroid.longitude, expectedPoint.longitude)
-        AssertEqualAccuracy10(centroid.latitude, expectedPoint.latitude)
-    }
-    
-    func testCentroid_Negative_To_Negative() {
-        let centroid = GeoTestHelper.multiPoint([GeoTestHelper.point(-20, -10), GeoTestHelper.point(-10, -5)]).centroid
-        let expectedPoint = GeoTestHelper.simplePoint(-14.9711864618099, -7.52831985539658, nil)
-        
-        AssertEqualAccuracy10(centroid.longitude, expectedPoint.longitude)
-        AssertEqualAccuracy10(centroid.latitude, expectedPoint.latitude)
     }
     
     // MultiPoint Tests

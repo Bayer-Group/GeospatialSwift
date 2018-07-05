@@ -4,11 +4,6 @@ internal typealias Point = GeoJson.Point
 
 public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
     var normalize: GeodesicPoint { get }
-    
-    func initialBearing(to point: GeodesicPoint) -> Double
-    func averageBearing(to point: GeodesicPoint) -> Double
-    func finalBearing(to point: GeodesicPoint) -> Double
-    func midpoint(with point: GeodesicPoint) -> GeodesicPoint
 }
 
 extension GeoJson {
@@ -64,11 +59,5 @@ extension GeoJson {
         }
         
         public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return distance(to: point, errorDistance: errorDistance) == 0 }
-        
-        public func initialBearing(to point: GeodesicPoint) -> Double { return Calculator.initialBearing(point1: self, point2: point) }
-        public func averageBearing(to point: GeodesicPoint) -> Double { return Calculator.averageBearing(point1: self, point2: point) }
-        public func finalBearing(to point: GeodesicPoint) -> Double { return Calculator.finalBearing(point1: self, point2: point) }
-        
-        public func midpoint(with point: GeodesicPoint) -> GeodesicPoint { return Calculator.midpoint(point1: self, point2: point) }
     }
 }

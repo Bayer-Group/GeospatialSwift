@@ -146,14 +146,14 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: 0).description, "27754.112314124")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27756.2242840717")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), errorDistance: 0).description, "27741.1590712679")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), errorDistance: 0).description, "27741.159070823")
     }
     
     func testDistance_TravelingThroughVertically() {
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), errorDistance: 0).description, "39328.079908396")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), errorDistance: 0).description, "27789.8922694512")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), errorDistance: 0).description, "27791.4048339845")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), errorDistance: 0).description, "27789.902235927")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), errorDistance: 0).description, "27791.4048336645")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), errorDistance: 0).description, "27789.9022346475")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27756.2242840717")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), errorDistance: 0).description, "6.33553915404217")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
@@ -191,24 +191,14 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), errorDistance: 0).description, "27753.4442334685")
         XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
         // Line 2
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), errorDistance: 0).description, "27747.136686888")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), errorDistance: 0).description, "27753.1704202716")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), errorDistance: 0).description, "27747.1366851065")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), errorDistance: 0).description, "27753.170416259")
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
     
     func testPoints() {
         XCTAssertEqual((lineString.points as? [Point])!, points)
-    }
-    
-    func testCentroid() {
-        // swiftlint:disable:next force_cast
-        XCTAssertEqual(lineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.0, 2.00109365277232, 4.0))
-    }
-    
-    func testCentroid_Negative() {
-        // swiftlint:disable:next force_cast
-        XCTAssertEqual(lineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.0, 2.00109365277232, 4.0))
     }
     
     // GeoJsonLinearGeometry Tests

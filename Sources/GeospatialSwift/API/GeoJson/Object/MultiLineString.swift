@@ -37,9 +37,9 @@ extension GeoJson {
             return BoundingBox.best(lineStrings.map { $0.boundingBox })!
         }
         
-        public var centroid: GeodesicPoint {
-            return Calculator.centroid(lines: lineStrings)
-        }
+//        public var centroid: GeodesicPoint {
+//            return Calculator.centroid(lines: lineStrings)
+//        }
         
         public var length: Double {
             return lineStrings.reduce(0) { $0 + $1.length }

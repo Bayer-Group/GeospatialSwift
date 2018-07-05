@@ -3,6 +3,4 @@
  */
 public protocol GeoJsonMultiCoordinatesGeometry: GeoJsonCoordinatesGeometry {
     var points: [GeoJsonPoint] { get }
-    
-    var centroid: GeodesicPoint { get }
 }

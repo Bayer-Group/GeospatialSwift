@@ -31,10 +31,6 @@ extension GeoJson {
             return BoundingBox.best(points.compactMap { $0.boundingBox })!
         }
         
-        public var centroid: GeodesicPoint {
-            return Calculator.centroid(points: points)
-        }
-        
         internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPoint must have valid coordinates"); return nil }
             

@@ -63,19 +63,19 @@ class PointTests: XCTestCase {
     }
     
     func testContains_OutsideErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335734)
+        let contains = point.contains(distancePoint, errorDistance: 1335387)
         
         XCTAssertEqual(contains, false)
     }
     
     func testContains_OnErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335734.603511751163751)
+        let contains = point.contains(distancePoint, errorDistance: 1335387.647673850413412)
         
         XCTAssertEqual(contains, true)
     }
     
     func testContains_InsideErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335735)
+        let contains = point.contains(distancePoint, errorDistance: 1335388)
         
         XCTAssertEqual(contains, true)
     }
@@ -117,7 +117,7 @@ class PointTests: XCTestCase {
     func testDistance() {
         let distance = point.distance(to: distancePoint)
         
-        AssertEqualAccuracy6(distance, 1335734.60351175)
+        AssertEqualAccuracy6(distance, 1335387.64767385)
     }
     
     func testDistance_Self() {
@@ -129,17 +129,17 @@ class PointTests: XCTestCase {
     func testDistance_NoErrorDistance() {
         let distance = point.distance(to: distancePoint, errorDistance: 0.0)
         
-        AssertEqualAccuracy6(distance, 1335734.60351175)
+        AssertEqualAccuracy6(distance, 1335387.64767385)
     }
     
     func testDistance_OutsideErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 1335734)
+        let distance = point.distance(to: distancePoint, errorDistance: 1335387)
         
-        AssertEqualAccuracy6(distance, 0.603511751163751)
+        AssertEqualAccuracy6(distance, 0.647673850413412)
     }
     
     func testDistance_OnErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 1335734.60351175069809)
+        let distance = point.distance(to: distancePoint, errorDistance: 1335387.647673850413412)
         
         AssertEqualAccuracy6(distance, 0.0)
     }
@@ -182,49 +182,6 @@ class PointTests: XCTestCase {
         
         AssertEqualAccuracy10(normalizedPoint.longitude, 180.0)
         AssertEqualAccuracy10(normalizedPoint.latitude, 90.0)
-    }
-    
-    func testInitialBearing() {
-        let bearing = point.initialBearing(to: distancePoint)
-        
-        AssertEqualAccuracy10(bearing, 47.8193763709035)
-    }
-    
-    func testInitialBearing_Reverse() {
-        let bearing = distancePoint.initialBearing(to: point)
-        
-        AssertEqualAccuracy10(bearing, 228.764352221902)
-    }
-    
-    func testAverageBearing() {
-        let bearing = point.averageBearing(to: distancePoint)
-        
-        AssertEqualAccuracy10(bearing, 48.1320345260737)
-    }
-    
-    func testAverageBearing_Reverse() {
-        let bearing = distancePoint.averageBearing(to: point)
-        
-        AssertEqualAccuracy10(bearing, 228.132034526074)
-    }
-    
-    func testFinalBearing() {
-        let bearing = point.finalBearing(to: distancePoint)
-        
-        AssertEqualAccuracy10(bearing, 48.7643522219023)
-    }
-    
-    func testFinalBearing_Reverse() {
-        let bearing = distancePoint.finalBearing(to: point)
-        
-        AssertEqualAccuracy10(bearing, 227.819376370904)
-    }
-    
-    func testMidpoint() {
-        let midpoint = point.midpoint(with: distancePoint)
-        
-        AssertEqualAccuracy10(midpoint.latitude, 6.01841622677193)
-        AssertEqualAccuracy10(midpoint.longitude, 5.46685861298068)
     }
     
     func testEquals() {

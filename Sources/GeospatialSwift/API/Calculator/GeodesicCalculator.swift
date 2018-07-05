@@ -1,15 +1,10 @@
 import Foundation
 
 public protocol GeodesicCalculatorProtocol {
-    func area(polygonRings: [GeoJsonLineString]) -> Double
+    func area(polygon: GeoJsonPolygon) -> Double
     func length(lineSegments: [GeodesicLineSegment]) -> Double
     
-    func centroid(polygons: [GeoJsonPolygon]) -> GeodesicPoint
-    func centroid(polygonRings: [GeoJsonLineString]) -> GeodesicPoint
-    func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint
-    func centroid(lines: [GeoJsonLineString]) -> GeodesicPoint
-    func centroid(linePoints: [GeodesicPoint]) -> GeodesicPoint
-    func centroid(points: [GeodesicPoint]) -> GeodesicPoint
+    func centroid(polygon: GeoJsonPolygon) -> GeodesicPoint
     
     func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double
     func distance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
@@ -34,7 +29,6 @@ internal let Calculator = GeodesicCalculator.shared
 /**
  All calculation input and output is based in meters. Geospatial input and output is expected in longitude/latitude and degrees.
  */
-// swiftlint:disable file_length
 public struct GeodesicCalculator: GeodesicCalculatorProtocol {
     internal static let shared: GeodesicCalculatorProtocol = GeodesicCalculator()
     
@@ -99,13 +93,13 @@ extension GeodesicCalculator {
     }
     
     // TODO: Not geodesic?
-    public func area(polygonRings: [GeoJsonLineString]) -> Double {
-        let earthRadius = self.earthRadius(latitudeAverage: centroid(polygonRings: polygonRings).latitude)
+    public func area(polygon: GeoJsonPolygon) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: centroid(polygon: polygon).latitude)
         
-        let mainRing = polygonRings.first!
+        let mainRing = polygon.linearRings.first!
         let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
         
-        guard let negativeRings = polygonRings.tail else { return mainRingArea }
+        guard let negativeRings = polygon.linearRings.tail else { return mainRingArea }
         
         return mainRingArea - negativeRings.reduce(0.0) { return $0 + area(linearRingPoints: $1.points, earthRadius: earthRadius) }
     }
@@ -207,7 +201,7 @@ extension GeodesicCalculator {
     
     // TODO: It would be nice to understand this better as there seems to be too much to calling this twice.
     private func distancePartialResult(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
-        let earthRadius = self.earthRadius(latitudeAverage: centroid(linePoints: [lineSegment.point1, lineSegment.point2]).latitude)
+        let earthRadius = self.earthRadius(latitudeAverage: midpoint(point1: lineSegment.point1, point2: lineSegment.point2).latitude)
         
         let θ12 = initialBearing(point1: lineSegment.point1, point2: lineSegment.point2).degreesToRadians
         let θ13 = initialBearing(point1: lineSegment.point1, point2: point).degreesToRadians
@@ -284,34 +278,14 @@ extension GeodesicCalculator {
 // MARK: Centroid Functions
 
 extension GeodesicCalculator {
-    public func centroid(polygons: [GeoJsonPolygon]) -> GeodesicPoint {
-        let firstPolygon = polygons.first!
-        var finalCentroid = centroid(polygonRings: firstPolygon.linearRings)
-        
-        if let remainingPolygons = polygons.tail {
-            let firstPolygonArea = area(polygonRings: firstPolygon.linearRings)
-            
-            remainingPolygons.forEach { remainingPolygon in
-                let remainingPolygonCentroid = centroid(polygonRings: remainingPolygon.linearRings)
-                let remainingPolygonArea = area(polygonRings: remainingPolygon.linearRings)
-                
-                let distanceToShiftCentroid = distance(point1: finalCentroid, point2: remainingPolygonCentroid) * remainingPolygonArea / firstPolygonArea / 2
-                let bearing = initialBearing(point1: finalCentroid, point2: remainingPolygonCentroid)
-                
-                finalCentroid = destinationPoint(origin: finalCentroid, bearing: bearing, distance: distanceToShiftCentroid)
-            }
-        }
-        
-        return finalCentroid
-    }
-    
-    public func centroid(polygonRings: [GeoJsonLineString]) -> GeodesicPoint {
-        let mainRing = polygonRings.first!
+    public func centroid(polygon: GeoJsonPolygon) -> GeodesicPoint {
+        let mainRing = polygon.linearRings.first!
         var finalCentroid = centroid(linearRingSegments: mainRing.segments)
         
         let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
         
-        if let negativeRings = polygonRings.tail {
+        // TODO: Negative Rings likely Broken
+        if let negativeRings = polygon.linearRings.tail {
             let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
             
             negativeRings.forEach { negativeRing in
@@ -329,7 +303,7 @@ extension GeodesicCalculator {
     }
     
     // TODO: Not geodesic. Estimation.
-    public func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint {
+    private func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint {
         var sumY = 0.0
         var sumX = 0.0
         var partialSum = 0.0
@@ -357,71 +331,6 @@ extension GeodesicCalculator {
         return SimplePoint(longitude: sumX / 6 / area + offsetLongitude, latitude: sumY / 6 / area + offsetLatitude, altitude: offset.altitude)
     }
     
-    public func centroid(lines: [GeoJsonLineString]) -> GeodesicPoint {
-        let firstLine = lines.first!
-        var finalCentroid = centroid(linePoints: firstLine.points)
-        
-        if let remainingLines = lines.tail {
-            let firstLineLength = length(lineSegments: firstLine.segments)
-            
-            remainingLines.forEach { remainingLine in
-                let remainingLineCentroid = centroid(linePoints: remainingLine.points)
-                let remainingLineLength = length(lineSegments: remainingLine.segments)
-                
-                let distanceToShiftCentroid = distance(point1: finalCentroid, point2: remainingLineCentroid) * remainingLineLength / firstLineLength / 2
-                let bearing = initialBearing(point1: finalCentroid, point2: remainingLineCentroid)
-                
-                finalCentroid = destinationPoint(origin: finalCentroid, bearing: bearing, distance: distanceToShiftCentroid)
-            }
-        }
-        
-        return finalCentroid
-    }
-    
-    public func centroid(linePoints: [GeodesicPoint]) -> GeodesicPoint {
-        let totalDistance = linePoints.enumerated().reduce(0.0) { subtotal, point in
-            if linePoints.count == point.offset + 1 { return subtotal }
-            
-            return subtotal + distance(point1: point.element, point2: linePoints[point.offset + 1])
-        }
-        
-        let midDistance = totalDistance / 2
-        var subDistanceTotal = 0.0
-        var lastIndex = 0
-        
-        for point in linePoints.enumerated() {
-            let subDistance = distance(point1: point.element, point2: linePoints[point.offset + 1])
-            
-            if subDistance + subDistanceTotal < midDistance {
-                subDistanceTotal += subDistance
-            } else {
-                lastIndex = point.offset
-                break
-            }
-        }
-        
-        let finalDistance = midDistance - subDistanceTotal
-        
-        let bearing = initialBearing(point1: linePoints[lastIndex], point2: linePoints[lastIndex + 1])
-        
-        return destinationPoint(origin: linePoints[lastIndex], bearing: bearing, distance: finalDistance)
-    }
-    
-    public func centroid(points: [GeodesicPoint]) -> GeodesicPoint {
-        var centroid = points.first!
-        
-        if let remainingPoints = points.tail {
-            remainingPoints.forEach { remainingPoint in
-                let distanceToShiftCentroid = distance(point1: centroid, point2: remainingPoint) / 2
-                let bearing = initialBearing(point1: centroid, point2: remainingPoint)
-                
-                centroid = destinationPoint(origin: centroid, bearing: bearing, distance: distanceToShiftCentroid)
-            }
-        }
-        
-        return centroid
-    }
-    
     private func destinationPoint(origin: GeodesicPoint, bearing: Double, distance: Double) -> GeodesicPoint {
         let earthRadius = self.earthRadius(latitudeAverage: origin.latitude)
         
@@ -436,6 +345,8 @@ extension GeodesicCalculator {
         let longitude2 = longitude1 + atan2(sin(bearing) * sin(centralAngle) * cos(latitude1), cos(centralAngle) - sin(latitude1) * sin(latitude2))
         
         // TODO: Altitude is just passed through right now.
-        return SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
+        let point = SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
+        
+        return point
     }
 }

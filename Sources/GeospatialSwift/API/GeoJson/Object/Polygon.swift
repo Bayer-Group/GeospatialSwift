@@ -2,6 +2,8 @@ internal typealias Polygon = GeoJson.Polygon
 
 public protocol GeoJsonPolygon: GeoJsonClosedGeometry {
     var linearRings: [GeoJsonLineString] { get }
+    
+    var centroid: GeodesicPoint { get }
 }
 
 extension GeoJson {
@@ -33,11 +35,11 @@ extension GeoJson {
         
         public var boundingBox: GeoJsonBoundingBox { return BoundingBox.best(linearRings.map { $0.boundingBox })! }
         
-        public var centroid: GeodesicPoint { return Calculator.centroid(polygonRings: linearRings) }
+        public var centroid: GeodesicPoint { return Calculator.centroid(polygon: self) }
         
         public var hasHole: Bool { return linearRings.count > 1 }
         
-        public var area: Double { return Calculator.area(polygonRings: linearRings) }
+        public var area: Double { return Calculator.area(polygon: self) }
         
         internal init?(coordinatesJson: [Any]) {
             guard let linearRingsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid Polygon must have valid coordinates"); return nil }

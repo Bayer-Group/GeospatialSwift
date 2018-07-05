@@ -270,6 +270,9 @@
 		1E92ABD520EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */; };
 		1E92ABD620EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */; };
 		1E92ABD720EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */; };
+		1E9A9BA420EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
+		1E9A9BA520EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
+		1E9A9BA620EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -392,6 +395,7 @@
 		1E92ABCA20ED955800EF4A4E /* GeoJsonLinearGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonLinearGeometry.swift; sourceTree = "<group>"; };
 		1E92ABCF20EDA69700EF4A4E /* MockGeoJsonLinearGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGeoJsonLinearGeometry.swift; sourceTree = "<group>"; };
 		1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegment.swift; sourceTree = "<group>"; };
+		1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegmentTests.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -699,6 +703,7 @@
 		1E8B786B209394DE0097A986 /* GeoJson */ = {
 			isa = PBXGroup;
 			children = (
+				1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */,
 				1E8B786C209394DE0097A986 /* BoundingBoxTests.swift */,
 				1E8B786D209394DE0097A986 /* Object */,
 			);
@@ -1338,6 +1343,7 @@
 				1E7CB73D2093A91400ECC023 /* BoundingBoxTests.swift in Sources */,
 				1E7CB73E2093A91400ECC023 /* PolygonTests.swift in Sources */,
 				1E7CB72A2093A91400ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */,
+				1E9A9BA420EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */,
 				1E7CB7472093A91500ECC023 /* GeohashCoderTests.swift in Sources */,
 				1E7CB73C2093A91400ECC023 /* Assertions.swift in Sources */,
 				1E7CB73F2093A91400ECC023 /* FeatureTests.swift in Sources */,
@@ -1423,6 +1429,7 @@
 				1E7CB7652093A91600ECC023 /* BoundingBoxTests.swift in Sources */,
 				1E7CB7662093A91600ECC023 /* PolygonTests.swift in Sources */,
 				1E7CB7522093A91600ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */,
+				1E9A9BA520EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */,
 				1E7CB76F2093A91600ECC023 /* GeohashCoderTests.swift in Sources */,
 				1E7CB7642093A91600ECC023 /* Assertions.swift in Sources */,
 				1E7CB7672093A91600ECC023 /* FeatureTests.swift in Sources */,
@@ -1508,6 +1515,7 @@
 				1E7CB78D2093A91700ECC023 /* BoundingBoxTests.swift in Sources */,
 				1E7CB78E2093A91700ECC023 /* PolygonTests.swift in Sources */,
 				1E7CB77A2093A91700ECC023 /* MockGeoJsonCoordinatesGeometry.swift in Sources */,
+				1E9A9BA620EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */,
 				1E7CB7972093A91700ECC023 /* GeohashCoderTests.swift in Sources */,
 				1E7CB78C2093A91700ECC023 /* Assertions.swift in Sources */,
 				1E7CB78F2093A91700ECC023 /* FeatureTests.swift in Sources */,

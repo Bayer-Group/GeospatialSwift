@@ -33,8 +33,6 @@ extension GeoJson {
         
         public var boundingBox: GeoJsonBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
         
-        public var centroid: GeodesicPoint { return Calculator.centroid(polygons: polygons) }
-        
         public var hasHole: Bool { return polygons.contains { $0.hasHole } }
         
         public var area: Double { return polygons.reduce(0) { $0 + $1.area } }

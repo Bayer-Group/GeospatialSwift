@@ -159,7 +159,7 @@ class MultiLineStringTests: XCTestCase {
     // GeoJsonLinearGeometry Tests
     
     func testLength() {
-        XCTAssertEqual(multiLineString.length.description, "602243.635765672")
+        XCTAssertEqual(multiLineString.length.description, "601246.341145017")
     }
     
     // MultiLineString Tests

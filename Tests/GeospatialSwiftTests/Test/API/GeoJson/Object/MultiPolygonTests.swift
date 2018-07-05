@@ -116,7 +116,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testArea() {
-        XCTAssertEqual(multiPolygon.area.description, "37676463.2547665")
+        XCTAssertEqual(multiPolygon.area.description, "37490216.3337727")
     }
     
     // TODO: Test Edge Distance
