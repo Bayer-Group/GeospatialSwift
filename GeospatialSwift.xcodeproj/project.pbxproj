@@ -247,10 +247,6 @@
 		1E92ABB320ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */; };
 		1E92ABB420ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */; };
 		1E92ABB520ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */; };
-		1E92ABB720ED943700EF4A4E /* SimplePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB620ED943700EF4A4E /* SimplePoint.swift */; };
-		1E92ABB820ED943700EF4A4E /* SimplePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB620ED943700EF4A4E /* SimplePoint.swift */; };
-		1E92ABB920ED943700EF4A4E /* SimplePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB620ED943700EF4A4E /* SimplePoint.swift */; };
-		1E92ABBA20ED943700EF4A4E /* SimplePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABB620ED943700EF4A4E /* SimplePoint.swift */; };
 		1E92ABBC20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABBB20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift */; };
 		1E92ABBD20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABBB20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift */; };
 		1E92ABBE20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E92ABBB20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift */; };
@@ -390,7 +386,6 @@
 		1E92ABA620EC113D00EF4A4E /* GeoJsonObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonObject.swift; sourceTree = "<group>"; };
 		1E92ABA920ED938D00EF4A4E /* GeoJsonGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonGeometry.swift; sourceTree = "<group>"; };
 		1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonCoordinatesGeometry.swift; sourceTree = "<group>"; };
-		1E92ABB620ED943700EF4A4E /* SimplePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePoint.swift; sourceTree = "<group>"; };
 		1E92ABBB20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonMultiCoordinatesGeometry.swift; sourceTree = "<group>"; };
 		1E92ABC020ED948E00EF4A4E /* GeoJsonClosedGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonClosedGeometry.swift; sourceTree = "<group>"; };
 		1E92ABC520ED94B200EF4A4E /* GeoJsonObjectType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonObjectType.swift; sourceTree = "<group>"; };
@@ -622,7 +617,6 @@
 				1E8B7840209394D20097A986 /* GeoJson.swift */,
 				1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */,
 				1E8B7841209394D20097A986 /* GeodesicPoint.swift */,
-				1E92ABB620ED943700EF4A4E /* SimplePoint.swift */,
 				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
 				1E8B7834209394D20097A986 /* BoundingBox.swift */,
 				1E8B7836209394D20097A986 /* Object */,
@@ -1295,7 +1289,6 @@
 				1E92ABA720EC113D00EF4A4E /* GeoJsonObject.swift in Sources */,
 				1E53D4DC20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E92ABCB20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
-				1E92ABB720ED943700EF4A4E /* SimplePoint.swift in Sources */,
 				1E90912C2093A3EE00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091382093A3EE00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E9091332093A3EE00DAEF11 /* GeometryCollection.swift in Sources */,
@@ -1381,7 +1374,6 @@
 				1E53D4DD20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091442093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCC20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
-				1E92ABB820ED943700EF4A4E /* SimplePoint.swift in Sources */,
 				1E9091502093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90914B2093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABAE20ED939200EF4A4E /* GeoJsonObject.swift in Sources */,
@@ -1467,7 +1459,6 @@
 				1E53D4DE20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E90915C2093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCD20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
-				1E92ABB920ED943700EF4A4E /* SimplePoint.swift in Sources */,
 				1E9091682093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E9091632093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABAF20ED939300EF4A4E /* GeoJsonObject.swift in Sources */,
@@ -1553,7 +1544,6 @@
 				1E53D4DF20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091742093A3F000DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCE20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
-				1E92ABBA20ED943700EF4A4E /* SimplePoint.swift in Sources */,
 				1E9091802093A3F000DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90917B2093A3F000DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABB020ED939400EF4A4E /* GeoJsonObject.swift in Sources */,

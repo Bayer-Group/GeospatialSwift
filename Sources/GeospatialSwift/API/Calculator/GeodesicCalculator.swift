@@ -38,8 +38,15 @@ internal let Calculator = GeodesicCalculator.shared
 public struct GeodesicCalculator: GeodesicCalculatorProtocol {
     internal static let shared: GeodesicCalculatorProtocol = GeodesicCalculator()
     
-    // Apple uses a low number, for example this works in the point tests to match algorithms: earthRadius = 6359693.8652686905
-    private let earthRadius = 6378137.0
+    // Guess at the radius of the earth based on latitude
+    private let earthRadiusEquator: Double = 6378137
+    private let earthRadiusPole: Double = 6356752
+    //√ [ (r1² * cos(B))² + (r2² * sin(B))² ] / [ (r1 * cos(B))² + (r2 * sin(B))² ]
+    private func earthRadius(latitudeAverage: Double) -> Double {
+        let part1 = (pow(pow(earthRadiusEquator, 2) * cos(latitudeAverage), 2) + pow(pow(earthRadiusPole, 2) * sin(latitudeAverage), 2))
+        let part2 = (pow(earthRadiusEquator * cos(latitudeAverage), 2) + pow(earthRadiusPole * sin(latitudeAverage), 2))
+        return sqrt(part1 / part2)
+    }
     
     public func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint {
         let point1 = point1.degreesToRadians
@@ -93,16 +100,18 @@ extension GeodesicCalculator {
     
     // TODO: Not geodesic?
     public func area(polygonRings: [GeoJsonLineString]) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: centroid(polygonRings: polygonRings).latitude)
+        
         let mainRing = polygonRings.first!
-        let mainRingArea = area(linearRingPoints: mainRing.points)
+        let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
         
         guard let negativeRings = polygonRings.tail else { return mainRingArea }
         
-        return mainRingArea - negativeRings.reduce(0.0) { return $0 + area(linearRingPoints: $1.points) }
+        return mainRingArea - negativeRings.reduce(0.0) { return $0 + area(linearRingPoints: $1.points, earthRadius: earthRadius) }
     }
     
     // TODO: Not geodesic?
-    private func area(linearRingPoints: [GeodesicPoint]) -> Double {
+    private func area(linearRingPoints: [GeodesicPoint], earthRadius: Double) -> Double {
         let points = linearRingPoints.map { $0.degreesToRadians }
         
         var area = 0.0
@@ -162,6 +171,8 @@ extension GeodesicCalculator {
     public func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
         // TODO: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
         //return point1.location.distance(from: point2.location)
+        let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
+        
         let point1 = point1.degreesToRadians
         let point2 = point2.degreesToRadians
 
@@ -179,6 +190,8 @@ extension GeodesicCalculator {
     public func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
         // TODO: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
         //return point1.location.distance(from: point2.location)
+        let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
+        
         let point1 = point1.degreesToRadians
         let point2 = point2.degreesToRadians
         
@@ -194,6 +207,8 @@ extension GeodesicCalculator {
     
     // TODO: It would be nice to understand this better as there seems to be too much to calling this twice.
     private func distancePartialResult(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: centroid(linePoints: [lineSegment.point1, lineSegment.point2]).latitude)
+        
         let θ12 = initialBearing(point1: lineSegment.point1, point2: lineSegment.point2).degreesToRadians
         let θ13 = initialBearing(point1: lineSegment.point1, point2: point).degreesToRadians
         let δ13 = distance(point1: lineSegment.point1, point2: point)
@@ -294,12 +309,14 @@ extension GeodesicCalculator {
         let mainRing = polygonRings.first!
         var finalCentroid = centroid(linearRingSegments: mainRing.segments)
         
+        let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
+        
         if let negativeRings = polygonRings.tail {
-            let mainRingArea = area(linearRingPoints: mainRing.points)
+            let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
             
             negativeRings.forEach { negativeRing in
                 let negativeCentroid = centroid(linearRingSegments: negativeRing.segments)
-                let negativeArea = area(linearRingPoints: negativeRing.points)
+                let negativeArea = area(linearRingPoints: negativeRing.points, earthRadius: earthRadius)
                 
                 let distanceToShiftCentroid = distance(point1: finalCentroid, point2: negativeCentroid) * 2 * negativeArea / mainRingArea
                 let bearing = initialBearing(point1: negativeCentroid, point2: finalCentroid)
@@ -406,6 +423,8 @@ extension GeodesicCalculator {
     }
     
     private func destinationPoint(origin: GeodesicPoint, bearing: Double, distance: Double) -> GeodesicPoint {
+        let earthRadius = self.earthRadius(latitudeAverage: origin.latitude)
+        
         let bearing = bearing.degreesToRadians
         let latitude1 = origin.latitude.degreesToRadians
         let longitude1 = origin.longitude.degreesToRadians
