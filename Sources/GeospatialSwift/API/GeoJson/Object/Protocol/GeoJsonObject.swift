@@ -32,17 +32,17 @@ extension GeoJsonObject {
 
 extension GeoJsonObject {
     // Trust geoJson serialization
-    var geoJsonData: Data {
+    public var geoJsonData: Data {
         // swiftlint:disable:next force_try
         return try! JSONSerialization.data(withJSONObject: geoJson, options: [])
     }
     
     // Trust geoJson encoding
-    var geoJsonString: String {
+    public var geoJsonString: String {
         return String(data: geoJsonData, encoding: .utf8)!
     }
     
-    var coordinatesGeometries: [GeoJsonCoordinatesGeometry] {
+    public var coordinatesGeometries: [GeoJsonCoordinatesGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
             if let geometry = objectGeometry as? GeoJsonCoordinatesGeometry { return [geometry] }
             
@@ -50,7 +50,7 @@ extension GeoJsonObject {
         }
     }
     
-    var multiCoordinatesGeometries: [GeoJsonMultiCoordinatesGeometry] {
+    public var multiCoordinatesGeometries: [GeoJsonMultiCoordinatesGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonMultiCoordinatesGeometry] in
             if let geometry = objectGeometry as? GeoJsonMultiCoordinatesGeometry { return [geometry] }
             
@@ -60,7 +60,7 @@ extension GeoJsonObject {
         }
     }
     
-    var linearGeometries: [GeoJsonLinearGeometry] {
+    public var linearGeometries: [GeoJsonLinearGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
             if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }
             
@@ -70,7 +70,7 @@ extension GeoJsonObject {
         }
     }
     
-    var closedGeometries: [GeoJsonClosedGeometry] {
+    public var closedGeometries: [GeoJsonClosedGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
             if let geometry = objectGeometry as? GeoJsonClosedGeometry { return [geometry] }
             
