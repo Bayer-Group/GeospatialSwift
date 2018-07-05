@@ -5,6 +5,7 @@ import XCTest
 class FeatureTests: XCTestCase {
     var geometry: GeoJsonGeometry!
     var feature: Feature!
+    var featureNested: Feature!
     var featureWithPoint: Feature!
     var featureEmpty: Feature!
     var featureWithId1: Feature!
@@ -24,6 +25,8 @@ class FeatureTests: XCTestCase {
         
         let properties: GeoJsonDictionary = ["property1": "value1", "property2": ["key": "value"]]
         feature = GeoTestHelper.feature(geometry, "12345", properties)
+        
+        featureNested = GeoTestHelper.feature(GeoTestHelper.geometryCollection([geometry, geometry]))
         
         featureEmpty = GeoTestHelper.feature(nil, nil, nil)
         
@@ -51,6 +54,23 @@ class FeatureTests: XCTestCase {
     func testObjectGeometries() {
         // swiftlint:disable:next force_cast
         XCTAssertEqual(feature.objectGeometries as! [MultiPolygon], [feature.geometry as! MultiPolygon])
+    }
+    
+    func testGeometryTypes() {
+        XCTAssertEqual(feature.coordinatesGeometries.count, 1)
+        XCTAssertEqual(feature.multiCoordinatesGeometries.count, 1)
+        XCTAssertEqual(feature.linearGeometries.count, 0)
+        XCTAssertEqual(feature.closedGeometries.count, 1)
+        
+        XCTAssertEqual(featureEmpty.coordinatesGeometries.count, 0)
+        XCTAssertEqual(featureEmpty.multiCoordinatesGeometries.count, 0)
+        XCTAssertEqual(featureEmpty.linearGeometries.count, 0)
+        XCTAssertEqual(featureEmpty.closedGeometries.count, 0)
+        
+        XCTAssertEqual(featureNested.coordinatesGeometries.count, 2)
+        XCTAssertEqual(featureNested.multiCoordinatesGeometries.count, 2)
+        XCTAssertEqual(featureNested.linearGeometries.count, 0)
+        XCTAssertEqual(featureNested.closedGeometries.count, 2)
     }
     
     func testObjectBoundingBox() {

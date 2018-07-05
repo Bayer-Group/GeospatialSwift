@@ -33,6 +33,13 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.objectGeometries as! [MultiPolygon], multiPolygon.geometries as! [MultiPolygon])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(multiPolygon.coordinatesGeometries.count, 1)
+        XCTAssertEqual(multiPolygon.multiCoordinatesGeometries.count, 1)
+        XCTAssertEqual(multiPolygon.linearGeometries.count, 0)
+        XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(multiPolygon.objectBoundingBox as? BoundingBox, multiPolygon.boundingBox as? BoundingBox)
     }
@@ -82,11 +89,7 @@ class MultiPolygonTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiPolygon.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(polygons.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(polygons.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
@@ -105,6 +108,18 @@ class MultiPolygonTests: XCTestCase {
     func testCentroid() {
         // TODO: Test me.
     }
+    
+    // GeoJsonClosedGeometry Tests
+    
+    func testHasHole() {
+        // TODO: Need to test multipolygon with and without holes.
+    }
+    
+    func testArea() {
+        XCTAssertEqual(multiPolygon.area.description, "37676463.2547665")
+    }
+    
+    // TODO: Test Edge Distance
     
     // MultiPolygon Tests
     

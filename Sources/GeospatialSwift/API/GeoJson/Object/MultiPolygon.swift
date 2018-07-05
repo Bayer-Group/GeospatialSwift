@@ -35,6 +35,10 @@ extension GeoJson {
         
         public var centroid: GeodesicPoint { return Calculator.centroid(polygons: polygons) }
         
+        public var hasHole: Bool { return polygons.contains { $0.hasHole } }
+        
+        public var area: Double { return polygons.reduce(0) { $0 + $1.area } }
+        
         internal init?(coordinatesJson: [Any]) {
             guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
             

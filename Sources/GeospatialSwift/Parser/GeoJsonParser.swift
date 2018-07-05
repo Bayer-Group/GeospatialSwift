@@ -17,15 +17,15 @@ internal struct GeoJsonParser: GeoJsonParserProtocol {
     }
 }
 
-internal extension GeoJsonParser {
-    fileprivate func geoJsonObjectType(geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObjectType? {
+private extension GeoJsonParser {
+    private func geoJsonObjectType(geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObjectType? {
         guard let typeString = geoJsonDictionary["type"] as? String else { Log.warning("A valid geoJson must have a \"type\" key: String : \(geoJsonDictionary)"); return nil }
-        guard let type = GeoJsonObjectType(rawValue: typeString) else { Log.warning("Invalid GeoJson Geometry type: \(typeString)"); return nil }
+        guard let type = GeoJsonObjectType(name: typeString) else { Log.warning("Invalid GeoJson Geometry type: \(typeString)"); return nil }
         
         return type
     }
     
-    fileprivate func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
+    private func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
         if geoJsonObjectType == .geometryCollection { return GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
         
         guard let coordinates = geoJsonDictionary["coordinates"] as? [Any] else { Log.warning("A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array: String : \(geoJsonDictionary)"); return nil }
@@ -44,7 +44,7 @@ internal extension GeoJsonParser {
         case .multiPolygon:
             return MultiPolygon(coordinatesJson: coordinates)
         default:
-            Log.warning("\(geoJsonObjectType.rawValue) is not a valid Coordinates Geometry.")
+            Log.warning("\(geoJsonObjectType.name) is not a valid Coordinates Geometry.")
             return nil
         }
     }

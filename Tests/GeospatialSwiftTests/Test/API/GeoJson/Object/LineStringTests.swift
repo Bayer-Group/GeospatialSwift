@@ -28,6 +28,13 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.objectGeometries as! [LineString], lineString.geometries as! [LineString])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(lineString.coordinatesGeometries.count, 1)
+        XCTAssertEqual(lineString.multiCoordinatesGeometries.count, 1)
+        XCTAssertEqual(lineString.linearGeometries.count, 1)
+        XCTAssertEqual(lineString.closedGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(lineString.objectBoundingBox as? BoundingBox, lineString.boundingBox as? BoundingBox)
     }
@@ -81,11 +88,7 @@ class LineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = lineString.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(points.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(points.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
@@ -208,18 +211,22 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.0, 2.00030459421549, 4.0))
     }
     
-    // LineString Tests
+    // GeoJsonLinearGeometry Tests
     
     // TODO: Verify
     func testLength() {
         XCTAssertEqual(lineString.length.description, "222571.167040614")
     }
     
+    // LineString Tests
+    
     func testSegments() {
         let segments = lineString.segments
         
         XCTAssertEqual(segments.count, 2)
     }
+    
+    // TODO: Test Bearing
     
     func testEquals() {
         XCTAssertEqual(lineString, lineString)

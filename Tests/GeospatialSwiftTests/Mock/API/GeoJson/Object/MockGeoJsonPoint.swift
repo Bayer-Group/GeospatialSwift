@@ -1,82 +1,89 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonPoint: MockGeoJsonCoordinatesGeometry, GeoJsonPoint {
-    private(set) var locationCallCount: Int = 0
-    private(set) var locationCoordinateCallCount: Int = 0
-    private(set) var longitudeCallCount: Int = 0
-    private(set) var latitudeCallCount: Int = 0
-    private(set) var altitudeCallCount: Int = 0
-    private(set) var degreesToRadiansCallCount: Int = 0
-    private(set) var radiansToDegreesCallCount: Int = 0
-    private(set) var normalizeCallCount: Int = 0
-    private(set) var initialBearingCallCount: Int = 0
-    private(set) var averageBearingCallCount: Int = 0
-    private(set) var finalBearingCallCount: Int = 0
-    private(set) var midpointCallCount: Int = 0
-    
     override init() {
         super.init()
         
         geoJsonObjectTypeResult = .point
     }
     
+    private(set) var longitudeCallCount: Int = 0
+    var longitudeResult: Double = 0
     var longitude: Double {
         longitudeCallCount += 1
         
-        return 0
+        return longitudeResult
     }
     
+    private(set) var latitudeCallCount: Int = 0
+    var latitudeResult: Double = 0
     var latitude: Double {
         latitudeCallCount += 1
         
-        return 0
+        return latitudeResult
     }
     
+    private(set) var altitudeCallCount: Int = 0
+    var altitudeResult: Double?
     var altitude: Double? {
         altitudeCallCount += 1
         
-        return nil
+        return altitudeResult
     }
     
+    private(set) var degreesToRadiansCallCount: Int = 0
+    var degreesToRadiansResult: GeoJsonPoint = MockGeoJsonPoint()
     var degreesToRadians: GeoJsonPoint {
         degreesToRadiansCallCount += 1
         
-        return self
+        return degreesToRadiansResult
     }
     
+    private(set) var radiansToDegreesCallCount: Int = 0
+    var radiansToDegreesResult: GeoJsonPoint = MockGeoJsonPoint()
     var radiansToDegrees: GeoJsonPoint {
         radiansToDegreesCallCount += 1
         
-        return self
+        return radiansToDegreesResult
     }
     
+    private(set) var normalizeCallCount: Int = 0
+    var normalizeResult: GeoJsonPoint = MockGeoJsonPoint()
     var normalize: GeodesicPoint {
         normalizeCallCount += 1
         
-        return self
+        return normalizeResult
     }
     
+    private(set) var initialBearingCallCount: Int = 0
+    var initialBearingResult: Double = 0
     func initialBearing(to point: GeodesicPoint) -> Double {
         initialBearingCallCount += 1
         
-        return 0
+        return initialBearingResult
     }
     
+    private(set) var averageBearingCallCount: Int = 0
+    var averageBearingResult: Double = 0
     func averageBearing(to point: GeodesicPoint) -> Double {
         averageBearingCallCount += 1
         
-        return 0
+        return averageBearingResult
     }
     
+    private(set) var finalBearingCallCount: Int = 0
+    var finalBearingResult: Double = 0
     func finalBearing(to point: GeodesicPoint) -> Double {
         finalBearingCallCount += 1
         
-        return 0
+        return finalBearingResult
     }
     
+    private(set) var midpointCallCount: Int = 0
+    var midpointResult: GeodesicPoint = MockGeoJsonPoint()
     func midpoint(with point: GeodesicPoint) -> GeodesicPoint {
         midpointCallCount += 1
         
-        return self
+        return midpointResult
     }
 }

@@ -5,6 +5,7 @@ import XCTest
 class GeometryCollectionTests: XCTestCase {
     var geometries: [GeoJsonGeometry]!
     var geometryCollection: GeometryCollection!
+    var geometryCollectionNested: GeometryCollection!
     var nilGeometryCollection: GeometryCollection?
     var distancePoint: SimplePoint!
     
@@ -16,6 +17,8 @@ class GeometryCollectionTests: XCTestCase {
         geometries = MockData.geometries
         
         geometryCollection = GeoTestHelper.geometryCollection(geometries)
+        
+        geometryCollectionNested = GeoTestHelper.geometryCollection([GeoTestHelper.geometryCollection([geometryCollection, geometryCollection])])
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -38,13 +41,22 @@ class GeometryCollectionTests: XCTestCase {
         XCTAssertTrue(geometryCollection.objectGeometries?[5] is MultiPolygon)
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(geometryCollection.coordinatesGeometries.count, 6)
+        XCTAssertEqual(geometryCollection.multiCoordinatesGeometries.count, 5)
+        XCTAssertEqual(geometryCollection.linearGeometries.count, 2)
+        XCTAssertEqual(geometryCollection.closedGeometries.count, 2)
+        
+        XCTAssertEqual(geometryCollectionNested.coordinatesGeometries.count, 12)
+        XCTAssertEqual(geometryCollectionNested.multiCoordinatesGeometries.count, 10)
+        XCTAssertEqual(geometryCollectionNested.linearGeometries.count, 4)
+        XCTAssertEqual(geometryCollectionNested.closedGeometries.count, 4)
+    }
+    
     func testObjectBoundingBox() {
         let resultBoundingBox = geometryCollection.objectBoundingBox
-        #if swift(>=4.1)
+        
         let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.compactMap { $0.objectBoundingBox })
-        #else
-        let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.flatMap { $0.objectBoundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }

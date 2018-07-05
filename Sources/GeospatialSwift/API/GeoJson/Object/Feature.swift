@@ -20,7 +20,7 @@ extension GeoJson {
     public struct Feature: GeoJsonFeature {
         public let type: GeoJsonObjectType = .feature
         public var geoJson: GeoJsonDictionary {
-            var geoJson: GeoJsonDictionary = ["type": type.rawValue, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
+            var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
             if let id = id { geoJson["id"] = id }
             return geoJson
         }

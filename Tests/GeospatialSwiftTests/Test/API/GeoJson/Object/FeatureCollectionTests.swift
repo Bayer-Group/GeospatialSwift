@@ -5,6 +5,7 @@ import XCTest
 class FeatureCollectionTests: XCTestCase {
     var features: [Feature]!
     var featureCollection: FeatureCollection!
+    var featureCollectionNested: FeatureCollection!
     var distancePoint: SimplePoint!
     
     override func setUp() {
@@ -14,6 +15,8 @@ class FeatureCollectionTests: XCTestCase {
         features = MockData.features as! [Feature]
         
         featureCollection = GeoTestHelper.featureCollection(features)
+        
+        featureCollectionNested = GeoTestHelper.featureCollection(features + [GeoTestHelper.feature(GeoTestHelper.geometryCollection(MockData.polygons))])
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -28,14 +31,22 @@ class FeatureCollectionTests: XCTestCase {
         XCTAssertEqual(featureCollection.objectGeometries?.count, 3)
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(featureCollection.coordinatesGeometries.count, 3)
+        XCTAssertEqual(featureCollection.multiCoordinatesGeometries.count, 2)
+        XCTAssertEqual(featureCollection.linearGeometries.count, 1)
+        XCTAssertEqual(featureCollection.closedGeometries.count, 1)
+        
+        XCTAssertEqual(featureCollectionNested.coordinatesGeometries.count, 5)
+        XCTAssertEqual(featureCollectionNested.multiCoordinatesGeometries.count, 4)
+        XCTAssertEqual(featureCollectionNested.linearGeometries.count, 1)
+        XCTAssertEqual(featureCollectionNested.closedGeometries.count, 3)
+    }
+    
     func testObjectBoundingBox() {
         let resultBoundingBox = featureCollection.objectBoundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(featureCollection.features.compactMap { $0.geometry?.objectBoundingBox })
-        #else
-        let boundingBox = BoundingBox.best(featureCollection.features.flatMap { $0.geometry?.objectBoundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }

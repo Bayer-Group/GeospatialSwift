@@ -1,6 +1,6 @@
 internal typealias MultiLineString = GeoJson.MultiLineString
 
-public protocol GeoJsonMultiLineString: GeoJsonMultiCoordinatesGeometry {
+public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     var lineStrings: [GeoJsonLineString] { get }
 }
 
@@ -39,6 +39,10 @@ extension GeoJson {
         
         public var centroid: GeodesicPoint {
             return Calculator.centroid(lines: lineStrings)
+        }
+        
+        public var length: Double {
+            return lineStrings.reduce(0) { $0 + $1.length }
         }
         
         internal init?(coordinatesJson: [Any]) {

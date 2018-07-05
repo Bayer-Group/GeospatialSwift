@@ -1,13 +1,84 @@
 import Foundation
 
-public func == (lhs: [GeoJsonObject]?, rhs: [GeoJsonObject]?) -> Bool {
-    guard lhs != nil || rhs != nil else { return true }
+/**
+ GeoJsonObject Protocol
+ 
+ Does not support projected coordinates, only geographic
+ */
+public protocol GeoJsonObject: CustomStringConvertible {
+    var type: GeoJsonObjectType { get }
     
-    guard let lhs = lhs, let rhs = rhs, lhs.count == rhs.count else { return false }
+    var objectGeometries: [GeoJsonGeometry]? { get }
     
-    for geoJsonObject in lhs where !rhs.contains { $0 == geoJsonObject } { return false }
+    var objectBoundingBox: GeoJsonBoundingBox? { get }
     
-    return true
+    var geoJson: GeoJsonDictionary { get }
+    
+    // TODO: Could this be expanded to more than point?
+    func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double?
+    
+    // TODO: Could this be expanded to more than point?
+    func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool
+    
+    // TODO: More fun!
+    //func overlaps(geoJsonObject: GeoJsonObject, errorDistance: Double) -> Bool
+}
+
+extension GeoJsonObject {
+    public func contains(_ point: GeodesicPoint) -> Bool { return contains(point, errorDistance: 0) }
+    
+    public func objectDistance(to point: GeodesicPoint) -> Double? { return objectDistance(to: point, errorDistance: 0) }
+}
+
+extension GeoJsonObject {
+    // Trust geoJson serialization
+    var geoJsonData: Data {
+        // swiftlint:disable:next force_try
+        return try! JSONSerialization.data(withJSONObject: geoJson, options: [])
+    }
+    
+    // Trust geoJson encoding
+    var geoJsonString: String {
+        return String(data: geoJsonData, encoding: .utf8)!
+    }
+    
+    var coordinatesGeometries: [GeoJsonCoordinatesGeometry] {
+        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
+            if let geometry = objectGeometry as? GeoJsonCoordinatesGeometry { return [geometry] }
+            
+            return objectGeometry.coordinatesGeometries
+        }
+    }
+    
+    var multiCoordinatesGeometries: [GeoJsonMultiCoordinatesGeometry] {
+        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonMultiCoordinatesGeometry] in
+            if let geometry = objectGeometry as? GeoJsonMultiCoordinatesGeometry { return [geometry] }
+            
+            if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
+            
+            return objectGeometry.multiCoordinatesGeometries
+        }
+    }
+    
+    var linearGeometries: [GeoJsonLinearGeometry] {
+        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
+            if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }
+            
+            if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
+            
+            return objectGeometry.linearGeometries
+        }
+    }
+    
+    var closedGeometries: [GeoJsonClosedGeometry] {
+        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
+            if let geometry = objectGeometry as? GeoJsonClosedGeometry { return [geometry] }
+            
+            if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
+            
+            return objectGeometry.closedGeometries
+        }
+    }
 }
 
 // swiftlint:disable:next cyclomatic_complexity
@@ -77,16 +148,12 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     }
 }
 
-public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
-    let lhs = GeodesicCalculator.normalize(point: lhs)
-    let rhs = GeodesicCalculator.normalize(point: rhs)
-    
-    // TODO: Comparing strings rather than Doubles. Should Altitude be involved?
-    return lhs.latitude.description == rhs.latitude.description && lhs.longitude.description == rhs.longitude.description && lhs.altitude?.description == rhs.altitude?.description
-}
-
-internal func == (lhs: GeoJsonDictionary?, rhs: GeoJsonDictionary?) -> Bool {
+public func == (lhs: [GeoJsonObject]?, rhs: [GeoJsonObject]?) -> Bool {
     guard lhs != nil || rhs != nil else { return true }
     
-    return NSDictionary(dictionary: lhs ?? [:]).isEqual(to: rhs ?? [:])
+    guard let lhs = lhs, let rhs = rhs, lhs.count == rhs.count else { return false }
+    
+    for geoJsonObject in lhs where !rhs.contains { $0 == geoJsonObject } { return false }
+    
+    return true
 }

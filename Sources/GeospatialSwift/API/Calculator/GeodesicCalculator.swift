@@ -2,16 +2,16 @@ import Foundation
 
 public protocol GeodesicCalculatorProtocol {
     func area(polygonRings: [GeoJsonLineString]) -> Double
-    func length(lineSegments: [GeoJsonLineSegment]) -> Double
+    func length(lineSegments: [GeodesicLineSegment]) -> Double
     
     func centroid(polygons: [GeoJsonPolygon]) -> GeodesicPoint
     func centroid(polygonRings: [GeoJsonLineString]) -> GeodesicPoint
-    func centroid(linearRingSegments: [GeoJsonLineSegment]) -> GeodesicPoint
+    func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint
     func centroid(lines: [GeoJsonLineString]) -> GeodesicPoint
     func centroid(linePoints: [GeodesicPoint]) -> GeodesicPoint
     func centroid(points: [GeodesicPoint]) -> GeodesicPoint
     
-    func distance(point: GeodesicPoint, lineSegment: GeoJsonLineSegment) -> Double
+    func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double
     func distance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
     func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
     func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
@@ -87,7 +87,7 @@ public struct GeodesicCalculator: GeodesicCalculatorProtocol {
 // MARK: Measurement Functions
 
 extension GeodesicCalculator {
-    public func length(lineSegments: [GeoJsonLineSegment]) -> Double {
+    public func length(lineSegments: [GeodesicLineSegment]) -> Double {
         return lineSegments.reduce(0.0) { $0 + distance(point1: $1.point1, point2: $1.point2) }
     }
     
@@ -146,9 +146,9 @@ extension GeodesicCalculator {
 // MARK: Distance Functions
 
 extension GeodesicCalculator {
-    public func distance(point: GeodesicPoint, lineSegment: GeoJsonLineSegment) -> Double {
+    public func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
         let distance1 = distancePartialResult(point: point, lineSegment: lineSegment)
-        let distance2 = distancePartialResult(point: point, lineSegment: (lineSegment.point2, lineSegment.point1))
+        let distance2 = distancePartialResult(point: point, lineSegment: GeodesicLineSegment(point1: lineSegment.point2, point2: lineSegment.point1))
         
         return min(distance1, distance2)
     }
@@ -193,7 +193,7 @@ extension GeodesicCalculator {
     }
     
     // TODO: It would be nice to understand this better as there seems to be too much to calling this twice.
-    private func distancePartialResult(point: GeodesicPoint, lineSegment: GeoJsonLineSegment) -> Double {
+    private func distancePartialResult(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
         let θ12 = initialBearing(point1: lineSegment.point1, point2: lineSegment.point2).degreesToRadians
         let θ13 = initialBearing(point1: lineSegment.point1, point2: point).degreesToRadians
         let δ13 = distance(point1: lineSegment.point1, point2: point)
@@ -312,7 +312,7 @@ extension GeodesicCalculator {
     }
     
     // TODO: Not geodesic. Estimation.
-    public func centroid(linearRingSegments: [GeoJsonLineSegment]) -> GeodesicPoint {
+    public func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint {
         var sumY = 0.0
         var sumX = 0.0
         var partialSum = 0.0
@@ -322,9 +322,9 @@ extension GeodesicCalculator {
         let offsetLongitude = offset.longitude * (offset.longitude < 0 ? -1 : 1)
         let offsetLatitude = offset.latitude * (offset.latitude < 0 ? -1 : 1)
         
-        let offsetSegments = linearRingSegments.map { point1, point2 in
-            return (point1: SimplePoint(longitude: point1.longitude - offsetLongitude, latitude: point1.latitude - offsetLatitude),
-                    point2: SimplePoint(longitude: point2.longitude - offsetLongitude, latitude: point2.latitude - offsetLatitude))
+        let offsetSegments = linearRingSegments.map { lineSegment in
+            return (point1: SimplePoint(longitude: lineSegment.point1.longitude - offsetLongitude, latitude: lineSegment.point1.latitude - offsetLatitude),
+                    point2: SimplePoint(longitude: lineSegment.point2.longitude - offsetLongitude, latitude: lineSegment.point2.latitude - offsetLatitude))
         }
         
         offsetSegments.forEach { point1, point2 in

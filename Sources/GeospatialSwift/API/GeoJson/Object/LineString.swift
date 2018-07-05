@@ -1,10 +1,7 @@
-public typealias GeoJsonLineSegment = (point1: GeodesicPoint, point2: GeodesicPoint)
-
 internal typealias LineString = GeoJson.LineString
 
-public protocol GeoJsonLineString: GeoJsonMultiCoordinatesGeometry {
-    var segments: [GeoJsonLineSegment] { get }
-    var length: Double { get }
+public protocol GeoJsonLineString: GeoJsonLinearGeometry {
+    var segments: [GeodesicLineSegment] { get }
 }
 
 extension GeoJson {
@@ -33,11 +30,7 @@ extension GeoJson {
         public let points: [GeoJsonPoint]
         
         public var boundingBox: GeoJsonBoundingBox {
-            #if swift(>=4.1)
             return BoundingBox.best(points.compactMap { $0.boundingBox })!
-            #else
-            return BoundingBox.best(points.flatMap { $0.boundingBox })!
-            #endif
         }
         
         public var centroid: GeodesicPoint {
@@ -48,7 +41,7 @@ extension GeoJson {
             return Calculator.length(lineSegments: segments)
         }
         
-        public let segments: [GeoJsonLineSegment]
+        public let segments: [GeodesicLineSegment]
         
         internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid LineString must have valid coordinates"); return nil }
@@ -70,19 +63,11 @@ extension GeoJson {
             
             self.points = points
             
-            #if swift(>=4.1)
             segments = points.enumerated().compactMap { (offset, point) in
                 if points.count == offset + 1 { return nil }
                 
-                return (point, points[offset + 1])
+                return GeodesicLineSegment(point1: point, point2: points[offset + 1])
             }
-            #else
-            segments = points.enumerated().flatMap { (offset, point) in
-                if points.count == offset + 1 { return nil }
-            
-                return (point, points[offset + 1])
-            }
-            #endif
         }
         
         public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {

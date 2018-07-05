@@ -36,11 +36,11 @@ class GeoTestHelper {
         return geoJson.multiPolygon(polygons: polygons) as! MultiPolygon
     }
     
-    static func geometryCollection(_ geometries: [GeoJsonGeometry]?) -> GeometryCollection {
+    static func geometryCollection(_ geometries: [GeoJsonGeometry]? = nil) -> GeometryCollection {
         return geoJson.geometryCollection(geometries: geometries) as! GeometryCollection
     }
     
-    static func feature(_ geometry: GeoJsonGeometry?, _ id: Any?, _ properties: GeoJsonDictionary?) -> Feature {
+    static func feature(_ geometry: GeoJsonGeometry?, _ id: Any? = nil, _ properties: GeoJsonDictionary? = nil) -> Feature {
         return geoJson.feature(geometry: geometry, id: id, properties: properties) as! Feature
     }
     

@@ -45,7 +45,7 @@ extension GeoJson {
         }
         
         internal init?(coordinatesJson: [Any]) {
-            guard let pointJson = (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }), pointJson.count >= 2 else { Log.warning("A valid Point must have at least 2 coordinates"); return nil }
+            guard let pointJson = (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }), pointJson.count >= 2 else { Log.warning("A valid Point must have at least a longitude and latitude"); return nil }
             
             self.init(longitude: pointJson[0], latitude: pointJson[1], altitude: pointJson.count >= 3 ? pointJson[2] : nil)
         }

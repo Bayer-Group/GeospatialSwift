@@ -81,7 +81,7 @@ internal struct WktParser: WktParserProtocol {
 }
 
 fileprivate extension String {
-    fileprivate var wktTokens: [String] {
+    var wktTokens: [String] {
         var tokens = [String]()
         
         var startIndex = 0
@@ -110,7 +110,7 @@ fileprivate extension String {
 }
 
 fileprivate extension NumberFormatter {
-    fileprivate static let formatterForCoordinates: NumberFormatter = {
+    static let formatterForCoordinates: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US")
         formatter.numberStyle = NumberFormatter.Style.decimal

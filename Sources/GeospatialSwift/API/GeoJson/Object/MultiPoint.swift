@@ -28,11 +28,7 @@ extension GeoJson {
         public let points: [GeoJsonPoint]
         
         public var boundingBox: GeoJsonBoundingBox {
-            #if swift(>=4.1)
             return BoundingBox.best(points.compactMap { $0.boundingBox })!
-            #else
-            return BoundingBox.best(points.flatMap { $0.boundingBox })!
-            #endif
         }
         
         public var centroid: GeodesicPoint {

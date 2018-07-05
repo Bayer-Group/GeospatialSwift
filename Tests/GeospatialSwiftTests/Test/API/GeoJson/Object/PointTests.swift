@@ -25,6 +25,13 @@ class PointTests: XCTestCase {
         XCTAssertEqual(point.objectGeometries as! [Point], point.geometries as! [Point])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(point.coordinatesGeometries.count, 1)
+        XCTAssertEqual(point.multiCoordinatesGeometries.count, 0)
+        XCTAssertEqual(point.closedGeometries.count, 0)
+        XCTAssertEqual(point.linearGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(point.objectBoundingBox as? BoundingBox, point.boundingBox as? BoundingBox)
     }

@@ -28,6 +28,13 @@ class MultiPointTests: XCTestCase {
         XCTAssertEqual(multiPoint.objectGeometries as! [MultiPoint], multiPoint.geometries as! [MultiPoint])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(multiPoint.coordinatesGeometries.count, 1)
+        XCTAssertEqual(multiPoint.multiCoordinatesGeometries.count, 1)
+        XCTAssertEqual(multiPoint.linearGeometries.count, 0)
+        XCTAssertEqual(multiPoint.closedGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(multiPoint.objectBoundingBox as? BoundingBox, multiPoint.boundingBox as? BoundingBox)
     }
@@ -98,11 +105,7 @@ class MultiPointTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiPoint.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(points.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(points.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }

@@ -1,19 +1,25 @@
 @testable import GeospatialSwift
 
-final class MockGeoJsonLineString: MockGeoJsonMultiCoordinatesGeometry, GeoJsonLineString {
-    var segments: [GeoJsonLineSegment] = []
-    
-    private(set) var lengthCallCount = 0
-    
+final class MockGeoJsonLineString: MockGeoJsonLinearGeometry, GeoJsonLineString {
     override init() {
         super.init()
         
         geoJsonObjectTypeResult = .lineString
     }
     
-    var length: Double {
-        lengthCallCount += 1
+    private(set) var segmentsCallCount = 0
+    var segmentsResult: [GeodesicLineSegment] = []
+    var segments: [GeodesicLineSegment] {
+        segmentsCallCount += 1
         
-        return 0.0
+        return segmentsResult
+    }
+    
+    private(set) var bearingCallCount = 0
+    var bearingResult: (average: Double, back: Double)? = (0, 0)
+    var bearing: (average: Double, back: Double)? {
+        bearingCallCount += 1
+        
+        return bearingResult
     }
 }

@@ -84,7 +84,7 @@ private let decimalToBase32Map = "0123456789bcdefghjkmnpqrstuvwxyz".map { $0 }
 private let base32BitflowInit: UInt8 = 0b10000
 
 extension GeohashCoder {
-    fileprivate func neighborGeohashes(geohashBox: GeoJsonGeohashBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private func neighborGeohashes(geohashBox: GeoJsonGeohashBox, precision: Int) -> [GeoJsonGeohashBox] {
         let northGeohash = geohashBox.geohashNeighbor(direction: .north, precision: precision)
         let eastGeohash = geohashBox.geohashNeighbor(direction: .east, precision: precision)
         let southGeohash = geohashBox.geohashNeighbor(direction: .south, precision: precision)
@@ -99,7 +99,7 @@ extension GeohashCoder {
         return [northWestGeohash, northGeohash, northEastGeohash, eastGeohash, southEastGeohash, southGeohash, southWestGeohash, westGeohash]
     }
     
-    fileprivate func transform(point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
+    private func transform(point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var parity = Parity.even
@@ -145,7 +145,7 @@ extension GeohashCoder {
         return GeohashBox(boundingCoordinates: boundingCoordinates, geohashCoder: self, geohash: geohash)
     }
     
-    fileprivate func transform(boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private func transform(boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         var geohashBoxes = [GeoJsonGeohashBox]()
         
         let point = SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.minLatitude)
@@ -168,7 +168,7 @@ extension GeohashCoder {
         return geohashBoxes
     }
     
-    fileprivate func transform(geohash: String) -> GeoJsonGeohashBox? {
+    private func transform(geohash: String) -> GeoJsonGeohashBox? {
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var parity = Parity.even

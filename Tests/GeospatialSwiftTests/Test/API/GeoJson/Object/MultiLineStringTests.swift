@@ -29,6 +29,13 @@ class MultiLineStringTests: XCTestCase {
         XCTAssertEqual(multiLineString.objectGeometries as! [MultiLineString], multiLineString.geometries as! [MultiLineString])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(multiLineString.coordinatesGeometries.count, 1)
+        XCTAssertEqual(multiLineString.multiCoordinatesGeometries.count, 1)
+        XCTAssertEqual(multiLineString.linearGeometries.count, 1)
+        XCTAssertEqual(multiLineString.closedGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(multiLineString.objectBoundingBox as? BoundingBox, multiLineString.boundingBox as? BoundingBox)
     }
@@ -100,11 +107,7 @@ class MultiLineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiLineString.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(lineStrings.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(lineStrings.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
@@ -151,6 +154,12 @@ class MultiLineStringTests: XCTestCase {
     func testCentroid() {
         // TODO: Test me.
         //XCTAssertEqual(multiLineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.70660048323842, 3.00009455805683))
+    }
+    
+    // GeoJsonLinearGeometry Tests
+    
+    func testLength() {
+        XCTAssertEqual(multiLineString.length.description, "602243.635765672")
     }
     
     // MultiLineString Tests
