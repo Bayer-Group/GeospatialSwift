@@ -154,7 +154,7 @@
 		1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091292093A3EE00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
-		1E90912B2093A3EE00DAEF11 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* BoundingBox.swift */; };
+		1E90912B2093A3EE00DAEF11 /* GeodesicBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */; };
 		1E90912C2093A3EE00DAEF11 /* GeodesicPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7841209394D20097A986 /* GeodesicPoint.swift */; };
 		1E90912D2093A3EE00DAEF11 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7840209394D20097A986 /* GeoJson.swift */; };
 		1E90912E2093A3EE00DAEF11 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */; };
@@ -175,7 +175,7 @@
 		1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091412093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
-		1E9091432093A3EF00DAEF11 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* BoundingBox.swift */; };
+		1E9091432093A3EF00DAEF11 /* GeodesicBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */; };
 		1E9091442093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7841209394D20097A986 /* GeodesicPoint.swift */; };
 		1E9091452093A3EF00DAEF11 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7840209394D20097A986 /* GeoJson.swift */; };
 		1E9091462093A3EF00DAEF11 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */; };
@@ -196,7 +196,7 @@
 		1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091592093A3EF00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
-		1E90915B2093A3EF00DAEF11 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* BoundingBox.swift */; };
+		1E90915B2093A3EF00DAEF11 /* GeodesicBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */; };
 		1E90915C2093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7841209394D20097A986 /* GeodesicPoint.swift */; };
 		1E90915D2093A3EF00DAEF11 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7840209394D20097A986 /* GeoJson.swift */; };
 		1E90915E2093A3EF00DAEF11 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */; };
@@ -217,7 +217,7 @@
 		1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091712093A3F000DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
-		1E9091732093A3F000DAEF11 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* BoundingBox.swift */; };
+		1E9091732093A3F000DAEF11 /* GeodesicBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */; };
 		1E9091742093A3F000DAEF11 /* GeodesicPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7841209394D20097A986 /* GeodesicPoint.swift */; };
 		1E9091752093A3F000DAEF11 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7840209394D20097A986 /* GeoJson.swift */; };
 		1E9091762093A3F000DAEF11 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */; };
@@ -323,7 +323,7 @@
 		1E8B782C209394D20097A986 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		1E8B782E209394D20097A986 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
 		1E8B782F209394D20097A986 /* GeospatialSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeospatialSwift.h; sourceTree = "<group>"; };
-		1E8B7834209394D20097A986 /* BoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingBox.swift; sourceTree = "<group>"; };
+		1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeodesicBoundingBox.swift; sourceTree = "<group>"; };
 		1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoJsonDictionary.swift; sourceTree = "<group>"; };
 		1E8B7837209394D20097A986 /* Feature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
 		1E8B7838209394D20097A986 /* FeatureCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureCollection.swift; sourceTree = "<group>"; };
@@ -622,7 +622,7 @@
 				1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */,
 				1E8B7841209394D20097A986 /* GeodesicPoint.swift */,
 				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
-				1E8B7834209394D20097A986 /* BoundingBox.swift */,
+				1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */,
 				1E8B7836209394D20097A986 /* Object */,
 			);
 			path = GeoJson;
@@ -1286,7 +1286,7 @@
 				1E90912D2093A3EE00DAEF11 /* GeoJson.swift in Sources */,
 				1E92ABD420EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */,
 				1E90913D2093A3EE00DAEF11 /* WktParser.swift in Sources */,
-				1E90912B2093A3EE00DAEF11 /* BoundingBox.swift in Sources */,
+				1E90912B2093A3EE00DAEF11 /* GeodesicBoundingBox.swift in Sources */,
 				1E92ABBC20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */,
 				1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */,
 				1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */,
@@ -1372,7 +1372,7 @@
 				1E9091452093A3EF00DAEF11 /* GeoJson.swift in Sources */,
 				1E92ABD520EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */,
 				1E9091552093A3EF00DAEF11 /* WktParser.swift in Sources */,
-				1E9091432093A3EF00DAEF11 /* BoundingBox.swift in Sources */,
+				1E9091432093A3EF00DAEF11 /* GeodesicBoundingBox.swift in Sources */,
 				1E92ABBD20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */,
 				1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
@@ -1458,7 +1458,7 @@
 				1E90915D2093A3EF00DAEF11 /* GeoJson.swift in Sources */,
 				1E92ABD620EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */,
 				1E90916D2093A3EF00DAEF11 /* WktParser.swift in Sources */,
-				1E90915B2093A3EF00DAEF11 /* BoundingBox.swift in Sources */,
+				1E90915B2093A3EF00DAEF11 /* GeodesicBoundingBox.swift in Sources */,
 				1E92ABBE20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */,
 				1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
@@ -1544,7 +1544,7 @@
 				1E9091752093A3F000DAEF11 /* GeoJson.swift in Sources */,
 				1E92ABD720EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */,
 				1E9091852093A3F000DAEF11 /* WktParser.swift in Sources */,
-				1E9091732093A3F000DAEF11 /* BoundingBox.swift in Sources */,
+				1E9091732093A3F000DAEF11 /* GeodesicBoundingBox.swift in Sources */,
 				1E92ABBF20ED947500EF4A4E /* GeoJsonMultiCoordinatesGeometry.swift in Sources */,
 				1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */,
 				1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */,

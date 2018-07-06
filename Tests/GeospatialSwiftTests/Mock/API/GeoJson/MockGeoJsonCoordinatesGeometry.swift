@@ -10,8 +10,8 @@ class MockGeoJsonCoordinatesGeometry: MockGeoJsonGeometry, GeoJsonCoordinatesGeo
     }
     
     private(set) var boundingBoxCallCount = 0
-    lazy var boundingBoxResult: GeoJsonBoundingBox = MockGeoJsonBoundingBox()
-    var boundingBox: GeoJsonBoundingBox {
+    lazy var boundingBoxResult: GeodesicBoundingBox = MockGeoJsonBoundingBox()
+    var boundingBox: GeodesicBoundingBox {
         boundingBoxCallCount += 1
         
         return boundingBoxResult

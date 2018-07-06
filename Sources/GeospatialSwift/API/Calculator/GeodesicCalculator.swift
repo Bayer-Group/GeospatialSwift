@@ -11,7 +11,7 @@ public protocol GeodesicCalculatorProtocol {
     func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
     func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
     
-    func contains(point: GeodesicPoint, polygonRings: [GeoJsonLineString]) -> Bool
+    func contains(point: GeodesicPoint, polygon: GeoJsonPolygon) -> Bool
     
     func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint
     
@@ -20,8 +20,6 @@ public protocol GeodesicCalculatorProtocol {
     func finalBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
     
     func normalize(point: GeodesicPoint) -> GeodesicPoint
-    
-    static func normalize(point: GeodesicPoint) -> GeodesicPoint
 }
 
 internal let Calculator = GeodesicCalculator.shared
@@ -128,10 +126,6 @@ extension GeodesicCalculator {
 
 extension GeodesicCalculator {
     public func normalize(point: GeodesicPoint) -> GeodesicPoint {
-        return GeodesicCalculator.normalize(point: point)
-    }
-    
-    public static func normalize(point: GeodesicPoint) -> GeodesicPoint {
         let normalizedLongitude = normalizeCoordinate(value: point.longitude, shift: 360.0)
         let normalizedLatitude = normalizeCoordinate(value: point.latitude, shift: 180.0)
         
@@ -139,7 +133,7 @@ extension GeodesicCalculator {
     }
     
     // A normalized value (longitude or latitude) is greater than the minimum and less than or equal to the maximum yet geospatially equal to the original.
-    private static func normalizeCoordinate(value: Double, shift: Double) -> Double {
+    private func normalizeCoordinate(value: Double, shift: Double) -> Double {
         let shiftedValue = value.truncatingRemainder(dividingBy: shift)
         
         return shiftedValue > shift / 2 ? shiftedValue - shift : shiftedValue <= -shift / 2 ? shiftedValue + shift : shiftedValue
@@ -151,7 +145,7 @@ extension GeodesicCalculator {
 extension GeodesicCalculator {
     public func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
         let distance1 = distancePartialResult(point: point, lineSegment: lineSegment)
-        let distance2 = distancePartialResult(point: point, lineSegment: GeodesicLineSegment(point1: lineSegment.point2, point2: lineSegment.point1))
+        let distance2 = distancePartialResult(point: point, lineSegment: LineSegment(point1: lineSegment.point2, point2: lineSegment.point1))
         
         return min(distance1, distance2)
     }
@@ -234,21 +228,21 @@ extension GeodesicCalculator {
 // MARK: Contains
 
 extension GeodesicCalculator {
-    public func contains(point: GeodesicPoint, polygonRings: [GeoJsonLineString]) -> Bool {
-        guard polygonRings.count > 0 else { return false }
+    public func contains(point: GeodesicPoint, polygon: GeoJsonPolygon) -> Bool {
+        guard polygon.linearRings.count > 0 else { return false }
         
-        let mainRing = polygonRings.first!
+        let mainRing = polygon.linearRings.first!
         
         // Must at least be within the bounding box.
         guard mainRing.boundingBox.contains(point: point) else { return false }
         
         // If it's on a line, we're done.
-        if (polygonRings.map { $0.contains(point) }.first { $0 == true } ?? false) { return true }
+        if (polygon.linearRings.map { $0.contains(point) }.first { $0 == true } ?? false) { return true }
         
         let mainRingContains = contains(point: point, vertices: mainRing.points)
         // Skip running hole contains calculations if mainRingContains is false
         let holeContains: () -> (Bool) = {
-            return polygonRings.tail?.first { self.contains(point: point, vertices: $0.points) == true } != nil
+            return polygon.linearRings.tail?.first { self.contains(point: point, vertices: $0.points) == true } != nil
         }
         
         return mainRingContains && !holeContains()

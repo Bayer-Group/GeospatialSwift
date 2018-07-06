@@ -27,7 +27,7 @@ final class MockGeohashCoder: GeohashCoderProtocol {
     
     private(set) var geohashesCallCount = 0
     var geohashesResult: [String] = []
-    func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String] {
+    func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] {
         geohashesCallCount += 1
         
         return geohashesResult
@@ -35,7 +35,7 @@ final class MockGeohashCoder: GeohashCoderProtocol {
     
     private(set) var geohashBoxesCallCount = 0
     var geohashBoxesResult: [GeoJsonGeohashBox] = []
-    func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         geohashBoxesCallCount += 1
         
         return geohashBoxesResult

@@ -81,7 +81,7 @@ class FeatureCollectionTests: XCTestCase {
         
         XCTAssertTrue(featureCollection.features[0].geometry is Point)
         XCTAssertTrue(featureCollection.features[1].geometry is LineString)
-        XCTAssertTrue(featureCollection.features[2].geometry is GeospatialSwift.Polygon)
+        XCTAssertTrue(featureCollection.features[2].geometry is Polygon)
     }
     
     func testEquals() {

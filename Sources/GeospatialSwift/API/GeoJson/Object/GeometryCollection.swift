@@ -1,5 +1,3 @@
-internal typealias GeometryCollection = GeoJson.GeometryCollection
-
 public protocol GeoJsonGeometryCollection: GeoJsonGeometry { }
 
 extension GeoJson {
@@ -26,7 +24,7 @@ extension GeoJson {
         }
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }

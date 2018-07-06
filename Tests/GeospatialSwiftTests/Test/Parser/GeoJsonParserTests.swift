@@ -137,15 +137,15 @@ class GeoJsonParserTests: XCTestCase {
     func testPolygon() {
         let geoJsonObject = geoJsonParser.geoJsonObject(from: MockData.testGeoJson("Polygon"))
         
-        XCTAssertTrue(geoJsonObject is GeospatialSwift.Polygon)
-        XCTAssertEqual((geoJsonObject as? GeospatialSwift.Polygon)?.linearRings.count, 1)
+        XCTAssertTrue(geoJsonObject is Polygon)
+        XCTAssertEqual((geoJsonObject as? Polygon)?.linearRings.count, 1)
     }
     
     func testPolygonMultipleRings() {
         let geoJsonObject = geoJsonParser.geoJsonObject(from: MockData.testGeoJson("Polygon: Multiple Rings"))
         
-        XCTAssertTrue(geoJsonObject is GeospatialSwift.Polygon)
-        XCTAssertEqual((geoJsonObject as? GeospatialSwift.Polygon)?.linearRings.count, 2)
+        XCTAssertTrue(geoJsonObject is Polygon)
+        XCTAssertEqual((geoJsonObject as? Polygon)?.linearRings.count, 2)
     }
     
     func testPolygonNoCoordinates() {
@@ -228,7 +228,7 @@ class GeoJsonParserTests: XCTestCase {
         let geoJsonObject = geoJsonParser.geoJsonObject(from: MockData.testGeoJson("Feature"))
         
         XCTAssertTrue(geoJsonObject is Feature)
-        XCTAssertTrue((geoJsonObject as? Feature)?.geometry is GeospatialSwift.Polygon)
+        XCTAssertTrue((geoJsonObject as? Feature)?.geometry is Polygon)
         XCTAssertEqual((geoJsonObject as? Feature)?.idAsString, "12345")
         XCTAssertEqual((geoJsonObject as? Feature)?.properties?["prop0"] as? String, "value0")
         XCTAssertEqual(((geoJsonObject as? Feature)?.properties?["prop1"] as? [String: String])?["this"], "that")
@@ -269,7 +269,7 @@ class GeoJsonParserTests: XCTestCase {
         XCTAssertEqual((geoJsonObject as? FeatureCollection)?.features.count, 3)
         XCTAssertTrue((geoJsonObject as? FeatureCollection)?.features[0].geometry is Point)
         XCTAssertTrue((geoJsonObject as? FeatureCollection)?.features[1].geometry is LineString)
-        XCTAssertTrue((geoJsonObject as? FeatureCollection)?.features[2].geometry is GeospatialSwift.Polygon)
+        XCTAssertTrue((geoJsonObject as? FeatureCollection)?.features[2].geometry is Polygon)
     }
     
     func testFeatureCollection2Features1NullGeometry() {

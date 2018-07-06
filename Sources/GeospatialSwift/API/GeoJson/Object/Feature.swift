@@ -1,7 +1,5 @@
 import Foundation
 
-internal typealias Feature = GeoJson.Feature
-
 public protocol GeoJsonFeature: GeoJsonObject {
     var geometry: GeoJsonGeometry? { get }
     var id: Any? { get }
@@ -43,7 +41,7 @@ extension GeoJson {
         public let properties: GeoJsonDictionary?
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal let idString: String?
         internal let idDouble: Double?

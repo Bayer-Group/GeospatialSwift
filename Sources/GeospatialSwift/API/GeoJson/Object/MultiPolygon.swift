@@ -1,5 +1,3 @@
-internal typealias MultiPolygon = GeoJson.MultiPolygon
-
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
 }
@@ -31,7 +29,7 @@ extension GeoJson {
         
         public var points: [GeoJsonPoint] { return polygons.flatMap { $0.points } }
         
-        public var boundingBox: GeoJsonBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
+        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
         
         public var hasHole: Bool { return polygons.contains { $0.hasHole } }
         

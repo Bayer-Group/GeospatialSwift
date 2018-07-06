@@ -1,5 +1,3 @@
-internal typealias MultiPoint = GeoJson.MultiPoint
-
 public protocol GeoJsonMultiPoint: GeoJsonMultiCoordinatesGeometry { }
 
 extension GeoJson {
@@ -27,7 +25,7 @@ extension GeoJson {
         
         public let points: [GeoJsonPoint]
         
-        public var boundingBox: GeoJsonBoundingBox {
+        public var boundingBox: GeodesicBoundingBox {
             return BoundingBox.best(points.compactMap { $0.boundingBox })!
         }
         

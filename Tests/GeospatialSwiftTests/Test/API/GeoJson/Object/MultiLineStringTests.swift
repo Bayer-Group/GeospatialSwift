@@ -151,11 +151,6 @@ class MultiLineStringTests: XCTestCase {
         XCTAssertEqual(multiLineString.points as! [Point], lineStrings.flatMap { $0.points as! [Point] })
     }
     
-    func testCentroid() {
-        // TODO: Test me.
-        //XCTAssertEqual(multiLineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.70660048323842, 3.00009455805683))
-    }
-    
     // GeoJsonLinearGeometry Tests
     
     func testLength() {

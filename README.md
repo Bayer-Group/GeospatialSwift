@@ -47,23 +47,21 @@ Geospatial.geoJson
 * Bounding box
 * GeoJson as a Dictionary
 * Points array which make up the geometry
+* GeodesicPoint with SimplePoint implementation
+* GeodesicLineSegment with midpoint and bearing functions
 
 * Point
   * Normalize
-  * Bearing to a given point
-  * Midpoint to a given point
 * MultiPoint
-  * Centroid
 * LineString
-  * Centroid
   * Length
 * MultiLineString
-  * Centroid
+  * Length
 * Polygon
   * Centroid
   * Area
 * MultiPolygon
-  * Centroid
+  * Area
 * GeometryCollection
 * Feature
 * FeatureCollection

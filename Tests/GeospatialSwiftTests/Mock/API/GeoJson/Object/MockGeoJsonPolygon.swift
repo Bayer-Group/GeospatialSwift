@@ -14,4 +14,12 @@ final class MockGeoJsonPolygon: MockGeoJsonClosedGeometry, GeoJsonPolygon {
         
         return linearRingsResult
     }
+    
+    private(set) var centroidCallCount = 0
+    var centroidResult: GeoJsonPoint = MockGeoJsonPoint()
+    var centroid: GeodesicPoint {
+        centroidCallCount += 1
+        
+        return centroidResult
+    }
 }

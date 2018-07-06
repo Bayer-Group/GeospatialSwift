@@ -5,9 +5,9 @@ public protocol GeohashCoderProtocol {
     
     func geohashBox(geohash: String) -> GeoJsonGeohashBox?
     
-    func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String]
+    func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String]
     
-    func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
+    func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
     
     func geohashWithNeighbors(for point: GeodesicPoint, precision: Int) -> [String]
 }
@@ -47,10 +47,10 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: An array of geohashes
      */
-    public func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String] {
+    public func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] {
         return transform(boundingBox: boundingBox, precision: precision).map { $0.geohash }
     }
-    public func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         return transform(boundingBox: boundingBox, precision: precision)
     }
     
@@ -145,7 +145,7 @@ extension GeohashCoder {
         return GeohashBox(boundingCoordinates: boundingCoordinates, geohashCoder: self, geohash: geohash)
     }
     
-    private func transform(boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private func transform(boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         var geohashBoxes = [GeoJsonGeohashBox]()
         
         let point = SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.minLatitude)

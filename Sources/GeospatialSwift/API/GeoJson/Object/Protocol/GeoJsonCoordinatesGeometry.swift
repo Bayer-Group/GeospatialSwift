@@ -6,7 +6,7 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
     
     var geometries: [GeoJsonGeometry] { get }
     
-    var boundingBox: GeoJsonBoundingBox { get }
+    var boundingBox: GeodesicBoundingBox { get }
     
     func distance(to point: GeodesicPoint, errorDistance: Double) -> Double
 }
@@ -14,7 +14,7 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
 public extension GeoJsonCoordinatesGeometry {
     public var objectGeometries: [GeoJsonGeometry]? { return geometries }
     
-    public var objectBoundingBox: GeoJsonBoundingBox? { return boundingBox }
+    public var objectBoundingBox: GeodesicBoundingBox? { return boundingBox }
     
     public var geoJson: GeoJsonDictionary { return ["type": type.name, "coordinates": geoJsonCoordinates] }
     

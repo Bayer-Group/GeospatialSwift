@@ -2,7 +2,7 @@
 
 public typealias BoundingCoordinates = (minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double)
 
-public protocol GeoJsonBoundingBox: CustomStringConvertible {
+public protocol GeodesicBoundingBox: CustomStringConvertible {
     var minLongitude: Double { get }
     var minLatitude: Double { get }
     var maxLongitude: Double { get }
@@ -15,16 +15,16 @@ public protocol GeoJsonBoundingBox: CustomStringConvertible {
     var centroid: GeodesicPoint { get }
     var boundingCoordinates: BoundingCoordinates { get }
     
-    func best(_ boundingBoxes: [GeoJsonBoundingBox]) -> GeoJsonBoundingBox
-    func adjusted(minimumAdjustment: Double) -> GeoJsonBoundingBox
+    func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox
+    func adjusted(minimumAdjustment: Double) -> GeodesicBoundingBox
     func contains(point: GeodesicPoint) -> Bool
-    func overlaps(boundingBox: GeoJsonBoundingBox) -> Bool
+    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool
 }
 
 /**
  A bounding box intended to exactly fit a GeoJsonObject. Also known as a "Minimum Bounding Box", "Bounding Envelope".
  */
-internal class BoundingBox: GeoJsonBoundingBox {
+internal class BoundingBox: GeodesicBoundingBox {
     public var description: String {
         return "BoundingBox: (\n\tminLongitude: \(minLongitude),\n\tminLatitude: \(minLatitude),\n\tmaxLongitude: \(maxLongitude),\n\tmaxLatitude: \(maxLatitude),\n\tcentroid: \(centroid)\n)"
     }
@@ -62,7 +62,7 @@ internal class BoundingBox: GeoJsonBoundingBox {
             point.latitude >= minLatitude && point.latitude <= maxLatitude
     }
     
-    public func overlaps(boundingBox: GeoJsonBoundingBox) -> Bool {
+    public func overlaps(boundingBox: GeodesicBoundingBox) -> Bool {
         return contains(point: SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.minLatitude))
             || contains(point: SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.maxLatitude))
             || contains(point: SimplePoint(longitude: boundingBox.maxLongitude, latitude: boundingBox.minLatitude))
@@ -74,7 +74,7 @@ internal class BoundingBox: GeoJsonBoundingBox {
     }
     
     // TODO: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.
-    public func best(_ boundingBoxes: [GeoJsonBoundingBox]) -> GeoJsonBoundingBox {
+    public func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox {
         return boundingBoxes.reduce(self) {
             let boundingCoordinates = (minLongitude: min($0.minLongitude, $1.minLongitude), minLatitude: min($0.minLatitude, $1.minLatitude), maxLongitude: max($0.maxLongitude, $1.maxLongitude), maxLatitude: max($0.maxLatitude, $1.maxLatitude))
             
@@ -82,7 +82,7 @@ internal class BoundingBox: GeoJsonBoundingBox {
         }
     }
     
-    public func adjusted(minimumAdjustment: Double) -> GeoJsonBoundingBox {
+    public func adjusted(minimumAdjustment: Double) -> GeodesicBoundingBox {
         let longitudeAdjustment = minLongitude == maxLongitude ? minimumAdjustment : 0
         let latitudeAdjustment = minLatitude == maxLatitude ? minimumAdjustment : 0
         
@@ -93,7 +93,7 @@ internal class BoundingBox: GeoJsonBoundingBox {
 }
 
 internal extension BoundingBox {
-    static func best(_ boundingBoxes: [GeoJsonBoundingBox]) -> GeoJsonBoundingBox? {
+    static func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox? {
         guard let firstBoundingBox = boundingBoxes.first else { return nil }
         
         guard let boundingBoxesTail = boundingBoxes.tail, !boundingBoxesTail.isEmpty else { return firstBoundingBox }
@@ -102,6 +102,6 @@ internal extension BoundingBox {
     }
 }
 
-public func == (lhs: GeoJsonBoundingBox, rhs: GeoJsonBoundingBox) -> Bool {
+public func == (lhs: GeodesicBoundingBox, rhs: GeodesicBoundingBox) -> Bool {
     return lhs.minLongitude == rhs.minLongitude && lhs.minLatitude == rhs.minLatitude && lhs.maxLongitude == rhs.maxLongitude && lhs.maxLatitude == rhs.maxLatitude
 }

@@ -5,8 +5,8 @@ import XCTest
 // swiftlint:disable type_body_length
 class PolygonTests: XCTestCase {
     var linearRings: [LineString]!
-    var polygon: GeospatialSwift.Polygon!
-    var polygonDistance: GeospatialSwift.Polygon!
+    var polygon: Polygon!
+    var polygonDistance: Polygon!
     var distancePoint: SimplePoint!
     
     var point1: GeoJsonPoint!
@@ -56,7 +56,7 @@ class PolygonTests: XCTestCase {
     
     func testObjectGeometries() {
         // swiftlint:disable:next force_cast
-        XCTAssertEqual(polygon.objectGeometries as! [GeospatialSwift.Polygon], polygon.geometries as! [GeospatialSwift.Polygon])
+        XCTAssertEqual(polygon.objectGeometries as! [Polygon], polygon.geometries as! [Polygon])
     }
     
     func testGeometryTypes() {
@@ -126,7 +126,7 @@ class PolygonTests: XCTestCase {
     
     func testGeometries() {
         XCTAssertEqual(polygon.geometries.count, 1)
-        XCTAssertEqual(polygon.geometries[0] as? GeospatialSwift.Polygon, polygon)
+        XCTAssertEqual(polygon.geometries[0] as? Polygon, polygon)
     }
     
     func testBoundingBox() {

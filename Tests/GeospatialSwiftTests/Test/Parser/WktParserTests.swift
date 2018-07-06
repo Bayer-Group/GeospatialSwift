@@ -69,7 +69,7 @@ class WktParserTests: XCTestCase {
     func testPolygon() {
         let geoJsonObject = wktParser.geoJsonObject(from: MockData.testWkt("Polygon"))
         
-        XCTAssertTrue(geoJsonObject is GeospatialSwift.Polygon)
+        XCTAssertTrue(geoJsonObject is Polygon)
     }
     
     func testMultiPolygon() {

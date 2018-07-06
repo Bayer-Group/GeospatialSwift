@@ -21,8 +21,8 @@ class MockGeoJsonObject: GeoJsonObject {
     }
     
     private(set) var objectBoundingBoxCallCount = 0
-    var objectBoundingBoxResult: GeoJsonBoundingBox?
-    var objectBoundingBox: GeoJsonBoundingBox? {
+    var objectBoundingBoxResult: GeodesicBoundingBox?
+    var objectBoundingBox: GeodesicBoundingBox? {
         objectBoundingBoxCallCount += 1
         
         return objectBoundingBoxResult

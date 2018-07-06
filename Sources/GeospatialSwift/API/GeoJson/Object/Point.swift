@@ -1,7 +1,5 @@
 import Foundation
 
-internal typealias Point = GeoJson.Point
-
 public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
     var normalize: GeodesicPoint { get }
 }
@@ -35,7 +33,7 @@ extension GeoJson {
         // TODO: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
         public var altitude: Double?
         
-        public var boundingBox: GeoJsonBoundingBox {
+        public var boundingBox: GeodesicBoundingBox {
             return BoundingBox(boundingCoordinates: (minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude))
         }
         

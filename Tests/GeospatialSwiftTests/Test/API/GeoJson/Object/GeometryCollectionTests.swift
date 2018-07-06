@@ -37,7 +37,7 @@ class GeometryCollectionTests: XCTestCase {
         XCTAssertTrue(geometryCollection.objectGeometries?[1] is MultiPoint)
         XCTAssertTrue(geometryCollection.objectGeometries?[2] is LineString)
         XCTAssertTrue(geometryCollection.objectGeometries?[3] is MultiLineString)
-        XCTAssertTrue(geometryCollection.objectGeometries?[4] is GeospatialSwift.Polygon)
+        XCTAssertTrue(geometryCollection.objectGeometries?[4] is Polygon)
         XCTAssertTrue(geometryCollection.objectGeometries?[5] is MultiPolygon)
     }
     

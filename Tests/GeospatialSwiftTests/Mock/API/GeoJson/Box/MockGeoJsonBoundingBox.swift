@@ -1,6 +1,6 @@
 @testable import GeospatialSwift
 
-class MockGeoJsonBoundingBox: GeoJsonBoundingBox {
+class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     var description: String = ""
     
     private(set) var minLongitudeCallCount = 0
@@ -72,16 +72,16 @@ class MockGeoJsonBoundingBox: GeoJsonBoundingBox {
     }
     
     private(set) var bestCallCount = 0
-    lazy var bestResult: GeoJsonBoundingBox = MockGeoJsonBoundingBox()
-    func best(_ boundingBoxes: [GeoJsonBoundingBox]) -> GeoJsonBoundingBox {
+    lazy var bestResult: GeodesicBoundingBox = MockGeoJsonBoundingBox()
+    func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox {
         bestCallCount += 1
         
         return bestResult
     }
     
     private(set) var adjustedCallCount = 0
-    lazy var adjustedResult: GeoJsonBoundingBox = MockGeoJsonBoundingBox()
-    func adjusted(minimumAdjustment: Double) -> GeoJsonBoundingBox {
+    lazy var adjustedResult: GeodesicBoundingBox = MockGeoJsonBoundingBox()
+    func adjusted(minimumAdjustment: Double) -> GeodesicBoundingBox {
         adjustedCallCount += 1
         
         return adjustedResult
@@ -97,7 +97,7 @@ class MockGeoJsonBoundingBox: GeoJsonBoundingBox {
     
     private(set) var overlapsCallCount = 0
     var overlapsResult: Bool = false
-    func overlaps(boundingBox: GeoJsonBoundingBox) -> Bool {
+    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool {
         overlapsCallCount += 1
         
         return overlapsResult

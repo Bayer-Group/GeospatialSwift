@@ -1,5 +1,3 @@
-internal typealias Polygon = GeoJson.Polygon
-
 public protocol GeoJsonPolygon: GeoJsonClosedGeometry {
     var linearRings: [GeoJsonLineString] { get }
     
@@ -33,7 +31,7 @@ extension GeoJson {
         
         public var points: [GeoJsonPoint] { return linearRings.flatMap { $0.points } }
         
-        public var boundingBox: GeoJsonBoundingBox { return BoundingBox.best(linearRings.map { $0.boundingBox })! }
+        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(linearRings.map { $0.boundingBox })! }
         
         public var centroid: GeodesicPoint { return Calculator.centroid(polygon: self) }
         
@@ -87,7 +85,6 @@ extension GeoJson {
         fileprivate init?(linearRings: [GeoJsonLineString]) {
             guard linearRings.count >= 1 else { Log.warning("A valid Polygon must have at least one LinearRing"); return nil }
             
-            // TODO: Save up errors to present which rings were incorrect.
             for linearRing in linearRings {
                 guard linearRing.points.first! == linearRing.points.last! else { Log.warning("A valid Polygon LinearRing must have the first and last points equal"); return nil }
                 
@@ -108,7 +105,7 @@ extension GeoJson {
         }
         
         public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool {
-            let contains = Calculator.contains(point: point, polygonRings: linearRings)
+            let contains = Calculator.contains(point: point, polygon: self)
             
             if errorDistance < 0 && contains { return edgeDistance(to: point, errorDistance: 0) >= -errorDistance }
             

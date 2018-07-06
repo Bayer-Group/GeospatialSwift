@@ -10,7 +10,7 @@ public protocol GeoJsonObject: CustomStringConvertible {
     
     var objectGeometries: [GeoJsonGeometry]? { get }
     
-    var objectBoundingBox: GeoJsonBoundingBox? { get }
+    var objectBoundingBox: GeodesicBoundingBox? { get }
     
     var geoJson: GeoJsonDictionary { get }
     

@@ -1,5 +1,3 @@
-internal typealias LineString = GeoJson.LineString
-
 public protocol GeoJsonLineString: GeoJsonLinearGeometry {
     var segments: [GeodesicLineSegment] { get }
 }
@@ -29,13 +27,9 @@ extension GeoJson {
         
         public let points: [GeoJsonPoint]
         
-        public var boundingBox: GeoJsonBoundingBox {
+        public var boundingBox: GeodesicBoundingBox {
             return BoundingBox.best(points.compactMap { $0.boundingBox })!
         }
-        
-//        public var centroid: GeodesicPoint {
-//            return Calculator.centroid(linePoints: points)
-//        }
         
         public var length: Double {
             return Calculator.length(lineSegments: segments)
@@ -66,7 +60,7 @@ extension GeoJson {
             segments = points.enumerated().compactMap { (offset, point) in
                 if points.count == offset + 1 { return nil }
                 
-                return GeodesicLineSegment(point1: point, point2: points[offset + 1])
+                return LineSegment(point1: point, point2: points[offset + 1])
             }
         }
         

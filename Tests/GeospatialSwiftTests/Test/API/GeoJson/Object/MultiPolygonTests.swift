@@ -3,7 +3,7 @@ import XCTest
 @testable import GeospatialSwift
 
 class MultiPolygonTests: XCTestCase {
-    var polygons: [GeospatialSwift.Polygon]!
+    var polygons: [Polygon]!
     var multiPolygon: MultiPolygon!
     var distancePoint: SimplePoint!
     
@@ -13,7 +13,7 @@ class MultiPolygonTests: XCTestCase {
         super.setUp()
         
         // swiftlint:disable:next force_cast
-        polygons = MockData.polygons as! [GeospatialSwift.Polygon]
+        polygons = MockData.polygons as! [Polygon]
         
         multiPolygon = GeoTestHelper.multiPolygon(polygons)
         
@@ -105,10 +105,6 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.points as! [Point], multiPolygon.polygons.flatMap { $0.points as! [Point] })
     }
     
-    func testCentroid() {
-        // TODO: Test me.
-    }
-    
     // GeoJsonClosedGeometry Tests
     
     func testHasHole() {
@@ -124,7 +120,7 @@ class MultiPolygonTests: XCTestCase {
     // MultiPolygon Tests
     
     func testPolygons() {
-        XCTAssertEqual((multiPolygon.polygons as? [GeospatialSwift.Polygon])!, polygons)
+        XCTAssertEqual((multiPolygon.polygons as? [Polygon])!, polygons)
     }
     
     func testEquals() {

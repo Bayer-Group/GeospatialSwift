@@ -9,9 +9,9 @@ internal struct GeoJsonParser: GeoJsonParserProtocol {
         
         switch type {
         case .feature:
-            return Feature(geoJsonDictionary: geoJsonDictionary)
+            return GeoJson.Feature(geoJsonDictionary: geoJsonDictionary)
         case .featureCollection:
-            return FeatureCollection(geoJsonDictionary: geoJsonDictionary)
+            return GeoJson.FeatureCollection(geoJsonDictionary: geoJsonDictionary)
         default: return geometry(geoJsonDictionary: geoJsonDictionary, geoJsonObjectType: type)
         }
     }
@@ -26,23 +26,23 @@ private extension GeoJsonParser {
     }
     
     private func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
-        if geoJsonObjectType == .geometryCollection { return GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
+        if geoJsonObjectType == .geometryCollection { return GeoJson.GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
         
         guard let coordinates = geoJsonDictionary["coordinates"] as? [Any] else { Log.warning("A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array: String : \(geoJsonDictionary)"); return nil }
         
         switch geoJsonObjectType {
         case .point:
-            return Point(coordinatesJson: coordinates)
+            return GeoJson.Point(coordinatesJson: coordinates)
         case .multiPoint:
-            return MultiPoint(coordinatesJson: coordinates)
+            return GeoJson.MultiPoint(coordinatesJson: coordinates)
         case .lineString:
-            return LineString(coordinatesJson: coordinates)
+            return GeoJson.LineString(coordinatesJson: coordinates)
         case .multiLineString:
-            return MultiLineString(coordinatesJson: coordinates)
+            return GeoJson.MultiLineString(coordinatesJson: coordinates)
         case .polygon:
-            return Polygon(coordinatesJson: coordinates)
+            return GeoJson.Polygon(coordinatesJson: coordinates)
         case .multiPolygon:
-            return MultiPolygon(coordinatesJson: coordinates)
+            return GeoJson.MultiPolygon(coordinatesJson: coordinates)
         default:
             Log.warning("\(geoJsonObjectType.name) is not a valid Coordinates Geometry.")
             return nil

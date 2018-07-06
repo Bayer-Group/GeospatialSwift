@@ -1,5 +1,3 @@
-internal typealias FeatureCollection = GeoJson.FeatureCollection
-
 public protocol GeoJsonFeatureCollection: GeoJsonObject {
     var features: [GeoJsonFeature] { get }
 }
@@ -30,7 +28,7 @@ extension GeoJson {
         public let features: [GeoJsonFeature]
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let featuresJson = geoJsonDictionary["features"] as? [GeoJsonDictionary] else { Log.warning("A valid FeatureCollection must have a \"features\" key: String : \(geoJsonDictionary)"); return nil }
