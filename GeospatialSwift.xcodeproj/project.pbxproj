@@ -273,6 +273,9 @@
 		1E9A9BA420EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
 		1E9A9BA520EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
 		1E9A9BA620EE8B51003F381B /* GeodesicLineSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */; };
+		1E9A9BD520EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
+		1E9A9BD620EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
+		1E9A9BD720EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -396,6 +399,7 @@
 		1E92ABCF20EDA69700EF4A4E /* MockGeoJsonLinearGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGeoJsonLinearGeometry.swift; sourceTree = "<group>"; };
 		1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegment.swift; sourceTree = "<group>"; };
 		1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegmentTests.swift; sourceTree = "<group>"; };
+		1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeodesicCalculator.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -746,6 +750,7 @@
 		1E8B787E209394DE0097A986 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				1E9A9BD320EEF5D7003F381B /* Calculator */,
 				1E8B7892209394DE0097A986 /* Geohash */,
 				1E8B787F209394DE0097A986 /* GeoJson */,
 			);
@@ -842,6 +847,14 @@
 				1E92ABCA20ED955800EF4A4E /* GeoJsonLinearGeometry.swift */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		1E9A9BD320EEF5D7003F381B /* Calculator */ = {
+			isa = PBXGroup;
+			children = (
+				1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */,
+			);
+			path = Calculator;
 			sourceTree = "<group>";
 		};
 		OBJ_123 /* Products */ = {
@@ -1327,6 +1340,7 @@
 				1E7CB7212093A91400ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB72E2093A91400ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
 				1E7CB72B2093A91400ECC023 /* MockGeoJsonGeometry.swift in Sources */,
+				1E9A9BD520EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7412093A91400ECC023 /* GeometryCollectionTests.swift in Sources */,
 				1E7CB7432093A91500ECC023 /* MultiPolygonTests.swift in Sources */,
 				1E7CB7462093A91500ECC023 /* PointTests.swift in Sources */,
@@ -1413,6 +1427,7 @@
 				1E7CB7492093A91600ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB7562093A91600ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
 				1E7CB7532093A91600ECC023 /* MockGeoJsonGeometry.swift in Sources */,
+				1E9A9BD620EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7692093A91600ECC023 /* GeometryCollectionTests.swift in Sources */,
 				1E7CB76B2093A91600ECC023 /* MultiPolygonTests.swift in Sources */,
 				1E7CB76E2093A91600ECC023 /* PointTests.swift in Sources */,
@@ -1499,6 +1514,7 @@
 				1E7CB7712093A91700ECC023 /* GeoJsonTestJson.swift in Sources */,
 				1E7CB77E2093A91700ECC023 /* MockGeoJsonGeohashBox.swift in Sources */,
 				1E7CB77B2093A91700ECC023 /* MockGeoJsonGeometry.swift in Sources */,
+				1E9A9BD720EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */,
 				1E7CB7912093A91700ECC023 /* GeometryCollectionTests.swift in Sources */,
 				1E7CB7932093A91700ECC023 /* MultiPolygonTests.swift in Sources */,
 				1E7CB7962093A91700ECC023 /* PointTests.swift in Sources */,
