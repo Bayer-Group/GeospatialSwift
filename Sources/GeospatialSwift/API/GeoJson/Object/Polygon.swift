@@ -2,6 +2,8 @@ public protocol GeoJsonPolygon: GeoJsonClosedGeometry {
     var linearRings: [GeoJsonLineString] { get }
     
     var centroid: GeodesicPoint { get }
+    
+    // TODO: PolygonValidation: hasIntersection, conflictingIndices, ringsOverlap, hasBowtie, maybe an enum array of validation issues
 }
 
 extension GeoJson {

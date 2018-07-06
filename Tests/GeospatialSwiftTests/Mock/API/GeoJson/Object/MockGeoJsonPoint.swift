@@ -31,24 +31,8 @@ final class MockGeoJsonPoint: MockGeoJsonCoordinatesGeometry, GeoJsonPoint {
         return altitudeResult
     }
     
-    private(set) var degreesToRadiansCallCount: Int = 0
-    var degreesToRadiansResult: GeoJsonPoint = MockGeoJsonPoint()
-    var degreesToRadians: GeoJsonPoint {
-        degreesToRadiansCallCount += 1
-        
-        return degreesToRadiansResult
-    }
-    
-    private(set) var radiansToDegreesCallCount: Int = 0
-    var radiansToDegreesResult: GeoJsonPoint = MockGeoJsonPoint()
-    var radiansToDegrees: GeoJsonPoint {
-        radiansToDegreesCallCount += 1
-        
-        return radiansToDegreesResult
-    }
-    
     private(set) var normalizeCallCount: Int = 0
-    var normalizeResult: GeoJsonPoint = MockGeoJsonPoint()
+    var normalizeResult: GeodesicPoint = SimplePoint(longitude: 0, latitude: 0)
     var normalize: GeodesicPoint {
         normalizeCallCount += 1
         
@@ -80,7 +64,7 @@ final class MockGeoJsonPoint: MockGeoJsonCoordinatesGeometry, GeoJsonPoint {
     }
     
     private(set) var midpointCallCount: Int = 0
-    var midpointResult: GeodesicPoint = MockGeoJsonPoint()
+    var midpointResult: GeodesicPoint = SimplePoint(longitude: 0, latitude: 0)
     func midpoint(with point: GeodesicPoint) -> GeodesicPoint {
         midpointCallCount += 1
         
