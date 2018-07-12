@@ -53,11 +53,11 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContainsWithErrorDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // GeoJsonCoordinatesGeometry Tests
@@ -95,7 +95,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
@@ -108,14 +108,14 @@ class MultiPolygonTests: XCTestCase {
     // GeoJsonClosedGeometry Tests
     
     func testHasHole() {
-        // TODO: Need to test multipolygon with and without holes.
+        // SOMEDAY: Need to test multipolygon with and without holes.
     }
     
     func testArea() {
         XCTAssertEqual(multiPolygon.area.description, "37490216.3337727")
     }
     
-    // TODO: Test Edge Distance
+    // SOMEDAY: Test Edge Distance
     
     // MultiPolygon Tests
     
@@ -127,7 +127,7 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon, multiPolygon)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
         

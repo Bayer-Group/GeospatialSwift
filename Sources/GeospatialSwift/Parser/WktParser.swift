@@ -4,7 +4,7 @@ internal protocol WktParserProtocol {
     func geoJsonObject(from wkt: String) -> GeoJsonObject?
 }
 
-// TODO: Forced unwrapping leads to exceptions when WKT is invalid.
+// SOMEDAY: Forced unwrapping leads to exceptions when WKT is invalid.
 internal struct WktParser: WktParserProtocol {
     let geoJson: GeoJsonProtocol
     
@@ -15,7 +15,7 @@ internal struct WktParser: WktParserProtocol {
         let range = startRange.upperBound..<endRange.lowerBound
         let data = String(wkt[range])
         
-        // TODO: Does not nearly support all of the types.
+        // SOMEDAY: Does not nearly support all of the types.
         do {
             if wkt.uppercased().hasPrefix("POINT") {
                 return try parsePointString(data)

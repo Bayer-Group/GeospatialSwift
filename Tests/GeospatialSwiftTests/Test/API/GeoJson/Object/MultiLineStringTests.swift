@@ -167,7 +167,7 @@ class MultiLineStringTests: XCTestCase {
         XCTAssertEqual(multiLineString, multiLineString)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         let point = GeoTestHelper.point(0, 0, 0)
         

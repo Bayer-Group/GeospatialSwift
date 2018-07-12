@@ -14,13 +14,13 @@ public protocol GeoJsonObject: CustomStringConvertible {
     
     var geoJson: GeoJsonDictionary { get }
     
-    // TODO: Could this be expanded to more than point?
+    // SOMEDAY: Could this be expanded to more than point?
     func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double?
     
-    // TODO: Could this be expanded to more than point?
+    // SOMEDAY: Could this be expanded to more than point?
     func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool
     
-    // TODO: More fun!
+    // SOMEDAY: More fun!
     //func overlaps(geoJsonObject: GeoJsonObject, errorDistance: Double) -> Bool
 }
 
@@ -143,7 +143,7 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .point:
         guard let lhs = (lhs as? GeoJsonPoint)?.normalize, let rhs = (rhs as? GeoJsonPoint)?.normalize else { return false }
         
-        // TODO: Comparing strings rather than Doubles. Should Altitude be involved? Compare a certain precision instead?
+        // SOMEDAY: Comparing strings rather than Doubles. Should Altitude be involved? Compare a certain precision instead?
         return lhs.latitude.description == rhs.latitude.description && lhs.longitude.description == rhs.longitude.description && lhs.altitude?.description == rhs.altitude?.description
     }
 }

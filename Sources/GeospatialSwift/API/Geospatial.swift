@@ -53,7 +53,7 @@ open class Geospatial: GeospatialProtocol {
      
      - returns: A successfully parsed GeoJsonObject or nil if the specification was not correct
      
-     TODO: Experimental, untested, not fully written, and no plans to fully support in the future.
+     Experimental, untested, not fully written, and no plans to fully support in the future.
      */
     public func parse(wkt: String) -> GeoJsonObject? {
         return wktParser.geoJsonObject(from: wkt)

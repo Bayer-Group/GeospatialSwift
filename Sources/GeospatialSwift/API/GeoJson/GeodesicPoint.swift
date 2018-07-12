@@ -28,6 +28,6 @@ public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
     let lhs = calculator.normalize(point: lhs)
     let rhs = calculator.normalize(point: rhs)
     
-    // TODO: Comparing strings rather than Doubles. Should Altitude be involved?
+    // SOMEDAY: Comparing strings rather than Doubles. Should Altitude be involved?
     return lhs.latitude.description == rhs.latitude.description && lhs.longitude.description == rhs.longitude.description && lhs.altitude?.description == rhs.altitude?.description
 }

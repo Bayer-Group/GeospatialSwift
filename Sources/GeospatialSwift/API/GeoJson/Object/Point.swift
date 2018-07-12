@@ -30,7 +30,8 @@ extension GeoJson {
         
         public let longitude: Double
         public let latitude: Double
-        // TODO: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
+        // SOMEDAY: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
+        // SOMEDAY: Maybe a new type for altitude, Point3D?
         public var altitude: Double?
         
         public var boundingBox: GeodesicBoundingBox {
@@ -49,7 +50,7 @@ extension GeoJson {
             self.altitude = altitude
         }
         
-        // TODO: Consider Altitude? What to do if altitude is nil in some cases?
+        // SOMEDAY: Consider Altitude? What to do if altitude is nil in some cases?
         public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {
             let distance = Calculator.distance(point1: self, point2: point) - errorDistance
             

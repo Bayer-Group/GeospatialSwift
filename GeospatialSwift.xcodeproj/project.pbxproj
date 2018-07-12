@@ -922,6 +922,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1E9090C120939EA400DAEF11 /* Build configuration list for PBXNativeTarget "GeospatialSwift macOS" */;
 			buildPhases = (
+				1E160A8220F788B300C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */,
 				1E9090AB20939EA300DAEF11 /* Sources */,
 				1E9090AC20939EA300DAEF11 /* Frameworks */,
 				1E9090AD20939EA300DAEF11 /* Headers */,
@@ -960,6 +961,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1E9090F320939F2800DAEF11 /* Build configuration list for PBXNativeTarget "GeospatialSwift iOS" */;
 			buildPhases = (
+				1E160A8320F788C200C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */,
 				1E9090DD20939F2700DAEF11 /* Sources */,
 				1E9090DE20939F2700DAEF11 /* Frameworks */,
 				1E9090DF20939F2700DAEF11 /* Headers */,
@@ -998,6 +1000,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1E90910F20939F5C00DAEF11 /* Build configuration list for PBXNativeTarget "GeospatialSwift tvOS" */;
 			buildPhases = (
+				1E160A8420F788CA00C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */,
 				1E9090F920939F5C00DAEF11 /* Sources */,
 				1E9090FA20939F5C00DAEF11 /* Frameworks */,
 				1E9090FB20939F5C00DAEF11 /* Headers */,
@@ -1036,6 +1039,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1E90911F20939F6900DAEF11 /* Build configuration list for PBXNativeTarget "GeospatialSwift watchOS" */;
 			buildPhases = (
+				1E160A8520F788D300C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */,
 				1E90911520939F6900DAEF11 /* Sources */,
 				1E90911620939F6900DAEF11 /* Frameworks */,
 				1E90911720939F6900DAEF11 /* Headers */,
@@ -1181,6 +1185,62 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1E160A8220F788B300C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script - Raise error and warning flags for \"TODO:\", \"SOMEDAY:\", and \"QUESTION:\" in code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+		};
+		1E160A8320F788C200C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script - Raise error and warning flags for \"TODO:\", \"SOMEDAY:\", and \"QUESTION:\" in code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+		};
+		1E160A8420F788CA00C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script - Raise error and warning flags for \"TODO:\", \"SOMEDAY:\", and \"QUESTION:\" in code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+		};
+		1E160A8520F788D300C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script - Raise error and warning flags for \"TODO:\", \"SOMEDAY:\", and \"QUESTION:\" in code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+		};
 		1E54975E20AB6A7D00FE50EC /* Run Script - Carthage Copy */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

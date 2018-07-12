@@ -184,9 +184,9 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), errorDistance: 0).description, "39226.835607103")
     }
     
-    // TODO: Need distance tests with a hole
+    // SOMEDAY: Need distance tests with a hole
     
-    // TODO: Need edge distance tests
+    // SOMEDAY: Need edge distance tests
     
     func testDistance_DiagnalFromPoints_ShouldBeSimilar() {
         // Point 1
@@ -248,7 +248,7 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(distance.description, "0.00661514939644603")
     }
     
-    // TODO: Test distance with holes
+    // SOMEDAY: Test distance with holes
     
     // swiftlint:disable force_cast
     func testCentroid_SmallHole() {
@@ -346,13 +346,13 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.75, 0), errorDistance: 0).description, "19614.8864286195")
     }
     
-    // TODO: Test edge distance with holes
+    // SOMEDAY: Test edge distance with holes
     
     func testHasHole() {
-        // TODO: Need to test polygon with and without holes.
+        // SOMEDAY: Need to test polygon with and without holes.
     }
     
-    // TODO: Verify
+    // SOMEDAY: Verify
     func testArea() {
         XCTAssertEqual(polygon.area.description, "11301732.6333942")
     }
@@ -363,7 +363,7 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual((polygon.linearRings as? [LineString])!, linearRings)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testEquals() {
         XCTAssertEqual(polygon, polygon)
         
@@ -372,7 +372,7 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(GeoTestHelper.polygon([lineString1, lineString2]), GeoTestHelper.polygon([lineString1, lineString2]))
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         XCTAssertNotEqual(polygon, GeoTestHelper.polygon([lineString1]))
         

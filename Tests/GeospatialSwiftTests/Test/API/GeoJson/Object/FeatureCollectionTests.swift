@@ -63,15 +63,15 @@ class FeatureCollectionTests: XCTestCase {
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContainsWithErrorDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // Feature Collection Tests

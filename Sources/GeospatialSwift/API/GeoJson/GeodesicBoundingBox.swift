@@ -1,4 +1,4 @@
-// TODO: The concept of minimums and maximums is not right. Crossing the Antimeridian will do odd things. Fix all things BoundingCoordinates and BoundingBox.
+// SOMEDAY: The concept of minimums and maximums is not right. Crossing the Antimeridian will do odd things. Fix all things BoundingCoordinates and BoundingBox.
 
 public typealias BoundingCoordinates = (minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double)
 
@@ -73,7 +73,7 @@ internal class BoundingBox: GeodesicBoundingBox {
             || boundingBox.contains(point: SimplePoint(longitude: maxLongitude, latitude: maxLatitude))
     }
     
-    // TODO: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.
+    // SOMEDAY: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.
     public func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox {
         return boundingBoxes.reduce(self) {
             let boundingCoordinates = (minLongitude: min($0.minLongitude, $1.minLongitude), minLatitude: min($0.minLatitude, $1.minLatitude), maxLongitude: max($0.maxLongitude, $1.maxLongitude), maxLatitude: max($0.maxLatitude, $1.maxLatitude))

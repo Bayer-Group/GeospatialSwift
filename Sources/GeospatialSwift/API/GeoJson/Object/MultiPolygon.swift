@@ -50,7 +50,7 @@ extension GeoJson {
             self.init(polygons: polygons)
         }
         
-        // TODO: More strict additions:
+        // SOMEDAY: More strict additions:
         // Multipolygon where two polygons intersect - validate that two polygons are merged as well
         fileprivate init?(polygons: [GeoJsonPolygon]) {
             guard polygons.count >= 1 else { Log.warning("A valid MultiPolygon must have at least one Polygon"); return nil }

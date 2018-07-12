@@ -78,13 +78,13 @@ class WktParserTests: XCTestCase {
         XCTAssertTrue(geoJsonObject is MultiPolygon)
     }
     
-    // TODO: A ton of other unsupported tests.
+    // SOMEDAY: A ton of other unsupported tests.
     
     func testAllMockData() {
         XCTAssertEqual(wktTestData.count, 21)
         
         wktTestData.forEach { wktData in
-            // TODO: Lots of Unsupported types, check WktTestData.json for names with prefix "Unsupported"
+            // SOMEDAY: Lots of Unsupported types, check WktTestData.json for names with prefix "Unsupported"
             guard !((wktData["name"] as? String)?.hasPrefix("Unsupported ") ?? false) else {
                 Log.warning("Test Unsupported: \(wktData["name"] ?? "")")
                 return

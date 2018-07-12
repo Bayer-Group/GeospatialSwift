@@ -74,15 +74,15 @@ class GeometryCollectionTests: XCTestCase {
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContainsWithErrorDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // GeometryCollection Tests
@@ -103,7 +103,7 @@ class GeometryCollectionTests: XCTestCase {
         XCTAssertNotEqual(GeoTestHelper.geometryCollection([point]), GeoTestHelper.geometryCollection(nil))
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals_DifferentGeometries() {
         let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
         

@@ -89,29 +89,29 @@ class FeatureTests: XCTestCase {
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContainsWithErrorDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // Feature Tests
     
     func testId() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testIdAsString() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testProperties() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testGeometry() {
@@ -120,7 +120,7 @@ class FeatureTests: XCTestCase {
         XCTAssertNil(featureEmpty.geometry)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testEquals() {
         XCTAssertEqual(feature, feature)
         
@@ -130,7 +130,7 @@ class FeatureTests: XCTestCase {
         XCTAssertEqual(featureWithProperties1, featureWithProperties1Mixed)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         XCTAssertNotEqual(feature, featureWithPoint)
         

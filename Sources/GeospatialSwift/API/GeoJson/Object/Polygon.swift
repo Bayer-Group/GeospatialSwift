@@ -56,10 +56,10 @@ extension GeoJson {
             self.init(linearRings: linearRings)
         }
         
-        // TODO: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
-        // TODO: More strict additions:
+        // SOMEDAY: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
+        // SOMEDAY: More strict additions:
         
-        // TODO: Check for validity beyond geoJson specification of geometries - Perhaps this will set an isValid flag or an invalidReasonEnum on the GeoJsonObject itself rather than failing.
+        // SOMEDAY: Check for validity beyond geoJson specification of geometries - Perhaps this will set an isValid flag or an invalidReasonEnum on the GeoJsonObject itself rather than failing.
         
         //Checking winding order is valid
         //Checking geometry is_valid
@@ -77,7 +77,7 @@ extension GeoJson {
         //    o  A linear ring MUST follow the right-hand rule with respect to the
         //    area it bounds, i.e., exterior rings are counterclockwise, and
         //    holes are clockwise.
-        // TODO: Can run contains on all interior polygon points to be contained in the exterior polygon and NOT contains in other interior polygons.
+        // SOMEDAY: Can run contains on all interior polygon points to be contained in the exterior polygon and NOT contains in other interior polygons.
         // Polygon where hole intersects with same point as exterior edge point
         // Polygon where hole extends past edge of polygon
         //    o  For Polygons with more than one of these rings, the first MUST be

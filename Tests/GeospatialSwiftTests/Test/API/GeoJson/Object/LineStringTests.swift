@@ -203,7 +203,7 @@ class LineStringTests: XCTestCase {
     
     // GeoJsonLinearGeometry Tests
     
-    // TODO: Verify
+    // SOMEDAY: Verify
     func testLength() {
         XCTAssertEqual(lineString.length.description, "222130.2399313")
     }
@@ -216,7 +216,7 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(segments.count, 2)
     }
     
-    // TODO: Test Bearing
+    // SOMEDAY: Test Bearing
     
     func testEquals() {
         XCTAssertEqual(lineString, lineString)

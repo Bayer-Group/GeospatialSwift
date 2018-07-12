@@ -90,7 +90,7 @@ extension GeodesicCalculator {
         return lineSegments.reduce(0.0) { $0 + distance(point1: $1.point1, point2: $1.point2) }
     }
     
-    // TODO: Not geodesic?
+    // SOMEDAY: Not geodesic?
     public func area(polygon: GeoJsonPolygon) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: centroid(polygon: polygon).latitude)
         
@@ -102,7 +102,7 @@ extension GeodesicCalculator {
         return mainRingArea - negativeRings.reduce(0.0) { return $0 + area(linearRingPoints: $1.points, earthRadius: earthRadius) }
     }
     
-    // TODO: Not geodesic?
+    // SOMEDAY: Not geodesic?
     private func area(linearRingPoints: [GeodesicPoint], earthRadius: Double) -> Double {
         let points = linearRingPoints.map { $0.degreesToRadians }
         
@@ -157,7 +157,7 @@ extension GeodesicCalculator {
     
     // Law Of Cosines is not accurate under 0.5 meters. Also, acos can produce NaN if not protected.
     public func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        // TODO: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
+        // SOMEDAY: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
         //return point1.location.distance(from: point2.location)
         let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
         
@@ -176,7 +176,7 @@ extension GeodesicCalculator {
     
     // Haversine distance is accurate under 0.5 meters
     public func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        // TODO: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
+        // SOMEDAY: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
         //return point1.location.distance(from: point2.location)
         let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
         
@@ -193,7 +193,7 @@ extension GeodesicCalculator {
         return angularDistance * earthRadius
     }
     
-    // TODO: It would be nice to understand this better as there seems to be too much to calling this twice.
+    // SOMEDAY: It would be nice to understand this better as there seems to be too much to calling this twice.
     private func distancePartialResult(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: midpoint(point1: lineSegment.point1, point2: lineSegment.point2).latitude)
         
@@ -248,7 +248,7 @@ extension GeodesicCalculator {
         return mainRingContains && !holeContains()
     }
     
-    // TODO: Not geodesic.
+    // SOMEDAY: Not geodesic.
     private func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
         guard !vertices.isEmpty else { return false }
         
@@ -278,7 +278,7 @@ extension GeodesicCalculator {
         
         let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
         
-        // TODO: Negative Rings likely Broken
+        // TODO: Multiple negative rings might be producting a bad result
         if let negativeRings = polygon.linearRings.tail {
             let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
             
@@ -296,7 +296,7 @@ extension GeodesicCalculator {
         return finalCentroid
     }
     
-    // TODO: Not geodesic. Estimation.
+    // SOMEDAY: Not geodesic. Estimation.
     private func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint {
         var sumY = 0.0
         var sumX = 0.0
@@ -321,7 +321,7 @@ extension GeodesicCalculator {
         
         let area = 0.5 * sum
         
-        // TODO: Altitude is just passed through for the first point right now.
+        // SOMEDAY: Altitude is just passed through for the first point right now.
         return SimplePoint(longitude: sumX / 6 / area + offsetLongitude, latitude: sumY / 6 / area + offsetLatitude, altitude: offset.altitude)
     }
     
@@ -338,7 +338,7 @@ extension GeodesicCalculator {
         
         let longitude2 = longitude1 + atan2(sin(bearing) * sin(centralAngle) * cos(latitude1), cos(centralAngle) - sin(latitude1) * sin(latitude2))
         
-        // TODO: Altitude is just passed through right now.
+        // SOMEDAY: Altitude is just passed through right now.
         let point = SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
         
         return point
