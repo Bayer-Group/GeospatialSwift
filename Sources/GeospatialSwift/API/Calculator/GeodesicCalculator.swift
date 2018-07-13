@@ -278,7 +278,7 @@ extension GeodesicCalculator {
         
         let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
         
-        // TODO: Multiple negative rings might be producting a bad result
+        // TODO-: Multiple negative rings might be producting a bad result
         if let negativeRings = polygon.linearRings.tail {
             let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
             
