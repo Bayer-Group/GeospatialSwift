@@ -24,4 +24,12 @@ class MockGeoJsonCoordinatesGeometry: MockGeoJsonGeometry, GeoJsonCoordinatesGeo
         
         return distanceResult
     }
+    
+    private(set) var pointsCallCount = 0
+    var pointsResult: [GeoJsonPoint] = []
+    var points: [GeoJsonPoint] {
+        pointsCallCount += 1
+        
+        return pointsResult
+    }
 }

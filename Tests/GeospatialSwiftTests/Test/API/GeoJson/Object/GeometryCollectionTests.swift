@@ -43,12 +43,10 @@ class GeometryCollectionTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(geometryCollection.coordinatesGeometries.count, 6)
-        XCTAssertEqual(geometryCollection.multiCoordinatesGeometries.count, 5)
         XCTAssertEqual(geometryCollection.linearGeometries.count, 2)
         XCTAssertEqual(geometryCollection.closedGeometries.count, 2)
         
         XCTAssertEqual(geometryCollectionNested.coordinatesGeometries.count, 12)
-        XCTAssertEqual(geometryCollectionNested.multiCoordinatesGeometries.count, 10)
         XCTAssertEqual(geometryCollectionNested.linearGeometries.count, 4)
         XCTAssertEqual(geometryCollectionNested.closedGeometries.count, 4)
     }

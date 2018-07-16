@@ -30,7 +30,6 @@ class LineStringTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(lineString.coordinatesGeometries.count, 1)
-        XCTAssertEqual(lineString.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(lineString.linearGeometries.count, 1)
         XCTAssertEqual(lineString.closedGeometries.count, 0)
     }

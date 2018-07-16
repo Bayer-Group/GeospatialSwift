@@ -31,7 +31,6 @@ class MultiLineStringTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(multiLineString.coordinatesGeometries.count, 1)
-        XCTAssertEqual(multiLineString.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(multiLineString.linearGeometries.count, 1)
         XCTAssertEqual(multiLineString.closedGeometries.count, 0)
     }

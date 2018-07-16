@@ -35,7 +35,6 @@ class MultiPolygonTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(multiPolygon.coordinatesGeometries.count, 1)
-        XCTAssertEqual(multiPolygon.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(multiPolygon.linearGeometries.count, 0)
         XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
     }

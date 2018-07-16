@@ -58,17 +58,14 @@ class FeatureTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(feature.coordinatesGeometries.count, 1)
-        XCTAssertEqual(feature.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(feature.linearGeometries.count, 0)
         XCTAssertEqual(feature.closedGeometries.count, 1)
         
         XCTAssertEqual(featureEmpty.coordinatesGeometries.count, 0)
-        XCTAssertEqual(featureEmpty.multiCoordinatesGeometries.count, 0)
         XCTAssertEqual(featureEmpty.linearGeometries.count, 0)
         XCTAssertEqual(featureEmpty.closedGeometries.count, 0)
         
         XCTAssertEqual(featureNested.coordinatesGeometries.count, 2)
-        XCTAssertEqual(featureNested.multiCoordinatesGeometries.count, 2)
         XCTAssertEqual(featureNested.linearGeometries.count, 0)
         XCTAssertEqual(featureNested.closedGeometries.count, 2)
     }

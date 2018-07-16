@@ -27,7 +27,6 @@ class PointTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(point.coordinatesGeometries.count, 1)
-        XCTAssertEqual(point.multiCoordinatesGeometries.count, 0)
         XCTAssertEqual(point.closedGeometries.count, 0)
         XCTAssertEqual(point.linearGeometries.count, 0)
     }

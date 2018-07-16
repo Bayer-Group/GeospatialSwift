@@ -1,4 +1,4 @@
 @testable import GeospatialSwift
 
-final class MockGeoJsonMultiPoint: MockGeoJsonMultiCoordinatesGeometry, GeoJsonMultiPoint {
+final class MockGeoJsonMultiPoint: MockGeoJsonCoordinatesGeometry, GeoJsonMultiPoint {
 }

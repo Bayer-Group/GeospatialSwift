@@ -30,7 +30,6 @@ class MultiPointTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(multiPoint.coordinatesGeometries.count, 1)
-        XCTAssertEqual(multiPoint.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(multiPoint.linearGeometries.count, 0)
         XCTAssertEqual(multiPoint.closedGeometries.count, 0)
     }

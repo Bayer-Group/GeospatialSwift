@@ -1,7 +1,7 @@
 public protocol GeoJsonLineString: GeoJsonLinearGeometry {
     var segments: [GeodesicLineSegment] { get }
     
-    // TODO-: LineValidation: hasIntersection, conflictingIndices, maybe an enum array of validation issues
+    // SOMEDAY: LineValidation: hasIntersection, conflictingIndices, maybe an enum array of validation issues
 }
 
 extension GeoJson {

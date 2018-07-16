@@ -9,6 +9,8 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
     var boundingBox: GeodesicBoundingBox { get }
     
     func distance(to point: GeodesicPoint, errorDistance: Double) -> Double
+    
+    var points: [GeoJsonPoint] { get }
 }
 
 public extension GeoJsonCoordinatesGeometry {

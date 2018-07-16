@@ -61,7 +61,6 @@ class PolygonTests: XCTestCase {
     
     func testGeometryTypes() {
         XCTAssertEqual(polygon.coordinatesGeometries.count, 1)
-        XCTAssertEqual(polygon.multiCoordinatesGeometries.count, 1)
         XCTAssertEqual(polygon.linearGeometries.count, 0)
         XCTAssertEqual(polygon.closedGeometries.count, 1)
     }
@@ -220,7 +219,7 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(polygonDistance.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.66666666666667, 2.33333333333333, 3.0))
     }
     
-    // TODO-: Wrong
+    // SOMEDAY: Wrong?
     func testCentroid_NoHoles2() {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(-88.3254122, 39.5206294), GeoTestHelper.point(-88.3254123, 39.520643), GeoTestHelper.point(-88.3254549, 39.5206432), GeoTestHelper.point(-88.3254549, 39.5206296), GeoTestHelper.point(-88.3254122, 39.5206294)])
         let polygon = GeoTestHelper.polygon([mainRing])

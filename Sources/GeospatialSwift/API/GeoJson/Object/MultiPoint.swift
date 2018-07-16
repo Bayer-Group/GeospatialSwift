@@ -1,4 +1,4 @@
-public protocol GeoJsonMultiPoint: GeoJsonMultiCoordinatesGeometry { }
+public protocol GeoJsonMultiPoint: GeoJsonCoordinatesGeometry { }
 
 extension GeoJson {
     /**

@@ -1,6 +1,6 @@
 @testable import GeospatialSwift
 
-class MockGeoJsonClosedGeometry: MockGeoJsonMultiCoordinatesGeometry, GeoJsonClosedGeometry {
+class MockGeoJsonClosedGeometry: MockGeoJsonCoordinatesGeometry, GeoJsonClosedGeometry {
     private(set) var edgeDistanceCallCount = 0
     var edgeDistanceResult: Double = 0
     func edgeDistance(to point: GeodesicPoint, errorDistance: Double) -> Double {

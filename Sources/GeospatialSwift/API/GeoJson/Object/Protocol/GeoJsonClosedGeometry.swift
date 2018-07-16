@@ -1,7 +1,7 @@
 /**
  A GeoJsonClosedGeometry is a geometry made of polygons
  */
-public protocol GeoJsonClosedGeometry: GeoJsonMultiCoordinatesGeometry {
+public protocol GeoJsonClosedGeometry: GeoJsonCoordinatesGeometry {
     var hasHole: Bool { get }
     
     var area: Double { get }

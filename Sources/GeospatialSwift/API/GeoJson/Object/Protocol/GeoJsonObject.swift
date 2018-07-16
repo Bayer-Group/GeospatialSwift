@@ -50,16 +50,6 @@ extension GeoJsonObject {
         }
     }
     
-    public var multiCoordinatesGeometries: [GeoJsonMultiCoordinatesGeometry] {
-        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonMultiCoordinatesGeometry] in
-            if let geometry = objectGeometry as? GeoJsonMultiCoordinatesGeometry { return [geometry] }
-            
-            if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
-            
-            return objectGeometry.multiCoordinatesGeometries
-        }
-    }
-    
     public var linearGeometries: [GeoJsonLinearGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
             if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }

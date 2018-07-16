@@ -28,6 +28,8 @@ extension GeoJson {
         
         public var description: String { return "Point: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
         
+        public var points: [GeoJsonPoint] { return [self] }
+        
         public let longitude: Double
         public let latitude: Double
         // SOMEDAY: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
