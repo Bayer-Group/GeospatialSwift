@@ -1,4 +1,4 @@
-public protocol GeoJsonPolygon: GeoJsonClosedGeometry {
+public protocol GeoJsonPolygon: GeoJsonSimpleGeometry, GeoJsonClosedGeometry {
     var linearRings: [GeoJsonLineString] { get }
     
     var centroid: GeodesicPoint { get }

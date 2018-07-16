@@ -50,6 +50,14 @@ extension GeoJsonObject {
         }
     }
     
+    public var simpleGeometries: [GeoJsonSimpleGeometry] {
+        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonSimpleGeometry] in
+            if let geometry = objectGeometry as? GeoJsonSimpleGeometry { return [geometry] }
+            
+            return objectGeometry.simpleGeometries
+        }
+    }
+    
     public var linearGeometries: [GeoJsonLinearGeometry] {
         return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
             if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }

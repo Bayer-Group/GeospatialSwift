@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
+public protocol GeoJsonPoint: GeodesicPoint, GeoJsonSimpleGeometry {
     var normalize: GeodesicPoint { get }
 }
 

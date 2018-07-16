@@ -1,4 +1,4 @@
-public protocol GeoJsonLineString: GeoJsonLinearGeometry {
+public protocol GeoJsonLineString: GeoJsonSimpleGeometry, GeoJsonLinearGeometry {
     var segments: [GeodesicLineSegment] { get }
     
     // SOMEDAY: LineValidation: hasIntersection, conflictingIndices, maybe an enum array of validation issues
