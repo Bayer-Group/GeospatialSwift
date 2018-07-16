@@ -31,6 +31,10 @@ extension GeoJsonObject {
 }
 
 extension GeoJsonObject {
+    public var isSimpleGeometry: Bool {
+        return [.point, .lineString, .polygon].contains(type)
+    }
+    
     // Trust geoJson serialization
     public var geoJsonData: Data {
         // swiftlint:disable:next force_try
@@ -47,14 +51,6 @@ extension GeoJsonObject {
             if let geometry = objectGeometry as? GeoJsonCoordinatesGeometry { return [geometry] }
             
             return objectGeometry.coordinatesGeometries
-        }
-    }
-    
-    public var simpleGeometries: [GeoJsonSimpleGeometry] {
-        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonSimpleGeometry] in
-            if let geometry = objectGeometry as? GeoJsonSimpleGeometry { return [geometry] }
-            
-            return objectGeometry.simpleGeometries
         }
     }
     
