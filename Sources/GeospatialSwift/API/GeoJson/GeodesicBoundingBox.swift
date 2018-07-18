@@ -24,12 +24,12 @@ public protocol GeodesicBoundingBox: CustomStringConvertible {
 /**
  A bounding box intended to exactly fit a GeoJsonObject. Also known as a "Minimum Bounding Box", "Bounding Envelope".
  */
-internal class BoundingBox: GeodesicBoundingBox {
+public class BoundingBox: GeodesicBoundingBox {
     public var description: String {
         return "BoundingBox: (\n\tminLongitude: \(minLongitude),\n\tminLatitude: \(minLatitude),\n\tmaxLongitude: \(maxLongitude),\n\tmaxLatitude: \(maxLatitude),\n\tcentroid: \(centroid)\n)"
     }
     
-    public var points: [GeodesicPoint]
+    public let points: [GeodesicPoint]
     
     public let centroid: GeodesicPoint
     
@@ -92,8 +92,8 @@ internal class BoundingBox: GeodesicBoundingBox {
     }
 }
 
-internal extension BoundingBox {
-    static func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox? {
+public extension BoundingBox {
+    public static func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox? {
         guard let firstBoundingBox = boundingBoxes.first else { return nil }
         
         guard let boundingBoxesTail = boundingBoxes.tail, !boundingBoxesTail.isEmpty else { return firstBoundingBox }
