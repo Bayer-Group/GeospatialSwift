@@ -17,9 +17,19 @@ public protocol GeodesicBoundingBox: CustomStringConvertible {
     
     func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox
     func validBoundingBox(minimumAdjustment: Double) -> GeodesicBoundingBox
-    func insetBoundingBox(percent: Double) -> GeodesicBoundingBox
+    func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox
     func contains(point: GeodesicPoint) -> Bool
     func overlaps(boundingBox: GeodesicBoundingBox) -> Bool
+}
+
+extension GeodesicBoundingBox {
+    public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox {
+        return insetBoundingBox(widthPercent: percent, heightPercent: percent)
+    }
+    
+    public func insetBoundingBox(widthPercent: Double, heightPercent: Double) -> GeodesicBoundingBox {
+        return insetBoundingBox(topPercent: heightPercent, leftPercent: widthPercent, bottomPercent: heightPercent, rightPercent: widthPercent)
+    }
 }
 
 /**
@@ -92,11 +102,8 @@ public class BoundingBox: GeodesicBoundingBox {
         return BoundingBox(boundingCoordinates: boundingCoordinates)
     }
     
-    public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox {
-        let longitudeAdjustment = longitudeDelta * percent
-        let latitudeAdjustment = latitudeDelta * percent
-        
-        let boundingCoordinates = (minLongitude: minLongitude - longitudeAdjustment, minLatitude: minLatitude - latitudeAdjustment, maxLongitude: maxLongitude + longitudeAdjustment, maxLatitude: maxLatitude + latitudeAdjustment)
+    public func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox {
+        let boundingCoordinates = (minLongitude: minLongitude - (longitudeDelta * leftPercent), minLatitude: minLatitude - (longitudeDelta * bottomPercent), maxLongitude: maxLongitude + (longitudeDelta * rightPercent), maxLatitude: maxLatitude + (longitudeDelta * topPercent))
         
         return BoundingBox(boundingCoordinates: boundingCoordinates)
     }
