@@ -17,6 +17,7 @@ public protocol GeodesicBoundingBox: CustomStringConvertible {
     
     func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox
     func adjusted(minimumAdjustment: Double) -> GeodesicBoundingBox
+    func inset(percent: Double) -> GeodesicBoundingBox
     func contains(point: GeodesicPoint) -> Bool
     func overlaps(boundingBox: GeodesicBoundingBox) -> Bool
 }
@@ -85,6 +86,15 @@ public class BoundingBox: GeodesicBoundingBox {
     public func adjusted(minimumAdjustment: Double) -> GeodesicBoundingBox {
         let longitudeAdjustment = minLongitude == maxLongitude ? minimumAdjustment : 0
         let latitudeAdjustment = minLatitude == maxLatitude ? minimumAdjustment : 0
+        
+        let boundingCoordinates = (minLongitude: minLongitude - longitudeAdjustment, minLatitude: minLatitude - latitudeAdjustment, maxLongitude: maxLongitude + longitudeAdjustment, maxLatitude: maxLatitude + latitudeAdjustment)
+        
+        return BoundingBox(boundingCoordinates: boundingCoordinates)
+    }
+    
+    public func inset(percent: Double) -> GeodesicBoundingBox {
+        let longitudeAdjustment = longitudeDelta * percent
+        let latitudeAdjustment = latitudeDelta * percent
         
         let boundingCoordinates = (minLongitude: minLongitude - longitudeAdjustment, minLatitude: minLatitude - latitudeAdjustment, maxLongitude: maxLongitude + longitudeAdjustment, maxLatitude: maxLatitude + latitudeAdjustment)
         

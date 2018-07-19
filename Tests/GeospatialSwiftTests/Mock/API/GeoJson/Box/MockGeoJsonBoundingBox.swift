@@ -87,6 +87,14 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
         return adjustedResult
     }
     
+    private(set) var insetCallCount = 0
+    lazy var insetResult: GeodesicBoundingBox = MockGeoJsonBoundingBox()
+    func inset(percent: Double) -> GeodesicBoundingBox {
+        insetCallCount += 1
+        
+        return insetResult
+    }
+    
     private(set) var containsCallCount = 0
     var containsResult: Bool = false
     func contains(point: GeodesicPoint) -> Bool {
