@@ -145,28 +145,28 @@ class BoundingBoxTests: XCTestCase {
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLongitudeAreEqual_ThenAdjust() {
-        let verticalAdjustedBoundingBox = verticalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let verticalAdjustedBoundingBox = verticalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(verticalAdjustedBoundingBox.minLongitude, verticalBoundingBox.minLongitude - boundingBoxMinimumAdjustment)
         XCTAssertEqual(verticalAdjustedBoundingBox.maxLongitude, verticalBoundingBox.maxLongitude + boundingBoxMinimumAdjustment)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLatitudeAreEqual_ThenAdjust() {
-        let horizontalAdjustedBoundingBox = horizontalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let horizontalAdjustedBoundingBox = horizontalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(horizontalAdjustedBoundingBox.minLatitude, horizontalBoundingBox.minLatitude - boundingBoxMinimumAdjustment)
         XCTAssertEqual(horizontalAdjustedBoundingBox.maxLatitude, horizontalBoundingBox.maxLatitude + boundingBoxMinimumAdjustment)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLongitudeAreDifferent_ThenNoAdjustment() {
-        let horizontalAdjustedBoundingBox = horizontalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let horizontalAdjustedBoundingBox = horizontalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(horizontalAdjustedBoundingBox.minLongitude, horizontalBoundingBox.minLongitude)
         XCTAssertEqual(horizontalAdjustedBoundingBox.maxLongitude, horizontalBoundingBox.maxLongitude)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLatitudeAreDifferent_ThenNoAdjustment() {
-        let verticalAdjustedBoundingBox = verticalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let verticalAdjustedBoundingBox = verticalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(verticalAdjustedBoundingBox.minLatitude, verticalBoundingBox.minLatitude)
         XCTAssertEqual(verticalAdjustedBoundingBox.maxLatitude, verticalBoundingBox.maxLatitude)
