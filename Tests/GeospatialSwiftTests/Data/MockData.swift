@@ -21,12 +21,13 @@ final class MockData {
         return wktTestData.first { ($0["name"] as! String) == name }!["wkt"] as! String
     }
     
+    static let point: GeoJsonPoint = geoJson.point(longitude: 1, latitude: 2, altitude: 3)
     static let points: [GeoJsonPoint] = linesPoints.first!
     static let lineStrings: [GeoJsonLineString] = linesPoints.map { geoJson.lineString(points: $0)! }
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let geometries: [GeoJsonGeometry] = [
-        geoJson.point(longitude: 1, latitude: 2, altitude: 3),
+        MockData.point,
         geoJson.multiPoint(points: MockData.points)!,
         geoJson.lineString(points: MockData.points)!,
         geoJson.multiLineString(lineStrings: MockData.lineStrings)!,
@@ -39,15 +40,21 @@ final class MockData {
         geoJson.feature(geometry: geoJson.polygon(linearRings: MockData.linearRings)!, id: nil, properties: nil)!
     ]
     
-    static let pointsCoordinatesJson = "[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]]"
-    static let lineStringsCoordinatesJson = "[[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]"
-    static let linearRingsCoordinatesJson = "[[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]]"
+    static let pointsCoordinatesJson = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]]
+    static let lineStringsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]
+    static let linearRingsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]]
     
-    private static let partialPolygonsCoordinates1 = "[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]]"
-    private static let partialPolygonsCoordinates2 = "[[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]"
-    private static let partialPolygonsCoordinates3 = "[[5.0, 6.0, 13.0], [6.0, 6.0, 14.0], [6.0, 7.0, 15.0], [5.0, 7.0, 14.0], [5.0, 6.0, 13.0]]"
-    private static let partialPolygonsCoordinates4 = "[[6.0, 7.0, 13.0], [7.0, 7.0, 14.0], [7.0, 8.0, 15.0], [6.0, 8.0, 14.0], [6.0, 7.0, 13.0]]"
-    static let polygonsCoordinatesJson = "[[\(partialPolygonsCoordinates1), \(partialPolygonsCoordinates2)], [\(partialPolygonsCoordinates3), \(partialPolygonsCoordinates4)]]"
+    private static let partialPolygonsCoordinates1 = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]]
+    private static let partialPolygonsCoordinates2 = [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]
+    private static let partialPolygonsCoordinates3 = [[5.0, 6.0, 13.0], [6.0, 6.0, 14.0], [6.0, 7.0, 15.0], [5.0, 7.0, 14.0], [5.0, 6.0, 13.0]]
+    private static let partialPolygonsCoordinates4 = [[6.0, 7.0, 13.0], [7.0, 7.0, 14.0], [7.0, 8.0, 15.0], [6.0, 8.0, 14.0], [6.0, 7.0, 13.0]]
+    static let polygonsCoordinatesJson = [[partialPolygonsCoordinates1, partialPolygonsCoordinates2], [partialPolygonsCoordinates3, partialPolygonsCoordinates4]]
+    
+    static let box: GeodesicPolygon = SimplePolygon(mainRingSegments: [
+        LineSegment(point: SimplePoint(longitude: 0, latitude: 0), otherPoint: SimplePoint(longitude: 0, latitude: 1)),
+        LineSegment(point: SimplePoint(longitude: 0, latitude: 1), otherPoint: SimplePoint(longitude: 1, latitude: 1)),
+        LineSegment(point: SimplePoint(longitude: 1, latitude: 1), otherPoint: SimplePoint(longitude: 1, latitude: 0)),
+        LineSegment(point: SimplePoint(longitude: 1, latitude: 0), otherPoint: SimplePoint(longitude: 0, latitude: 0))])!
 }
 
 extension MockData {

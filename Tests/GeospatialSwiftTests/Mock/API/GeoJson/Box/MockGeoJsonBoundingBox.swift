@@ -1,6 +1,10 @@
 @testable import GeospatialSwift
 
 class MockGeoJsonBoundingBox: GeodesicBoundingBox {
+    var segments: [GeodesicLineSegment] = MockData.box.mainRingSegments
+    
+    var box: GeodesicPolygon = MockData.box
+    
     var description: String = ""
     
     private(set) var minLongitudeCallCount = 0
@@ -97,7 +101,7 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     
     private(set) var containsCallCount = 0
     var containsResult: Bool = false
-    func contains(point: GeodesicPoint) -> Bool {
+    func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
         containsCallCount += 1
         
         return containsResult
@@ -105,7 +109,7 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     
     private(set) var overlapsCallCount = 0
     var overlapsResult: Bool = false
-    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool {
+    func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
         overlapsCallCount += 1
         
         return overlapsResult

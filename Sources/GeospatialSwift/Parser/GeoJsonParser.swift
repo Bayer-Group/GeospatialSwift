@@ -3,7 +3,7 @@ internal protocol GeoJsonParserProtocol {
 }
 
 internal struct GeoJsonParser: GeoJsonParserProtocol {
-    // TODO does not handle optional "bbox" or "crs" members
+    // SOMEDAY: does not handle optional "bbox" or "crs" members
     func geoJsonObject(from geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObject? {
         guard let type = geoJsonObjectType(geoJsonDictionary: geoJsonDictionary) else { return nil }
         

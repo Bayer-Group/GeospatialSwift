@@ -1,6 +1,6 @@
 public protocol GeodesicLineSegment {
-    var point1: GeodesicPoint { get }
-    var point2: GeodesicPoint { get }
+    var point: GeodesicPoint { get }
+    var otherPoint: GeodesicPoint { get }
     
     var midpoint: GeodesicPoint { get }
     var initialBearing: (bearing: Double, back: Double) { get }
@@ -9,26 +9,34 @@ public protocol GeodesicLineSegment {
 }
 
 internal struct LineSegment: GeodesicLineSegment {
-    let point1: GeodesicPoint
-    let point2: GeodesicPoint
+    let point: GeodesicPoint
+    let otherPoint: GeodesicPoint
     
-    public var midpoint: GeodesicPoint { return Calculator.midpoint(point1: point1, point2: point2) }
+    public var midpoint: GeodesicPoint { return Calculator.midpoint(from: point, to: otherPoint) }
     
     public var initialBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.initialBearing(point1: point1, point2: point2)
+        let bearing = Calculator.initialBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
     
     public var averageBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.averageBearing(point1: point1, point2: point2)
+        let bearing = Calculator.averageBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
     
     public var finalBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.finalBearing(point1: point1, point2: point2)
+        let bearing = Calculator.finalBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
+}
+
+public func == (lhs: GeodesicLineSegment, rhs: GeodesicLineSegment) -> Bool {
+    return lhs.point == rhs.point && lhs.otherPoint == rhs.otherPoint
+}
+
+public func != (lhs: GeodesicLineSegment, rhs: GeodesicLineSegment) -> Bool {
+    return !(lhs == rhs)
 }

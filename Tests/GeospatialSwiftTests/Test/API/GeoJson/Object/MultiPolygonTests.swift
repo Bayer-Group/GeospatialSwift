@@ -12,8 +12,7 @@ class MultiPolygonTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        polygons = MockData.polygons as! [Polygon]
+        polygons = MockData.polygons as? [Polygon]
         
         multiPolygon = GeoTestHelper.multiPolygon(polygons)
         
@@ -44,7 +43,8 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testGeoJson() {
-        XCTAssertEqual(multiPolygon.geoJson.description, "[\"type\": \"MultiPolygon\", \"coordinates\": \(MockData.polygonsCoordinatesJson)]")
+        XCTAssertEqual(multiPolygon.geoJson["type"] as? String, "MultiPolygon")
+        XCTAssertEqual(multiPolygon.geoJson["coordinates"] as? [[[[Double]]]], MockData.polygonsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -55,7 +55,7 @@ class MultiPolygonTests: XCTestCase {
         // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
+    func testContainsWithTolerance() {
         // SOMEDAY: Test me.
     }
     
@@ -111,7 +111,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testArea() {
-        XCTAssertEqual(multiPolygon.area.description, "37490216.3337727")
+        XCTAssertEqual(multiPolygon.area, 37490216.3337727, accuracy: 10)
     }
     
     // SOMEDAY: Test Edge Distance

@@ -80,9 +80,18 @@ class FeatureTests: XCTestCase {
     }
     
     func testGeoJson() {
-        XCTAssertEqual(feature.geoJson.description, "[\"geometry\": [\"type\": \"MultiPolygon\", \"coordinates\": \(MockData.polygonsCoordinatesJson)], \"type\": \"Feature\", \"id\": \"12345\", \"properties\": [\"property2\": [\"key\": \"value\"], \"property1\": \"value1\"]]")
+        let properties = feature.geoJson["properties"] as? [String: Any]
+        let geometry = feature.geoJson["geometry"] as? [String: Any]
+        XCTAssertEqual(feature.geoJson["type"] as? String, "Feature")
+        XCTAssertEqual(feature.geoJson["id"] as? String, "12345")
+        XCTAssertEqual(properties?["property1"] as? String, "value1")
+        XCTAssertEqual(properties?["property2"] as? [String: String], ["key": "value"])
+        XCTAssertEqual(geometry?["type"] as? String, "MultiPolygon")
+        XCTAssertEqual(geometry?["coordinates"] as? [[[[Double]]]], MockData.polygons.compactMap { $0.geoJsonCoordinates as? [[[Double]]] })
         
-        XCTAssertEqual(featureEmpty.geoJson.description, "[\"type\": \"Feature\", \"geometry\": <null>, \"properties\": <null>]")
+        XCTAssertEqual(featureEmpty.geoJson["type"] as? String, "Feature")
+        XCTAssertEqual(featureEmpty.geoJson["geometry"] as? NSNull, NSNull())
+        XCTAssertEqual(featureEmpty.geoJson["properties"] as? NSNull, NSNull())
     }
     
     func testObjectDistance() {
@@ -93,7 +102,7 @@ class FeatureTests: XCTestCase {
         // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
+    func testContainsWithTolerance() {
         // SOMEDAY: Test me.
     }
     

@@ -9,8 +9,8 @@ class PolygonTests: XCTestCase {
     var polygonDistance: Polygon!
     var distancePoint: SimplePoint!
     
-    var point1: GeoJsonPoint!
-    var point2: GeoJsonPoint!
+    var point: GeoJsonPoint!
+    var otherPoint: GeoJsonPoint!
     var point3: GeoJsonPoint!
     
     var lineString1: GeoJsonLineString!
@@ -20,18 +20,17 @@ class PolygonTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        linearRings = MockData.linearRings as! [LineString]
+        linearRings = MockData.linearRings as? [LineString]
         
-        //2                   *
+        //3                   *
+        //
+        //2.5
+        //
+        //2         *         *
         //
         //1.5
         //
-        //1         *         *
-        //
-        //0.5
-        //
-        //0
+        //1
         //    0.5   1   1.5   2
         polygonDistance = GeoTestHelper.polygon([GeoTestHelper.lineString([GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 2, 3)])])
         
@@ -39,13 +38,13 @@ class PolygonTests: XCTestCase {
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
-        point1 = GeoTestHelper.point(0, 0, 0)
-        point2 = GeoTestHelper.point(1, 0, 0)
+        point = GeoTestHelper.point(0, 0, 0)
+        otherPoint = GeoTestHelper.point(1, 0, 0)
         point3 = GeoTestHelper.point(1, 0, 0)
         
-        lineString1 = GeoTestHelper.lineString([point1, point1, point1, point1])
-        lineString2 = GeoTestHelper.lineString([point2, point1, point1, point2])
-        lineString3 = GeoTestHelper.lineString([point2, point3, point3, point2])
+        lineString1 = GeoTestHelper.lineString([point, point, point, point])
+        lineString2 = GeoTestHelper.lineString([otherPoint, point, point, otherPoint])
+        lineString3 = GeoTestHelper.lineString([otherPoint, point3, point3, otherPoint])
     }
     
     // GeoJsonObject Tests
@@ -70,7 +69,8 @@ class PolygonTests: XCTestCase {
     }
     
     func testGeoJson() {
-        XCTAssertEqual(polygon.geoJson.description, "[\"type\": \"Polygon\", \"coordinates\": \(MockData.linearRingsCoordinatesJson)]")
+        XCTAssertEqual(polygon.geoJson["type"] as? String, "Polygon")
+        XCTAssertEqual(polygon.geoJson["coordinates"] as? [[[Double]]], MockData.linearRingsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -79,29 +79,29 @@ class PolygonTests: XCTestCase {
     
     func testContains() {
         // Away From Polygon
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0), false)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), false)
         // In Polygon
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.0, 2.0, 0), errorDistance: 0), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 0), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 0), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 0), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.0, 2.0, 0), tolerance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), true)
         // Away From Polygon
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(2.5, 2.0, 0), errorDistance: 0), false)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(2.5, 2.0, 0), tolerance: 0), false)
     }
     
-    func testContains_WithErrorDistance() {
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0), false)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471), false)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471.856696714341524), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 100000), true)
+    func testContains_WithTolerance() {
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), false)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471), false)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471.856696714341524), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 100000), true)
     }
     
-    func testContains_WithNegativeErrorDistance() {
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: 0), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: -19614), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: -19614.612530981), true)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: -20000), false)
+    func testContains_WithNegativeTolerance() {
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: 0), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: -19614), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: -19614.612530981), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: -20000), false)
     }
     
     // GeoJsonCoordinatesGeometry Tests
@@ -138,49 +138,59 @@ class PolygonTests: XCTestCase {
     
     func testDistance_FollowingLine() {
         // Away From Line
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0).description, "55471.8566967143")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471).description, "0.856696714341524")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471.856696714341524), 0.0)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), 55471.8566967143, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471), 0.856696714341524, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471.856696714341524), 0.0, accuracy: 10)
         // On Line
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // On Line Geometrically but not geospatially
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // On Line
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // Away From Line
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), errorDistance: 0).description, "55471.8560535347")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), tolerance: 0), 55471.8560535347, accuracy: 10)
     }
     
+    //3                   *
+    //
+    //2.5
+    //
+    //2         *         *
+    //
+    //1.5
+    //
+    //1
+    //    0.5   1   1.5   2
     func testDistance_TravelingThroughHorizontally() {
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), errorDistance: 0).description, "39248.6795756426")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), errorDistance: 0).description, "19614.612530981")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), errorDistance: 0).description, "27741.159070823")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), tolerance: 0), 39248.6795756426, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), tolerance: 0), 19614.612530981, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), tolerance: 0), 27741.159070823, accuracy: 10)
     }
     
     func testDistance_TravelingThroughVertically() {
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), errorDistance: 0).description, "39328.079908396")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), errorDistance: 0).description, "19631.959529833")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), tolerance: 0), 39328.079908396, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), tolerance: 0), 19631.959529833, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
     }
     
     func testDistance_TravelingThroughDiagnally() {
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), errorDistance: 0).description, "235831.498448783")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), errorDistance: 0).description, "78552.8579841262")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.75, 0), errorDistance: 0).description, "39251.0773445417")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), errorDistance: 0).description, "39226.835607103")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), tolerance: 0), 235831.498448783, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), tolerance: 0), 78552.8579841262, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.75, 0), tolerance: 0), 39251.0773445417, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), tolerance: 0), 39226.835607103, accuracy: 10)
     }
     
     // SOMEDAY: Need distance tests with a hole
@@ -189,23 +199,23 @@ class PolygonTests: XCTestCase {
     
     func testDistance_DiagnalFromPoints_ShouldBeSimilar() {
         // Point 1
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), errorDistance: 0).description, "156876.478521843")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 2
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), errorDistance: 0).description, "156876.478521843")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 3
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), errorDistance: 0).description, "157217.359221784")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), tolerance: 0), 157217.359221784, accuracy: 10)
     }
     
     func testDistance_NearLineBySameAmount_ShouldBeSimilar() {
         // Line 1
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), errorDistance: 0).description, "27753.4442334685")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), tolerance: 0), 27753.4442334685, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
         // Line 2
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), errorDistance: 0).description, "27747.1366851065")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), errorDistance: 0).description, "27753.170416259")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), tolerance: 0), 27747.1366851065, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), tolerance: 0), 27753.170416259, accuracy: 10)
         // Line 3
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.5, 0), errorDistance: 0).description, "19609.3114569387")
-        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.75, 0), errorDistance: 0).description, "19614.8864286195")
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.25, 2.5, 0), tolerance: 0), 19609.3114569387, accuracy: 10)
+        XCTAssertEqual(polygonDistance.distance(to: GeoTestHelper.simplePoint(1.5, 2.75, 0), tolerance: 0), 19614.8864286195, accuracy: 10)
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
@@ -216,7 +226,7 @@ class PolygonTests: XCTestCase {
     }
     
     func testCentroid_NoHoles() {
-        XCTAssertEqual(polygonDistance.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.66666666666667, 2.33333333333333, 3.0))
+        XCTAssertEqual(polygonDistance.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.6666666666666666, 2.3333333333333333, 3.0))
     }
     
     // SOMEDAY: Wrong?
@@ -224,7 +234,7 @@ class PolygonTests: XCTestCase {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(-88.3254122, 39.5206294), GeoTestHelper.point(-88.3254123, 39.520643), GeoTestHelper.point(-88.3254549, 39.5206432), GeoTestHelper.point(-88.3254549, 39.5206296), GeoTestHelper.point(-88.3254122, 39.5206294)])
         let polygon = GeoTestHelper.polygon([mainRing])
         
-        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(-88.3254335651818, 39.5206362973432))
+        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(-88.325433565181825, 39.520636297343238))
     }
     // swiftlint:enable force_cast
     
@@ -244,7 +254,7 @@ class PolygonTests: XCTestCase {
         
         let distance = polygon.distance(to: distancePoint)
         
-        XCTAssertEqual(distance.description, "0.00661514939644603")
+        XCTAssertEqual(distance, 0.00661514939644603, accuracy: 10)
     }
     
     // SOMEDAY: Test distance with holes
@@ -255,7 +265,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(1.0, 2.0, 3), GeoTestHelper.point(1.9, 2.5, 4), GeoTestHelper.point(1.9, 2.9, 5), GeoTestHelper.point(1.5, 2.5, 3), GeoTestHelper.point(1.0, 2.0, 3)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.49099975908457, 2.50300038168722, 3.0))
+        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.4909997590845703, 2.5030003816872175, 3.0))
     }
     
     func testCentroid_LargeHole() {
@@ -263,7 +273,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.05, 0.05, 3), GeoTestHelper.point(100.5, 0.05), GeoTestHelper.point(100.5, 0.95, 5), GeoTestHelper.point(100.05, 0.95, 3), GeoTestHelper.point(100.05, 0.05, 3)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.682250439513, 0.500000593298947, 3.0))
+        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.68225043951259, 0.50000059329894664, 3.0))
     }
     
     func testCentroid_CenterHole() {
@@ -271,7 +281,7 @@ class PolygonTests: XCTestCase {
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.2, 0.2), GeoTestHelper.point(100.8, 0.2), GeoTestHelper.point(100.8, 0.8), GeoTestHelper.point(100.2, 0.8), GeoTestHelper.point(100.2, 0.2)])
         let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
         
-        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.5, 0.5))
+        XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.5, 0.49999999999999994))
     }
     // swiftlint:enable force_cast
     
@@ -279,70 +289,70 @@ class PolygonTests: XCTestCase {
     
     func testEdgeDistance_FollowingLine() {
         // Away From Line
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0).description, "55471.8566967143")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471).description, "0.856696714341524")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 55471.856696714341524), 0.0)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), 55471.8566967143, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471), 0.856696714341524, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471.856696714341524), 0.0, accuracy: 10)
         // On Line
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // On Line Geometrically but not geospatially
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 0).description, "3.04105126725933")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 0).description, "8.44739894101213")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 0).description, "3.0410512672544")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 0), 3.04105126725933, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 0), 8.44739894101213, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 0), 3.0410512672544, accuracy: 10)
         // On Line
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // Away From Line
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), errorDistance: 0).description, "55471.8560535347")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), tolerance: 0), 55471.8560535347, accuracy: 10)
     }
     
     func testEdgeDistance_TravelingThroughHorizontally() {
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), errorDistance: 0).description, "39248.6795756426")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), errorDistance: 0).description, "19614.612530981")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), errorDistance: 0).description, "16.2521007346569")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: 0).description, "19643.7591709725")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27756.2242840717")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), errorDistance: 0).description, "27741.159070823")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), tolerance: 0), 39248.6795756426, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), tolerance: 0), 19614.612530981, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), tolerance: 0), 16.2521007346569, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: 0), 19643.7591709725, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), tolerance: 0), 27741.159070823, accuracy: 10)
     }
     
     func testEdgeDistance_TravelingThroughVertically() {
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), errorDistance: 0).description, "39328.079908396")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), errorDistance: 0).description, "19631.959529833")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), errorDistance: 0).description, "17.3848323302551")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), errorDistance: 0).description, "19650.4282021363")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27756.2242840717")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), errorDistance: 0).description, "6.33553915404217")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), tolerance: 0), 39328.079908396, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), tolerance: 0), 19631.959529833, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), tolerance: 0), 17.3848323302551, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), tolerance: 0), 19650.4282021363, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), tolerance: 0), 6.33553915404217, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
     }
     
     func testEdgeDistance_TravelingThroughDiagnally() {
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), errorDistance: 0).description, "235831.498448783")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), errorDistance: 0).description, "78552.8579841262")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.75, 0), errorDistance: 0).description, "39251.0773445417")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), errorDistance: 0).description, "22.4242585217697")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27756.2242840717")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), errorDistance: 0).description, "39226.835607103")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), tolerance: 0), 235831.498448783, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), tolerance: 0), 78552.8579841262, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.75, 0), tolerance: 0), 39251.0773445417, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), tolerance: 0), 22.4242585217697, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), tolerance: 0), 39226.835607103, accuracy: 10)
     }
     
     func testEdgeDistance_DiagnalFromPoints_ShouldBeSimilar() {
         // Point 1
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), errorDistance: 0).description, "156876.478521843")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 2
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), errorDistance: 0).description, "156876.478521843")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 3
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), errorDistance: 0).description, "157217.359221784")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), tolerance: 0), 157217.359221784, accuracy: 10)
     }
     
     func testEdgeDistance_NearLineBySameAmount_ShouldBeSimilar() {
         // Line 1
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), errorDistance: 0).description, "27753.4442334685")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27751.3324991307")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), tolerance: 0), 27753.4442334685, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
         // Line 2
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), errorDistance: 0).description, "27747.1366851065")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), errorDistance: 0).description, "27753.170416259")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), tolerance: 0), 27747.1366851065, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), tolerance: 0), 27753.170416259, accuracy: 10)
         // Line 3
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.5, 0), errorDistance: 0).description, "19609.3114569387")
-        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.75, 0), errorDistance: 0).description, "19614.8864286195")
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.25, 2.5, 0), tolerance: 0), 19609.3114569387, accuracy: 10)
+        XCTAssertEqual(polygonDistance.edgeDistance(to: GeoTestHelper.simplePoint(1.5, 2.75, 0), tolerance: 0), 19614.8864286195, accuracy: 10)
     }
     
     // SOMEDAY: Test edge distance with holes
@@ -353,7 +363,7 @@ class PolygonTests: XCTestCase {
     
     // SOMEDAY: Verify
     func testArea() {
-        XCTAssertEqual(polygon.area.description, "11301732.6333942")
+        XCTAssertEqual(polygon.area, 11301732.6333942, accuracy: 10)
     }
     
     // Polygon Tests

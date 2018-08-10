@@ -145,6 +145,10 @@
 		1E7CB7962093A91700ECC023 /* PointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7876209394DE0097A986 /* PointTests.swift */; };
 		1E7CB7972093A91700ECC023 /* GeohashCoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7878209394DE0097A986 /* GeohashCoderTests.swift */; };
 		1E7CB7982093A91700ECC023 /* GeohashBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7879209394DE0097A986 /* GeohashBoxTests.swift */; };
+		1E8BF420211DE20D00A247BF /* GeodesicPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */; };
+		1E8BF421211DE22000A247BF /* GeodesicPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */; };
+		1E8BF422211DE22100A247BF /* GeodesicPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */; };
+		1E8BF423211DE22200A247BF /* GeodesicPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */; };
 		1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7846209394D20097A986 /* Geospatial.swift */; };
 		1E9091292093A3EE00DAEF11 /* GeohashBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7844209394D20097A986 /* GeohashBox.swift */; };
 		1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8B7845209394D20097A986 /* GeohashCoder.swift */; };
@@ -266,6 +270,9 @@
 		1E9A9BD520EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
 		1E9A9BD620EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
 		1E9A9BD720EEF5E5003F381B /* MockGeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */; };
+		1EE89F1321147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
+		1EE89F1421147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
+		1EE89F1521147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
 		1EFFA4D820FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
 		1EFFA4D920FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
 		1EFFA4DA20FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
@@ -372,6 +379,7 @@
 		1E8B789B209394DE0097A986 /* WktTestJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WktTestJson.swift; sourceTree = "<group>"; };
 		1E8B789C209394DE0097A986 /* GeoTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTestHelper.swift; sourceTree = "<group>"; };
 		1E8B789E209394DE0097A986 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicPolygon.swift; sourceTree = "<group>"; };
 		1E9090B020939EA300DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9090B820939EA400DAEF11 /* GeospatialSwift macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GeospatialSwift macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9090E220939F2700DAEF11 /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -390,6 +398,7 @@
 		1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegment.swift; sourceTree = "<group>"; };
 		1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegmentTests.swift; sourceTree = "<group>"; };
 		1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeodesicCalculator.swift; sourceTree = "<group>"; };
+		1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicCalculatorTests.swift; sourceTree = "<group>"; };
 		1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonGeometry.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -617,6 +626,7 @@
 				1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */,
 				1E8B7841209394D20097A986 /* GeodesicPoint.swift */,
 				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
+				1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */,
 				1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */,
 				1E8B7836209394D20097A986 /* Object */,
 			);
@@ -689,6 +699,7 @@
 		1E8B786A209394DE0097A986 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				1EE89F1621147C930039554D /* Calculator */,
 				1E8B786B209394DE0097A986 /* GeoJson */,
 				1E8B7877209394DE0097A986 /* Geohash */,
 			);
@@ -842,6 +853,14 @@
 			isa = PBXGroup;
 			children = (
 				1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */,
+			);
+			path = Calculator;
+			sourceTree = "<group>";
+		};
+		1EE89F1621147C930039554D /* Calculator */ = {
+			isa = PBXGroup;
+			children = (
+				1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */,
 			);
 			path = Calculator;
 			sourceTree = "<group>";
@@ -1186,7 +1205,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ warning: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"\n";
 		};
 		1E160A8320F788C200C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1200,7 +1219,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ warning: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"\n";
 		};
 		1E160A8420F788CA00C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1214,7 +1233,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ warning: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"\n";
 		};
 		1E160A8520F788D300C556D0 /* Run Script - Raise error and warning flags for "TODO:", "SOMEDAY:", and "QUESTION:" in code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1228,7 +1247,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ error: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"";
+			shellScript = "SOMEDAY=\"SOMEDAY:\"\nTODO=\"TODO:\"\nQUESTION=\"QUESTION:\"\nfind \"${PROJECT_DIR}/Sources\" \"${PROJECT_DIR}/Tests\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($SOMEDAY).*\\$|($TODO).*\\$|($QUESTION).*\\$\" | perl -p -e \"s/($TODO)/ warning: \\$1/\" | perl -p -e \"s/($SOMEDAY)/ warning: \\$1/\" | perl -p -e \"s/($QUESTION)/ warning: \\$1/\"\n";
 		};
 		1E54975E20AB6A7D00FE50EC /* Run Script - Carthage Copy */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1290,7 +1309,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		1E8BCB432093BBC70091DA81 /* Run Script - Swift Lint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1349,6 +1368,7 @@
 				1E92ABD420EDC7AA00EF4A4E /* GeodesicLineSegment.swift in Sources */,
 				1E90913D2093A3EE00DAEF11 /* WktParser.swift in Sources */,
 				1E90912B2093A3EE00DAEF11 /* GeodesicBoundingBox.swift in Sources */,
+				1E8BF420211DE20D00A247BF /* GeodesicPolygon.swift in Sources */,
 				1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */,
 				1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E9091322093A3EE00DAEF11 /* MultiPoint.swift in Sources */,
@@ -1380,6 +1400,7 @@
 			files = (
 				1E7CB73B2093A91400ECC023 /* WktParserTests.swift in Sources */,
 				1EFFA4D820FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */,
+				1EE89F1321147C890039554D /* GeodesicCalculatorTests.swift in Sources */,
 				1E7CB7402093A91400ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7482093A91500ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB7372093A91400ECC023 /* MockGeoJsonLineString.swift in Sources */,
@@ -1450,6 +1471,7 @@
 				1E92ABAB20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90914E2093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
 				1E9091492093A3EF00DAEF11 /* Point.swift in Sources */,
+				1E8BF421211DE22000A247BF /* GeodesicPolygon.swift in Sources */,
 				1E90914D2093A3EF00DAEF11 /* Polygon.swift in Sources */,
 				1E9091472093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E92ABC720ED94B200EF4A4E /* GeoJsonObjectType.swift in Sources */,
@@ -1465,6 +1487,7 @@
 			files = (
 				1E7CB7632093A91600ECC023 /* WktParserTests.swift in Sources */,
 				1EFFA4D920FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */,
+				1EE89F1421147C890039554D /* GeodesicCalculatorTests.swift in Sources */,
 				1E7CB7682093A91600ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7702093A91600ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB75F2093A91600ECC023 /* MockGeoJsonLineString.swift in Sources */,
@@ -1535,6 +1558,7 @@
 				1E92ABAC20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E9091662093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
 				1E9091612093A3EF00DAEF11 /* Point.swift in Sources */,
+				1E8BF422211DE22100A247BF /* GeodesicPolygon.swift in Sources */,
 				1E9091652093A3EF00DAEF11 /* Polygon.swift in Sources */,
 				1E90915F2093A3EF00DAEF11 /* Feature.swift in Sources */,
 				1E92ABC820ED94B200EF4A4E /* GeoJsonObjectType.swift in Sources */,
@@ -1550,6 +1574,7 @@
 			files = (
 				1E7CB78B2093A91700ECC023 /* WktParserTests.swift in Sources */,
 				1EFFA4DA20FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */,
+				1EE89F1521147C890039554D /* GeodesicCalculatorTests.swift in Sources */,
 				1E7CB7902093A91700ECC023 /* FeatureCollectionTests.swift in Sources */,
 				1E7CB7982093A91700ECC023 /* GeohashBoxTests.swift in Sources */,
 				1E7CB7872093A91700ECC023 /* MockGeoJsonLineString.swift in Sources */,
@@ -1620,6 +1645,7 @@
 				1E92ABAD20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90917E2093A3F000DAEF11 /* MultiLineString.swift in Sources */,
 				1E9091792093A3F000DAEF11 /* Point.swift in Sources */,
+				1E8BF423211DE22200A247BF /* GeodesicPolygon.swift in Sources */,
 				1E90917D2093A3F000DAEF11 /* Polygon.swift in Sources */,
 				1E9091772093A3F000DAEF11 /* Feature.swift in Sources */,
 				1E92ABC920ED94B200EF4A4E /* GeoJsonObjectType.swift in Sources */,

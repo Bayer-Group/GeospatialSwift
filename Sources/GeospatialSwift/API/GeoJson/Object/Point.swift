@@ -24,7 +24,7 @@ extension GeoJson {
         
         public var geoJsonCoordinates: [Any] { return altitude != nil ? [longitude, latitude, altitude!] : [longitude, latitude] }
         
-        public var normalize: GeodesicPoint { return Calculator.normalize(point: self) }
+        public var normalize: GeodesicPoint { return Calculator.normalize(self) }
         
         public var description: String { return "Point: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
         
@@ -53,12 +53,12 @@ extension GeoJson {
         }
         
         // SOMEDAY: Consider Altitude? What to do if altitude is nil in some cases?
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {
-            let distance = Calculator.distance(point1: self, point2: point) - errorDistance
-            
-            return distance < 0 ? 0 : distance
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
+            return Calculator.distance(from: self, to: point, tolerance: tolerance)
         }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return distance(to: point, errorDistance: errorDistance) == 0 }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+            return Calculator.distance(from: self, to: point, tolerance: tolerance) == 0
+        }
     }
 }

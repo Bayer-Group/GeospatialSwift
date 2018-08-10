@@ -38,19 +38,19 @@ class MockGeoJsonObject: GeoJsonObject {
     
     private(set) var objectDistanceCallCount = 0
     var objectDistanceResult: Double?
-    func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? {
+    func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {
         objectDistanceCallCount += 1
         
         return objectDistanceResult
     }
     
     private(set) var containsCallCount = 0
-    private(set) var containsErrorDistanceCallCount = 0
+    private(set) var containsToleranceCallCount = 0
     var containsResult: Bool = false
-    var containsErrorDistanceResult: Bool = false
-    func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool {
-        if errorDistance > 0 { containsErrorDistanceCallCount += 1 } else { containsCallCount += 1 }
+    var containsToleranceResult: Bool = false
+    func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+        if tolerance > 0 { containsToleranceCallCount += 1 } else { containsCallCount += 1 }
         
-        return errorDistance > 0 ? containsErrorDistanceResult : containsResult
+        return tolerance > 0 ? containsToleranceResult : containsResult
     }
 }

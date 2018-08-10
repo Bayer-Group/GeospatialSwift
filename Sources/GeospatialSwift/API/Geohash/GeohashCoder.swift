@@ -108,7 +108,7 @@ extension GeohashCoder {
         
         var geohash = ""
         
-        let point = Calculator.normalize(point: point)
+        let point = Calculator.normalize(point)
         
         repeat {
             switch parity {
@@ -156,14 +156,14 @@ extension GeohashCoder {
             
             var latitudeGeohashBox = longitudeGeohashBox.geohashNeighbor(direction: .north, precision: precision)
             
-            while latitudeGeohashBox.overlaps(boundingBox: boundingBox) {
+            while latitudeGeohashBox.overlaps(boundingBox: boundingBox, tolerance: 0) {
                 geohashBoxes.append(latitudeGeohashBox)
                 
                 latitudeGeohashBox = latitudeGeohashBox.geohashNeighbor(direction: .north, precision: precision)
             }
             
             longitudeGeohashBox = longitudeGeohashBox.geohashNeighbor(direction: .east, precision: precision)
-        } while longitudeGeohashBox.overlaps(boundingBox: boundingBox)
+        } while longitudeGeohashBox.overlaps(boundingBox: boundingBox, tolerance: 0)
         
         return geohashBoxes
     }

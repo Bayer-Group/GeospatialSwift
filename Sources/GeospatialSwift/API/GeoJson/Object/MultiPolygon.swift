@@ -1,5 +1,7 @@
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
+    
+    func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]]
 }
 
 extension GeoJson {
@@ -58,12 +60,16 @@ extension GeoJson {
             self.polygons = polygons
         }
         
-        public func edgeDistance(to point: GeodesicPoint, errorDistance: Double) -> Double {
-            return polygons.map { $0.edgeDistance(to: point, errorDistance: errorDistance) }.min()!
+        public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
+            return polygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()!
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return polygons.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return polygons.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] {
+            return polygons.map { $0.invalidReasons(tolerance: tolerance) }
+        }
     }
 }

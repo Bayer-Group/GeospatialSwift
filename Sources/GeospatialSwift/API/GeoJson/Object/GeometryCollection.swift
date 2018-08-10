@@ -45,10 +45,10 @@ extension GeoJson {
             objectBoundingBox = BoundingBox.best(geometries?.compactMap { $0.objectBoundingBox } ?? [])
         }
         
-        public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? {
-            return objectGeometries?.compactMap { $0.objectDistance(to: point, errorDistance: errorDistance) }.min()
+        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {
+            return objectGeometries?.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min()
         }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return objectGeometries?.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return objectGeometries?.first { $0.contains(point, tolerance: tolerance) } != nil }
     }
 }

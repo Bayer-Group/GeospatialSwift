@@ -39,7 +39,8 @@ class MultiPointTests: XCTestCase {
     }
     
     func testGeoJson() {
-        XCTAssertEqual(multiPoint.geoJson.description, "[\"type\": \"MultiPoint\", \"coordinates\": \(MockData.pointsCoordinatesJson)]")
+        XCTAssertEqual(multiPoint.geoJson["type"] as? String, "MultiPoint")
+        XCTAssertEqual(multiPoint.geoJson["coordinates"] as? [[Double]], MockData.pointsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -58,26 +59,26 @@ class MultiPointTests: XCTestCase {
         XCTAssertEqual(contains, false)
     }
     
-    func testContains_NoErrorDistance() {
-        let contains = multiPoint.contains(multiPoint.points.first!, errorDistance: 0.0)
+    func testContains_NoTolerance() {
+        let contains = multiPoint.contains(multiPoint.points.first!, tolerance: 0.0)
         
         XCTAssertEqual(contains, true)
     }
     
-    func testContains_OutsideErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178422)
+    func testContains_OutsideTolerance() {
+        let contains = multiPoint.contains(distancePoint, tolerance: 1178422)
         
         XCTAssertEqual(contains, false)
     }
     
-    func testContains_OnErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178422.47118554264307)
+    func testContains_OnTolerance() {
+        let contains = multiPoint.contains(distancePoint, tolerance: 1178422.47118554264307)
         
         XCTAssertEqual(contains, true)
     }
     
-    func testContains_InsideErrorDistance() {
-        let contains = multiPoint.contains(distancePoint, errorDistance: 1178423)
+    func testContains_InsideTolerance() {
+        let contains = multiPoint.contains(distancePoint, tolerance: 1178423)
         
         XCTAssertEqual(contains, true)
     }
@@ -112,29 +113,29 @@ class MultiPointTests: XCTestCase {
     func testDistance() {
         let distance = multiPoint.distance(to: distancePoint)
         
-        XCTAssertEqual(distance.description, "1178422.47118554")
+        XCTAssertEqual(distance, 1178422.47118554, accuracy: 10)
     }
     
-    func testDistance_NoErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 0.0)
+    func testDistance_NoTolerance() {
+        let distance = multiPoint.distance(to: distancePoint, tolerance: 0.0)
         
-        XCTAssertEqual(distance.description, "1178422.47118554")
+        XCTAssertEqual(distance, 1178422.47118554, accuracy: 10)
     }
     
-    func testDistance_OutsideErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178422)
+    func testDistance_OutsideTolerance() {
+        let distance = multiPoint.distance(to: distancePoint, tolerance: 1178422)
         
-        XCTAssertEqual(distance.description, "0.47118554264307")
+        XCTAssertEqual(distance, 0.47118554264307, accuracy: 10)
     }
     
-    func testDistance_OnErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178422.883587234187871)
+    func testDistance_OnTolerance() {
+        let distance = multiPoint.distance(to: distancePoint, tolerance: 1178422.883587234187871)
         
         XCTAssertEqual(distance.description, "0.0")
     }
     
-    func testDistance_InsideErrorDistance() {
-        let distance = multiPoint.distance(to: distancePoint, errorDistance: 1178604)
+    func testDistance_InsideTolerance() {
+        let distance = multiPoint.distance(to: distancePoint, tolerance: 1178604)
         
         XCTAssertEqual(distance.description, "0.0")
     }
@@ -142,11 +143,11 @@ class MultiPointTests: XCTestCase {
     func testDistance_ChooseCorrectPointForDistance() {
 //        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
         
-        let distance1 = multiPoint.distance(to: GeoTestHelper.simplePoint(1, 2.1, 0), errorDistance: 11000)
-        let distance2 = multiPoint.distance(to: GeoTestHelper.simplePoint(2, 3.1, 0), errorDistance: 11000)
+        let distance1 = multiPoint.distance(to: GeoTestHelper.simplePoint(1, 2.1, 0), tolerance: 11000)
+        let distance2 = multiPoint.distance(to: GeoTestHelper.simplePoint(2, 3.1, 0), tolerance: 11000)
         
-        XCTAssertEqual(distance1.description, "102.612409978732")
-        XCTAssertEqual(distance2.description, "131.639424653114")
+        XCTAssertEqual(distance1, 102.612409978732, accuracy: 10)
+        XCTAssertEqual(distance2, 131.639424653114, accuracy: 10)
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests

@@ -15,19 +15,19 @@ public protocol GeoJsonObject: CustomStringConvertible {
     var geoJson: GeoJsonDictionary { get }
     
     // SOMEDAY: Could this be expanded to more than point?
-    func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double?
+    func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double?
     
     // SOMEDAY: Could this be expanded to more than point?
-    func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool
+    func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool
     
     // SOMEDAY: More fun!
-    //func overlaps(geoJsonObject: GeoJsonObject, errorDistance: Double) -> Bool
+    //func overlaps(geoJsonObject: GeoJsonObject, tolerance: Double) -> Bool
 }
 
 extension GeoJsonObject {
-    public func contains(_ point: GeodesicPoint) -> Bool { return contains(point, errorDistance: 0) }
+    public func contains(_ point: GeodesicPoint) -> Bool { return contains(point, tolerance: 0) }
     
-    public func objectDistance(to point: GeodesicPoint) -> Double? { return objectDistance(to: point, errorDistance: 0) }
+    public func objectDistance(to point: GeodesicPoint) -> Double? { return objectDistance(to: point, tolerance: 0) }
 }
 
 extension GeoJsonObject {
@@ -109,11 +109,11 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         return true
     case .polygon:
-        guard let lhs = lhs as? GeoJsonPolygon, let rhs = rhs as? GeoJsonPolygon, lhs.linearRings.count == rhs.linearRings.count else { return false }
+        guard let lhs = lhs as? GeoJsonPolygon, let rhs = rhs as? GeoJsonPolygon, lhs.negativeRings.count == rhs.negativeRings.count else { return false }
         
-        guard let lhsMainRing = lhs.linearRings.first, let rhsMainRing = rhs.linearRings.first, lhsMainRing == rhsMainRing else { return false }
+        guard lhs.mainRing == rhs.mainRing else { return false }
         
-        for linearRing in lhs.linearRings.tail ?? [] where !(rhs.linearRings.tail ?? []).contains { $0 == linearRing } { return false }
+        for linearRing in lhs.negativeRings where !(rhs.negativeRings).contains { $0 == linearRing } { return false }
         
         return true
     case .multiLineString:
@@ -135,10 +135,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         return true
     case .point:
-        guard let lhs = (lhs as? GeoJsonPoint)?.normalize, let rhs = (rhs as? GeoJsonPoint)?.normalize else { return false }
+        guard let lhs = lhs as? GeodesicPoint, let rhs = rhs as? GeodesicPoint else { return false }
         
-        // SOMEDAY: Comparing strings rather than Doubles. Should Altitude be involved? Compare a certain precision instead?
-        return lhs.latitude.description == rhs.latitude.description && lhs.longitude.description == rhs.longitude.description && lhs.altitude?.description == rhs.altitude?.description
+        return lhs == rhs
     }
 }
 

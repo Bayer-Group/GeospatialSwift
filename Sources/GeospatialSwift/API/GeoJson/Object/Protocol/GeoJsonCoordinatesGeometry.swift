@@ -8,7 +8,7 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
     
     var boundingBox: GeodesicBoundingBox { get }
     
-    func distance(to point: GeodesicPoint, errorDistance: Double) -> Double
+    func distance(to point: GeodesicPoint, tolerance: Double) -> Double
     
     var points: [GeoJsonPoint] { get }
 }
@@ -22,7 +22,7 @@ public extension GeoJsonCoordinatesGeometry {
     
     public var geometries: [GeoJsonGeometry] { return [self] }
     
-    public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? { return distance(to: point, errorDistance: errorDistance) }
+    public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return distance(to: point, tolerance: tolerance) }
     
-    public func distance(to point: GeodesicPoint) -> Double { return distance(to: point, errorDistance: 0) }
+    public func distance(to point: GeodesicPoint) -> Double { return distance(to: point, tolerance: 0) }
 }

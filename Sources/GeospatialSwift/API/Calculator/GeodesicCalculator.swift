@@ -1,25 +1,48 @@
 import Foundation
 
+// SOMEDAY: Altitude is not considered. Perhaps there should be 3D calculations as well.
+// SOMEDAY: Break this up into pieces.
+// swiftlint:disable file_length
 public protocol GeodesicCalculatorProtocol {
-    func area(polygon: GeoJsonPolygon) -> Double
-    func length(lineSegments: [GeodesicLineSegment]) -> Double
+    func area(of polygon: GeodesicPolygon) -> Double
+    func length(of lineSegments: [GeodesicLineSegment]) -> Double
     
-    func centroid(polygon: GeoJsonPolygon) -> GeodesicPoint
+    func centroid(polygon: GeodesicPolygon) -> GeodesicPoint
     
-    func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double
-    func distance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
-    func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
-    func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
+    func haversineDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
+    func lawOfCosinesDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
     
-    func contains(point: GeodesicPoint, polygon: GeoJsonPolygon) -> Bool
+    func distance(from point: GeodesicPoint, to otherPoint: GeodesicPoint, tolerance: Double) -> Double
+    func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double
+    func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double
+    func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double
+    func distance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
+    func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
     
-    func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint
+    func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool
     
-    func initialBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
-    func averageBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
-    func finalBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double
+    func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
+    func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool
+    func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool
+    func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool
     
-    func normalize(point: GeodesicPoint) -> GeodesicPoint
+    func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint?
+    func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int]
+    func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]]
+    
+    func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
+    func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool
+    func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
+    
+    // SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
+    
+    func midpoint(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> GeodesicPoint
+    
+    func initialBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
+    func averageBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
+    func finalBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
+    
+    func normalize(_ point: GeodesicPoint) -> GeodesicPoint
 }
 
 internal let Calculator = GeodesicCalculator.shared
@@ -29,6 +52,8 @@ internal let Calculator = GeodesicCalculator.shared
  */
 public struct GeodesicCalculator: GeodesicCalculatorProtocol {
     internal static let shared: GeodesicCalculatorProtocol = GeodesicCalculator()
+    
+    private init() { }
     
     // Guess at the radius of the earth based on latitude
     private let earthRadiusEquator: Double = 6378137
@@ -40,79 +65,79 @@ public struct GeodesicCalculator: GeodesicCalculatorProtocol {
         return sqrt(part1 / part2)
     }
     
-    public func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint {
-        let point1 = point1.degreesToRadians
-        let point2 = point2.degreesToRadians
+    public func midpoint(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> GeodesicPoint {
+        let point = point.degreesToRadians
+        let otherPoint = otherPoint.degreesToRadians
         
-        let φ1 = point1.latitude
-        let λ1 = point1.longitude
-        let φ2 = point2.latitude
-        let λ2 = point2.longitude
+        let φ1 = point.latitude
+        let λ1 = point.longitude
+        let φ2 = otherPoint.latitude
+        let λ2 = otherPoint.longitude
         
         let Bx = cos(φ2) * cos(λ2 - λ1)
         let By = cos(φ2) * sin(λ2 - λ1)
-        let φ3 = atan2(sin(point1.latitude) + sin(φ2), sqrt((cos(point1.latitude) + Bx) * (cos(point1.latitude) + Bx) + By * By))
+        let φ3 = atan2(sin(point.latitude) + sin(φ2), sqrt((cos(point.latitude) + Bx) * (cos(point.latitude) + Bx) + By * By))
         let λ3 = λ1 + atan2(By, cos(φ1) + Bx)
         
-        let altitude = point1.altitude != nil && point2.altitude != nil ? (point1.altitude! + point2.altitude!) / 2 : nil
+        let altitude = point.altitude != nil && otherPoint.altitude != nil ? (point.altitude! + otherPoint.altitude!) / 2 : nil
         
         return SimplePoint(longitude: λ3.radiansToDegrees, latitude: φ3.radiansToDegrees, altitude: altitude)
     }
     
-    public func bearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        let point1 = point1.degreesToRadians
-        let point2 = point2.degreesToRadians
+    public func bearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        let point = point.degreesToRadians
+        let otherPoint = otherPoint.degreesToRadians
         
-        let φ1 = point1.latitude
-        let φ2 = point2.latitude
-        let Δλ = point2.longitude - point1.longitude
+        let φ1 = point.latitude
+        let φ2 = otherPoint.latitude
+        let Δλ = otherPoint.longitude - point.longitude
         
         return atan2(sin(Δλ) * cos(φ2), cos(φ1) * sin(φ2) - sin(φ1) * cos(φ2) * cos(Δλ)).radiansToDegrees
     }
     
-    public func initialBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        return (bearing(point1: point1, point2: point2) + 360).truncatingRemainder(dividingBy: 360)
+    public func initialBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        return (bearing(from: point, to: otherPoint) + 360).truncatingRemainder(dividingBy: 360)
     }
     
-    public func averageBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        return initialBearing(point1: midpoint(point1: point1, point2: point2), point2: point2)
+    public func averageBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        return initialBearing(from: midpoint(from: point, to: otherPoint), to: otherPoint)
     }
     
-    public func finalBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        return (bearing(point1: point2, point2: point1) + 180).truncatingRemainder(dividingBy: 360)
+    public func finalBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        return (bearing(from: otherPoint, to: point) + 180).truncatingRemainder(dividingBy: 360)
     }
 }
 
 // MARK: Measurement Functions
 
+// SOMEDAY: Area calculations are not geodesic?
 extension GeodesicCalculator {
-    public func length(lineSegments: [GeodesicLineSegment]) -> Double {
-        return lineSegments.reduce(0.0) { $0 + distance(point1: $1.point1, point2: $1.point2) }
+    public func length(of lineSegments: [GeodesicLineSegment]) -> Double {
+        return lineSegments.reduce(0.0) { $0 + distance(from: $1.point, to: $1.otherPoint, tolerance: 0) }
     }
     
-    // SOMEDAY: Not geodesic?
-    public func area(polygon: GeoJsonPolygon) -> Double {
+    public func area(of polygon: GeodesicPolygon) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: centroid(polygon: polygon).latitude)
         
-        let mainRing = polygon.linearRings.first!
-        let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
+        let mainRingArea = area(of: polygon.mainRingSegments.map { $0.point }, earthRadius: earthRadius)
         
-        guard let negativeRings = polygon.linearRings.tail else { return mainRingArea }
+        guard polygon.negativeRingsSegments.count > 0 else { return mainRingArea }
         
-        return mainRingArea - negativeRings.reduce(0.0) { return $0 + area(linearRingPoints: $1.points, earthRadius: earthRadius) }
+        return mainRingArea - polygon.negativeRingsSegments.compactMap { $0.map { $0.point } }.reduce(0.0) {
+            return $0 + area(of: $1, earthRadius: earthRadius)
+        }
     }
     
-    // SOMEDAY: Not geodesic?
-    private func area(linearRingPoints: [GeodesicPoint], earthRadius: Double) -> Double {
+    private func area(of linearRingPoints: [GeodesicPoint], earthRadius: Double) -> Double {
         let points = linearRingPoints.map { $0.degreesToRadians }
         
         var area = 0.0
         
         for index in 0 ..< points.count {
-            let point1 = points[index > 0 ? index - 1 : points.count - 1]
-            let point2 = points[index]
+            let point = points[index > 0 ? index - 1 : points.count - 1]
+            let otherPoint = points[index]
             
-            area += (point2.longitude - point1.longitude) * (2 + sin(point1.latitude) + sin(point2.latitude))
+            area += (otherPoint.longitude - point.longitude) * (2 + sin(point.latitude) + sin(otherPoint.latitude))
         }
         
         area = -(area * earthRadius * earthRadius / 2)
@@ -125,7 +150,7 @@ extension GeodesicCalculator {
 // MARK: Normalize Functions
 
 extension GeodesicCalculator {
-    public func normalize(point: GeodesicPoint) -> GeodesicPoint {
+    public func normalize(_ point: GeodesicPoint) -> GeodesicPoint {
         let normalizedLongitude = normalizeCoordinate(value: point.longitude, shift: 360.0)
         let normalizedLatitude = normalizeCoordinate(value: point.latitude, shift: 180.0)
         
@@ -143,63 +168,97 @@ extension GeodesicCalculator {
 // MARK: Distance Functions
 
 extension GeodesicCalculator {
-    public func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
-        let distance1 = distancePartialResult(point: point, lineSegment: lineSegment)
-        let distance2 = distancePartialResult(point: point, lineSegment: LineSegment(point1: lineSegment.point2, point2: lineSegment.point1))
-        
-        return min(distance1, distance2)
+    // The default distance formula
+    public func distance(from point: GeodesicPoint, to otherPoint: GeodesicPoint, tolerance: Double) -> Double {
+        return max(haversineDistance(from: point, to: otherPoint) - tolerance, 0.0)
     }
     
-    // The default dinstance formula
-    public func distance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        return haversineDistance(point1: point1, point2: point2)
+    public func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
+        let distance1 = distancePartialResult(from: point, to: lineSegment)
+        let reverseSegment = LineSegment(point: lineSegment.otherPoint, otherPoint: lineSegment.point)
+        let distance2 = distancePartialResult(from: point, to: reverseSegment)
+        
+        return max(min(distance1, distance2) - tolerance, 0.0)
     }
     
-    // Law Of Cosines is not accurate under 0.5 meters. Also, acos can produce NaN if not protected.
-    public func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        // SOMEDAY: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
-        //return point1.location.distance(from: point2.location)
-        let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
+    public func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
+        //guard !hasIntersection(lineSegment, with: otherLineSegment, tolerance: tolerance) else { return 0 }
         
-        let point1 = point1.degreesToRadians
-        let point2 = point2.degreesToRadians
-
-        let φ1 = point1.latitude
-        let φ2 = point2.latitude
-        let Δλ = point2.longitude - point1.longitude
+        return min(
+            distance(from: lineSegment.point, to: otherLineSegment, tolerance: tolerance),
+            distance(from: lineSegment.otherPoint, to: otherLineSegment, tolerance: tolerance),
+            distance(from: otherLineSegment.point, to: lineSegment, tolerance: tolerance),
+            distance(from: otherLineSegment.otherPoint, to: lineSegment, tolerance: tolerance)
+        )
+    }
+    
+    public func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double {
+        var smallestDistance = Double.greatestFiniteMagnitude
+        
+        for lineSegment in lineSegments {
+            let distance = self.distance(from: point, to: lineSegment, tolerance: tolerance)
+            
+            guard distance > 0 else { return 0 }
+            
+            smallestDistance = min(smallestDistance, distance)
+        }
+        
+        return smallestDistance
+    }
+    
+    public func distance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double {
+        if contains(point, in: polygon, tolerance: tolerance) { return 0 }
+        
+        return edgeDistance(from: point, to: polygon, tolerance: tolerance)
+    }
+    
+    public func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double {
+        return polygon.ringSegements.map { distance(from: point, to: $0, tolerance: tolerance) }.min()!
+    }
+    
+    // Law Of Cosines is not accurate under 0.5 meters.
+    public func lawOfCosinesDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: (point.latitude + otherPoint.latitude) / 2)
+        
+        let point = point.degreesToRadians
+        let otherPoint = otherPoint.degreesToRadians
+        
+        let φ1 = point.latitude
+        let φ2 = otherPoint.latitude
+        let Δλ = otherPoint.longitude - point.longitude
         
         let partialCalculation = sin(φ1) * sin(φ2) + cos(φ1) * cos(φ2) * cos(Δλ)
+        // acos can produce NaN if not protected.
         let angularDistance = partialCalculation > 1 || partialCalculation < -1 ? 0 : acos(partialCalculation)
-
+        
         return angularDistance * earthRadius
     }
     
     // Haversine distance is accurate under 0.5 meters
-    public func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        // SOMEDAY: Which is the more accurate algorithm? Apple versus the custom algorithm. Custom algorithm does not vary earth radius with latitude.
-        //return point1.location.distance(from: point2.location)
-        let earthRadius = self.earthRadius(latitudeAverage: (point1.latitude + point2.latitude) / 2)
+    public func haversineDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: (point.latitude + otherPoint.latitude) / 2)
         
-        let point1 = point1.degreesToRadians
-        let point2 = point2.degreesToRadians
+        let point = point.degreesToRadians
+        let otherPoint = otherPoint.degreesToRadians
         
-        let dLat = point2.latitude - point1.latitude
-        let dLon = point2.longitude - point1.longitude
-        let partialCalculation1 = sin(dLat/2) * sin(dLat/2) + sin(dLon/2) * sin(dLon/2) * cos(point1.latitude) * cos(point2.latitude)
+        let dLat = otherPoint.latitude - point.latitude
+        let dLon = otherPoint.longitude - point.longitude
+        let partialCalculation1 = sin(dLat/2) * sin(dLat/2) + sin(dLon/2) * sin(dLon/2) * cos(point.latitude) * cos(otherPoint.latitude)
         
         let partialCalculation2 = sqrt(partialCalculation1)
+        // asin can produce NaN if not protected.
         let angularDistance = partialCalculation2 > 1 || partialCalculation2 < -1 ? 0 : 2 * asin(partialCalculation2)
         
         return angularDistance * earthRadius
     }
     
-    // SOMEDAY: It would be nice to understand this better as there seems to be too much to calling this twice.
-    private func distancePartialResult(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
-        let earthRadius = self.earthRadius(latitudeAverage: midpoint(point1: lineSegment.point1, point2: lineSegment.point2).latitude)
+    // SOMEDAY: It would be nice to understand this better as there seems to be too much to calling this twice but twice produces the correct result.
+    private func distancePartialResult(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment) -> Double {
+        let earthRadius = self.earthRadius(latitudeAverage: midpoint(from: lineSegment.point, to: lineSegment.otherPoint).latitude)
         
-        let θ12 = initialBearing(point1: lineSegment.point1, point2: lineSegment.point2).degreesToRadians
-        let θ13 = initialBearing(point1: lineSegment.point1, point2: point).degreesToRadians
-        let δ13 = distance(point1: lineSegment.point1, point2: point)
+        let θ12 = initialBearing(from: lineSegment.point, to: lineSegment.otherPoint).degreesToRadians
+        let θ13 = initialBearing(from: lineSegment.point, to: point).degreesToRadians
+        let δ13 = distance(from: lineSegment.point, to: point, tolerance: 0)
         
         guard abs(θ13 - θ12) <= .pi / 2.0 else { return δ13 }
         
@@ -209,7 +268,7 @@ extension GeodesicCalculator {
             return partialCalculation > 1 || partialCalculation < -1 ? 0 : asin(partialCalculation) * earthRadius
         }()
         
-        let δ12 = distance(point1: lineSegment.point1, point2: lineSegment.point2)
+        let δ12 = distance(from: lineSegment.point, to: lineSegment.otherPoint, tolerance: 0)
         
         let δ14: Double = {
             let partialCalculation = cos(δ13 / earthRadius) / cos(δxt / earthRadius)
@@ -219,7 +278,7 @@ extension GeodesicCalculator {
         
         guard δ14 > δ12 else { return abs(δxt) }
         
-        let δ23 = distance(point1: lineSegment.point2, point2: point)
+        let δ23 = distance(from: lineSegment.otherPoint, to: point, tolerance: 0)
         
         return δ23
     }
@@ -228,24 +287,39 @@ extension GeodesicCalculator {
 // MARK: Contains
 
 extension GeodesicCalculator {
-    public func contains(point: GeodesicPoint, polygon: GeoJsonPolygon) -> Bool {
-        guard polygon.linearRings.count > 0 else { return false }
-        
-        let mainRing = polygon.linearRings.first!
-        
+    public func contains(_ point: GeodesicPoint, in otherPoint: GeodesicPoint, tolerance: Double) -> Bool {
+        return distance(from: point, to: otherPoint, tolerance: tolerance) == 0
+    }
+    
+    public func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+        return distance(from: point, to: lineSegment, tolerance: tolerance) == 0
+    }
+    
+    public func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+        return distance(from: point, to: lineSegments, tolerance: tolerance) == 0
+    }
+    
+    // SOMEDAY: Negative Tolerance might be broken here.
+    public func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool {
         // Must at least be within the bounding box.
-        guard mainRing.boundingBox.contains(point: point) else { return false }
+        //guard polygon.mainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return 0 }
         
         // If it's on a line, we're done.
-        if (polygon.linearRings.map { $0.contains(point) }.first { $0 == true } ?? false) { return true }
+        if (polygon.ringSegements.map { contains(point, in: $0, tolerance: tolerance) }.first { $0 == true } ?? false) { return true }
         
-        let mainRingContains = contains(point: point, vertices: mainRing.points)
+        let mainRingContains = contains(point: point, vertices: polygon.mainRingSegments.map { $0.point })
         // Skip running hole contains calculations if mainRingContains is false
         let holeContains: () -> (Bool) = {
-            return polygon.linearRings.tail?.first { self.contains(point: point, vertices: $0.points) == true } != nil
+            return polygon.negativeRingsSegments.compactMap { $0.map { $0.point } }.first { self.contains(point: point, vertices: $0) } != nil
         }
         
-        return mainRingContains && !holeContains()
+        let baseContains = mainRingContains && !holeContains()
+        
+        if tolerance < 0 && baseContains { return edgeDistance(from: point, to: polygon, tolerance: 0) >= -tolerance }
+        
+        if tolerance > 0 { return baseContains || edgeDistance(from: point, to: polygon, tolerance: 0) <= tolerance }
+        
+        return baseContains
     }
     
     // SOMEDAY: Not geodesic.
@@ -269,28 +343,107 @@ extension GeodesicCalculator {
     }
 }
 
+// MARK: Intersection
+
+extension GeodesicCalculator {
+    public func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool {
+        return distance(from: point, to: otherPoint, tolerance: tolerance) == 0
+    }
+    
+    public func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+        return distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0
+    }
+    
+    // SOMEDAY: Consider holes
+    public func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        let polygonIntersects = polygon.ringSegements.contains {
+            $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
+        }
+        
+        return polygonIntersects || contains(lineSegment.point, in: polygon, tolerance: tolerance)
+    }
+    
+    public func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+        return lineSegments.contains { lineSegment in
+            lineSegments.contains {
+                guard lineSegment != $0 else { return false }
+                
+                return hasIntersection($0, with: lineSegment, tolerance: tolerance)
+            }
+        }
+    }
+    
+    public func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        return polygon.ringSegements.contains { hasSelfIntersection($0, tolerance: tolerance) }
+    }
+    
+    // Does not return a point if overlaping the path
+    public func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
+        let longitudeDeltaSegment2 = otherLineSegment.otherPoint.longitude - otherLineSegment.point.longitude
+        let latitudeDeltaSegment2 = otherLineSegment.otherPoint.latitude - otherLineSegment.point.latitude
+        let longitudeDeltaSegment1 = lineSegment.otherPoint.longitude - lineSegment.point.longitude
+        let latitudeDeltaSegment1 = lineSegment.otherPoint.latitude - lineSegment.point.latitude
+        let longitudeSegmentsOffset = lineSegment.point.longitude - otherLineSegment.point.longitude
+        let latitudeSegmentsOffset = lineSegment.point.latitude - otherLineSegment.point.latitude
+        
+        let denominator = (latitudeDeltaSegment2 * longitudeDeltaSegment1) - (longitudeDeltaSegment2 * latitudeDeltaSegment1)
+        let numerator1 = (longitudeDeltaSegment2 * latitudeSegmentsOffset) - (latitudeDeltaSegment2 * longitudeSegmentsOffset)
+        let numerator2 = (longitudeDeltaSegment1 * latitudeSegmentsOffset) - (latitudeDeltaSegment1 * longitudeSegmentsOffset)
+        
+        guard denominator != 0 && (numerator1 != 0 || numerator2 != 0) else {
+            Log.debug("denominator: \(denominator), numerator1: \(numerator1), numerator2: \(numerator2)")
+            return nil
+        }
+        
+        let result1 = numerator1 / denominator
+        let result2 = numerator2 / denominator
+        
+        guard case 0...1 = result1, case 0...1 = result2 else {
+            return nil
+        }
+        
+        let resultLongitude = lineSegment.point.longitude + (result1 * longitudeDeltaSegment1)
+        let resultLatitude = lineSegment.point.latitude + (result1 * latitudeDeltaSegment1)
+        
+        return SimplePoint(longitude: resultLongitude, latitude: resultLatitude)
+    }
+    
+    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
+    public func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int] {
+        return lineSegments.enumerated().filter { _, lineSegment in lineSegments.compactMap { intersection(of: $0, with: lineSegment) }.count > 1 }.map { $0.offset }
+    }
+    
+    // SOMEDAY: Add these intersection rules
+    // Polygon where hole intersects with same point as exterior edge point
+    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
+    public func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]] {
+        return polygon.ringSegements.map { ringSegments in
+            return ringSegments.map { lineSegment in
+                ringSegments.enumerated().filter { intersection(of: $1, with: lineSegment) != nil }.map { $0.offset }
+            }
+        }
+    }
+}
+
 // MARK: Centroid Functions
 
 extension GeodesicCalculator {
-    public func centroid(polygon: GeoJsonPolygon) -> GeodesicPoint {
-        let mainRing = polygon.linearRings.first!
-        var finalCentroid = centroid(linearRingSegments: mainRing.segments)
+    public func centroid(polygon: GeodesicPolygon) -> GeodesicPoint {
+        var finalCentroid = centroid(linearRingSegments: polygon.mainRingSegments)
         
         let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
         
         // SOMEDAY: Multiple negative rings might be producing a bad result
-        if let negativeRings = polygon.linearRings.tail {
-            let mainRingArea = area(linearRingPoints: mainRing.points, earthRadius: earthRadius)
+        let mainRingArea = area(of: polygon.mainRingSegments.map { $0.point }, earthRadius: earthRadius)
+        
+        polygon.negativeRingsSegments.forEach { negativeSegements in
+            let negativeCentroid = centroid(linearRingSegments: negativeSegements)
+            let negativeArea = area(of: negativeSegements.map { $0.point }, earthRadius: earthRadius)
             
-            negativeRings.forEach { negativeRing in
-                let negativeCentroid = centroid(linearRingSegments: negativeRing.segments)
-                let negativeArea = area(linearRingPoints: negativeRing.points, earthRadius: earthRadius)
-                
-                let distanceToShiftCentroid = distance(point1: finalCentroid, point2: negativeCentroid) * 2 * negativeArea / mainRingArea
-                let bearing = initialBearing(point1: negativeCentroid, point2: finalCentroid)
-                
-                finalCentroid = destinationPoint(origin: finalCentroid, bearing: bearing, distance: distanceToShiftCentroid)
-            }
+            let distanceToShiftCentroid = distance(from: finalCentroid, to: negativeCentroid, tolerance: 0) * 2 * negativeArea / mainRingArea
+            let bearing = initialBearing(from: negativeCentroid, to: finalCentroid)
+            
+            finalCentroid = destinationPoint(origin: finalCentroid, bearing: bearing, distance: distanceToShiftCentroid)
         }
         
         return finalCentroid
@@ -303,25 +456,23 @@ extension GeodesicCalculator {
         var partialSum = 0.0
         var sum = 0.0
         
-        let offset = linearRingSegments.first!.point1
+        let offset = linearRingSegments.first!.point
         let offsetLongitude = offset.longitude * (offset.longitude < 0 ? -1 : 1)
         let offsetLatitude = offset.latitude * (offset.latitude < 0 ? -1 : 1)
         
         let offsetSegments = linearRingSegments.map { lineSegment in
-            return (point1: SimplePoint(longitude: lineSegment.point1.longitude - offsetLongitude, latitude: lineSegment.point1.latitude - offsetLatitude),
-                    point2: SimplePoint(longitude: lineSegment.point2.longitude - offsetLongitude, latitude: lineSegment.point2.latitude - offsetLatitude))
+            return (point: SimplePoint(longitude: lineSegment.point.longitude - offsetLongitude, latitude: lineSegment.point.latitude - offsetLatitude), otherPoint: SimplePoint(longitude: lineSegment.otherPoint.longitude - offsetLongitude, latitude: lineSegment.otherPoint.latitude - offsetLatitude))
         }
         
-        offsetSegments.forEach { point1, point2 in
-            partialSum = point1.longitude * point2.latitude - point2.longitude * point1.latitude
+        offsetSegments.forEach { point, otherPoint in
+            partialSum = point.longitude * otherPoint.latitude - otherPoint.longitude * point.latitude
             sum += partialSum
-            sumX += (point1.longitude + point2.longitude) * partialSum
-            sumY += (point1.latitude + point2.latitude) * partialSum
+            sumX += (point.longitude + otherPoint.longitude) * partialSum
+            sumY += (point.latitude + otherPoint.latitude) * partialSum
         }
         
         let area = 0.5 * sum
         
-        // SOMEDAY: Altitude is just passed through for the first point right now.
         return SimplePoint(longitude: sumX / 6 / area + offsetLongitude, latitude: sumY / 6 / area + offsetLatitude, altitude: offset.altitude)
     }
     
@@ -338,7 +489,6 @@ extension GeodesicCalculator {
         
         let longitude2 = longitude1 + atan2(sin(bearing) * sin(centralAngle) * cos(latitude1), cos(centralAngle) - sin(latitude1) * sin(latitude2))
         
-        // SOMEDAY: Altitude is just passed through right now.
         let point = SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
         
         return point

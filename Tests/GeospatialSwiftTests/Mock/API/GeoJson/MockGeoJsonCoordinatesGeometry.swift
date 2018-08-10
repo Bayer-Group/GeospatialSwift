@@ -19,7 +19,7 @@ class MockGeoJsonCoordinatesGeometry: MockGeoJsonGeometry, GeoJsonCoordinatesGeo
     
     private(set) var distanceCallCount = 0
     var distanceResult: Double = 0
-    func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {
+    func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
         distanceCallCount += 1
         
         return distanceResult

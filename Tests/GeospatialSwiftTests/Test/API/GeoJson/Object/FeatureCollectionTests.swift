@@ -11,8 +11,7 @@ class FeatureCollectionTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        features = MockData.features as! [Feature]
+        features = MockData.features as? [Feature]
         
         featureCollection = GeoTestHelper.featureCollection(features)
         
@@ -50,14 +49,26 @@ class FeatureCollectionTests: XCTestCase {
     }
     
     func testGeoJson() {
-        let lineStringGeoJson = "[\"type\": \"LineString\", \"coordinates\": \(MockData.pointsCoordinatesJson)]"
-        let polygonGeoJson = "[\"type\": \"Polygon\", \"coordinates\": \(MockData.linearRingsCoordinatesJson)]"
-        let featureGeoJson1 = "[\"type\": \"Feature\", \"geometry\": [\"type\": \"Point\", \"coordinates\": [1.0, 2.0, 3.0]], \"properties\": <null>]"
-        let featureGeoJson2 = "[\"type\": \"Feature\", \"geometry\": \(lineStringGeoJson), \"properties\": <null>]"
-        let featureGeoJson3 = "[\"type\": \"Feature\", \"geometry\": \(polygonGeoJson), \"properties\": <null>]"
-        let featuresGeoJson = "[\(featureGeoJson1), \(featureGeoJson2), \(featureGeoJson3)]"
+        let features = (featureCollection.geoJson["features"] as? [[String: Any]])
+        XCTAssertEqual(featureCollection.geoJson["type"] as? String, "FeatureCollection")
+        XCTAssertEqual(features?.count, 3)
+        XCTAssertEqual(features?[0]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[0]["properties"] as? NSNull, NSNull())
+        let feature1 = features?[0]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature1?["type"] as? String, "Point")
+        XCTAssertEqual(feature1?["coordinates"] as? [Double], MockData.point.geoJsonCoordinates as? [Double])
         
-        XCTAssertEqual(featureCollection.geoJson.description, "[\"type\": \"FeatureCollection\", \"features\": \(featuresGeoJson)]")
+        XCTAssertEqual(features?[1]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[1]["properties"] as? NSNull, NSNull())
+        let feature2 = features?[1]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature2?["type"] as? String, "LineString")
+        XCTAssertEqual(feature2?["coordinates"] as? [[Double]], MockData.pointsCoordinatesJson)
+        
+        XCTAssertEqual(features?[2]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[2]["properties"] as? NSNull, NSNull())
+        let feature3 = features?[2]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature3?["type"] as? String, "Polygon")
+        XCTAssertEqual(feature3?["coordinates"] as? [[[Double]]], MockData.linearRingsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -68,7 +79,7 @@ class FeatureCollectionTests: XCTestCase {
         // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
+    func testContainsWithTolerance() {
         // SOMEDAY: Test me.
     }
     

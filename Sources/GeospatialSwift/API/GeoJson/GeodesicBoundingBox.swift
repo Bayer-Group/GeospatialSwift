@@ -14,12 +14,14 @@ public protocol GeodesicBoundingBox: CustomStringConvertible {
     var points: [GeodesicPoint] { get }
     var centroid: GeodesicPoint { get }
     var boundingCoordinates: BoundingCoordinates { get }
+    var segments: [GeodesicLineSegment] { get }
+    var box: GeodesicPolygon { get }
     
     func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox
     func validBoundingBox(minimumAdjustment: Double) -> GeodesicBoundingBox
     func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox
-    func contains(point: GeodesicPoint) -> Bool
-    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool
+    func contains(point: GeodesicPoint, tolerance: Double) -> Bool
+    func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool
 }
 
 extension GeodesicBoundingBox {
@@ -54,6 +56,12 @@ public class BoundingBox: GeodesicBoundingBox {
     public let longitudeDelta: Double
     public let latitudeDelta: Double
     
+    public var segments: [GeodesicLineSegment] {
+        return [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])]
+    }
+    
+    public var box: GeodesicPolygon { return SimplePolygon(mainRingSegments: segments)! }
+    
     init(boundingCoordinates: BoundingCoordinates) {
         minLongitude = boundingCoordinates.minLongitude
         minLatitude = boundingCoordinates.minLatitude
@@ -68,20 +76,12 @@ public class BoundingBox: GeodesicBoundingBox {
         centroid = SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2))
     }
     
-    public func contains(point: GeodesicPoint) -> Bool {
-        return point.longitude >= minLongitude && point.longitude <= maxLongitude &&
-            point.latitude >= minLatitude && point.latitude <= maxLatitude
+    public func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
+        return Calculator.contains(point, in: SimplePolygon(mainRingSegments: segments)!, tolerance: tolerance)
     }
     
-    public func overlaps(boundingBox: GeodesicBoundingBox) -> Bool {
-        return contains(point: SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.minLatitude))
-            || contains(point: SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.maxLatitude))
-            || contains(point: SimplePoint(longitude: boundingBox.maxLongitude, latitude: boundingBox.minLatitude))
-            || contains(point: SimplePoint(longitude: boundingBox.maxLongitude, latitude: boundingBox.maxLatitude))
-            || boundingBox.contains(point: SimplePoint(longitude: minLongitude, latitude: minLatitude))
-            || boundingBox.contains(point: SimplePoint(longitude: minLongitude, latitude: maxLatitude))
-            || boundingBox.contains(point: SimplePoint(longitude: maxLongitude, latitude: minLatitude))
-            || boundingBox.contains(point: SimplePoint(longitude: maxLongitude, latitude: maxLatitude))
+    public func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
+        return points.contains { boundingBox.contains(point: $0, tolerance: tolerance) } || boundingBox.points.contains { contains(point: $0, tolerance: tolerance) }
     }
     
     // SOMEDAY: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.

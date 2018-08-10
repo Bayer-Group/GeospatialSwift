@@ -1,6 +1,6 @@
 @testable import GeospatialSwift
 
-final class MockGeoJsonFeatureCollection: MockGeoJsonGeometry, GeoJsonFeatureCollection {
+final class MockGeoJsonFeatureCollection: MockGeoJsonObject, GeoJsonFeatureCollection {
     private(set) var featuresCallCount = 0
     var featuresResult: [GeoJsonFeature] = []
     var features: [GeoJsonFeature] {

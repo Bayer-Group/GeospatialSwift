@@ -6,9 +6,9 @@ public protocol GeoJsonClosedGeometry: GeoJsonCoordinatesGeometry {
     
     var area: Double { get }
     
-    func edgeDistance(to point: GeodesicPoint, errorDistance: Double) -> Double
+    func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double
 }
 
 public extension GeoJsonClosedGeometry {
-    public func edgeDistance(to point: GeodesicPoint) -> Double { return edgeDistance(to: point, errorDistance: 0) }
+    public func edgeDistance(to point: GeodesicPoint) -> Double { return edgeDistance(to: point, tolerance: 0) }
 }

@@ -27,3 +27,4 @@ identifier_name:
     - selfIntersects(segmentIndices:)
     - selfIntersects(ringIndices:)
     - ringInvalidReasons(_:)
+    - holeOutside(ringIndices:)

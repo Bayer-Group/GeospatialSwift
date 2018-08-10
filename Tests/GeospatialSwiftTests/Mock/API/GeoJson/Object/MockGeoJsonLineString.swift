@@ -1,6 +1,12 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonLineString: MockGeoJsonLinearGeometry, GeoJsonLineString {
+    func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
+        return []
+    }
+    
+    var invalidReason: LineStringInvalidReason?
+    
     override init() {
         super.init()
         

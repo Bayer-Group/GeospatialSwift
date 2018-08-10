@@ -1,9 +1,65 @@
 @testable import GeospatialSwift
 
 final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
+    private(set) var hasIntersectionLineCallCount = 0
+    var hasIntersectionLineResult: Bool = false
+    func hasIntersection(_ lineSegment1: GeodesicLineSegment, with lineSegment2: GeodesicLineSegment, tolerance: Double) -> Bool {
+        hasIntersectionLineCallCount += 1
+        
+        return hasIntersectionLineResult
+    }
+    
+    private(set) var hasIntersectionPolygonCallCount = 0
+    var hasIntersectionPolygonResult: Bool = false
+    func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        hasIntersectionPolygonCallCount += 1
+        
+        return hasIntersectionPolygonResult
+    }
+    
+    private(set) var hasSelfIntersectionLineCallCount = 0
+    var hasSelfIntersectionLineResult: Bool = false
+    func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+        hasSelfIntersectionLineCallCount += 1
+        
+        return hasSelfIntersectionLineResult
+    }
+    
+    private(set) var hasSelfIntersectionPolygonCallCount = 0
+    var hasSelfIntersectionPolygonResult: Bool = false
+    func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        hasSelfIntersectionPolygonCallCount += 1
+        
+        return hasSelfIntersectionPolygonResult
+    }
+    
+    private(set) var intersectionLineCallCount = 0
+    var intersectionLineResult: GeodesicPoint?
+    func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
+        intersectionLineCallCount += 1
+        
+        return intersectionLineResult
+    }
+    
+    private(set) var intersectionIndicesLineCallCount = 0
+    var intersectionIndicesLineResult: [Int] = []
+    func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int] {
+        intersectionIndicesLineCallCount += 1
+        
+        return intersectionIndicesLineResult
+    }
+    
+    private(set) var intersectionIndicesPolygonCallCount = 0
+    var intersectionIndicesPolygonResult: [[[Int]]] = []
+    func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]] {
+        intersectionIndicesPolygonCallCount += 1
+        
+        return intersectionIndicesPolygonResult
+    }
+    
     private(set) var lineLengthCallCount = 0
     var lineLengthResult: Double = 0
-    func length(lineSegments: [GeodesicLineSegment]) -> Double {
+    func length(of lineSegments: [GeodesicLineSegment]) -> Double {
         lineLengthCallCount += 1
         
         return lineLengthResult
@@ -11,81 +67,67 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var polygonAreaCallCount = 0
     var polygonAreaResult: Double = 0
-    func area(polygon: GeoJsonPolygon) -> Double {
+    func area(of polygon: GeodesicPolygon) -> Double {
         polygonAreaCallCount += 1
         
         return polygonAreaResult
     }
     
-    func centroid(polygon: GeoJsonPolygon) -> GeodesicPoint {
-        return polygon.linearRings.first!.points.first!
-    }
-    
-    private(set) var distanceToLineCallCount = 0
-    var distanceToLineResult: Double = 0
-    func distance(point: GeodesicPoint, lineSegment: GeodesicLineSegment) -> Double {
-        distanceToLineCallCount += 1
-        
-        return distanceToLineResult
+    func centroid(polygon: GeodesicPolygon) -> GeodesicPoint {
+        return polygon.mainRingSegments.first!.point
     }
     
     private(set) var distanceToPointCallCount = 0
     var distanceToPointResult: Double = 0
-    func distance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
+    func distance(from point: GeodesicPoint, to otherPoint: GeodesicPoint, tolerance: Double) -> Double {
         distanceToPointCallCount += 1
         
         return distanceToPointResult
     }
     
-    private(set) var containsCallCount = 0
-    var containsResult: Bool = false
-    func contains(point: GeodesicPoint, polygon: GeoJsonPolygon) -> Bool {
-        containsCallCount += 1
+    private(set) var distanceToLineCallCount = 0
+    var distanceToLineResult: Double = 0
+    func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
+        distanceToLineCallCount += 1
         
-        return containsResult
+        return distanceToLineResult
     }
     
-    private(set) var midpointCallCount = 0
-    func midpoint(point1: GeodesicPoint, point2: GeodesicPoint) -> GeodesicPoint {
-        midpointCallCount += 1
+    private(set) var distanceToLinesCallCount = 0
+    var distanceToLinesResult: Double = 0
+    func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double {
+        distanceToLinesCallCount += 1
         
-        return point1
+        return distanceToLinesResult
     }
     
-    private(set) var normalizeCallCount = 0
-    func normalize(point: GeodesicPoint) -> GeodesicPoint {
-        normalizeCallCount += 1
+    private(set) var distanceToPolygonCallCount = 0
+    var distanceToPolygoResult: Double = 0
+    func distance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double {
+        distanceToPolygonCallCount += 1
         
-        return point
+        return distanceToPolygoResult
     }
     
-    private(set) var initialBearingCallCount = 0
-    var initialBearingResult: Double = 0
-    func initialBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        initialBearingCallCount += 1
+    private(set) var edgeDistanceToPolygonCallCount = 0
+    var edgeDistanceToPolygoResult: Double = 0
+    func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double {
+        edgeDistanceToPolygonCallCount += 1
         
-        return initialBearingResult
+        return edgeDistanceToPolygoResult
     }
     
-    private(set) var averageBearingCallCount = 0
-    var averageBearingResult: Double = 0
-    func averageBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        averageBearingCallCount += 1
+    private(set) var distanceFromLineToLineCallCount = 0
+    var distanceFromLineToLineResult: Double = 0
+    func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
+        distanceFromLineToLineCallCount += 1
         
-        return averageBearingResult
-    }
-    
-    private(set) var finalBearingCallCount = 0
-    var finalBearingResult: Double = 0
-    func finalBearing(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
-        finalBearingCallCount += 1
-        
-        return finalBearingResult
+        return distanceFromLineToLineResult
     }
     
     private(set) var lawOfCosinesDistanceCallCount = 0
     var lawOfCosinesDistanceResult: Double = 0
-    func lawOfCosinesDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
+    func lawOfCosinesDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
         lawOfCosinesDistanceCallCount += 1
         
         return lawOfCosinesDistanceResult
@@ -93,9 +135,79 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var haversineDistanceCallCount = 0
     var haversineDistanceResult: Double = 0
-    func haversineDistance(point1: GeodesicPoint, point2: GeodesicPoint) -> Double {
+    func haversineDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
         haversineDistanceCallCount += 1
         
         return haversineDistanceResult
+    }
+    
+    private(set) var equalsCallCount = 0
+    var equalsResult: Bool = false
+    func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool {
+        equalsCallCount += 1
+        
+        return equalsResult
+    }
+    
+    private(set) var containsLineCallCount = 0
+    var containsLineResult: Bool = false
+    func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+        containsLineCallCount += 1
+        
+        return containsLineResult
+    }
+    
+    private(set) var containsLinesCallCount = 0
+    var containsLinesResult: Bool = false
+    func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+        containsLinesCallCount += 1
+        
+        return containsLinesResult
+    }
+    
+    private(set) var containsPolygonCallCount = 0
+    var containsPolygonResult: Bool = false
+    func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        containsPolygonCallCount += 1
+        
+        return containsPolygonResult
+    }
+    
+    private(set) var midpointCallCount = 0
+    func midpoint(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> GeodesicPoint {
+        midpointCallCount += 1
+        
+        return point
+    }
+    
+    private(set) var normalizeCallCount = 0
+    func normalize(_ point: GeodesicPoint) -> GeodesicPoint {
+        normalizeCallCount += 1
+        
+        return point
+    }
+    
+    private(set) var initialBearingCallCount = 0
+    var initialBearingResult: Double = 0
+    func initialBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        initialBearingCallCount += 1
+        
+        return initialBearingResult
+    }
+    
+    private(set) var averageBearingCallCount = 0
+    var averageBearingResult: Double = 0
+    func averageBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        averageBearingCallCount += 1
+        
+        return averageBearingResult
+    }
+    
+    private(set) var finalBearingCallCount = 0
+    var finalBearingResult: Double = 0
+    func finalBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+        finalBearingCallCount += 1
+        
+        return finalBearingResult
     }
 }

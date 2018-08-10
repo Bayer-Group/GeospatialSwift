@@ -75,8 +75,8 @@ extension GeoJson {
             objectBoundingBox = geometry?.objectBoundingBox
         }
         
-        public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? { return geometry?.objectDistance(to: point, errorDistance: errorDistance) }
+        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return geometry?.objectDistance(to: point, tolerance: tolerance) }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return geometry?.contains(point, errorDistance: errorDistance) ?? false }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geometry?.contains(point, tolerance: tolerance) ?? false }
     }
 }

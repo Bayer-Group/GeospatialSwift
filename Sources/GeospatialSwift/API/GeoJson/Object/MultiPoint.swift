@@ -1,4 +1,10 @@
-public protocol GeoJsonMultiPoint: GeoJsonCoordinatesGeometry { }
+public enum MultipointInvalidReason {
+    case duplicates(indices: [Int])
+}
+
+public protocol GeoJsonMultiPoint: GeoJsonCoordinatesGeometry {
+    func invalidReasons(tolerance: Double) -> [MultipointInvalidReason]
+}
 
 extension GeoJson {
     /**
@@ -50,8 +56,27 @@ extension GeoJson {
             self.points = points
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return points.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return points.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return points.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return points.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [MultipointInvalidReason] {
+            let duplicateIndices = points.enumerated().filter { index, point in points.enumerated().contains { $0 > index && $1 == point } }.map { $0.offset }
+            
+            // SOMEDAY: If the other doesn't work...
+            //            let duplicates = points.enumerated().filter { _, point in
+            //                points.contains { otherPoint in
+            //                    guard point != otherPoint else { return false }
+            //
+            //                    return Calculator.equals(point, otherPoint, tolerance: tolerance)
+            //                }
+            //            }
+            //
+            //            let duplicateIndices = duplicates.map { $0.offset }
+            
+            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+            
+            return []
+        }
     }
 }

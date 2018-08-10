@@ -24,10 +24,10 @@ public extension GeodesicPoint {
 }
 
 public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
-    let calculator = GeodesicCalculator()
-    let lhs = calculator.normalize(point: lhs)
-    let rhs = calculator.normalize(point: rhs)
+    let lhs = Calculator.normalize(lhs)
+    let rhs = Calculator.normalize(rhs)
     
-    // SOMEDAY: Comparing strings rather than Doubles. Should Altitude be involved?
-    return lhs.latitude.description == rhs.latitude.description && lhs.longitude.description == rhs.longitude.description && lhs.altitude?.description == rhs.altitude?.description
+    let altitudeIsSame = lhs.altitude != nil && rhs.altitude != nil ? lhs.altitude!.isEqual(to: rhs.altitude!) : lhs.altitude == rhs.altitude
+    
+    return lhs.latitude.isEqual(to: rhs.latitude) && lhs.longitude.isEqual(to: rhs.longitude) && altitudeIsSame
 }

@@ -1,5 +1,7 @@
 public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     var lineStrings: [GeoJsonLineString] { get }
+    
+    func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]]
 }
 
 extension GeoJson {
@@ -60,8 +62,12 @@ extension GeoJson {
             self.lineStrings = lineStrings
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return lineStrings.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return lineStrings.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return lineStrings.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]] {
+            return lineStrings.map { $0.invalidReasons(tolerance: tolerance) }
+        }
     }
 }
