@@ -28,7 +28,7 @@ extension GeoJson {
         
         public var description: String { return "Point: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
         
-        public var points: [GeoJsonPoint] { return [self] }
+        public var points: [GeodesicPoint] { return [self] }
         
         public let longitude: Double
         public let latitude: Double

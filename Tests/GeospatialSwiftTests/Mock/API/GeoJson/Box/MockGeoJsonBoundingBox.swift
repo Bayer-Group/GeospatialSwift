@@ -1,7 +1,7 @@
 @testable import GeospatialSwift
 
 class MockGeoJsonBoundingBox: GeodesicBoundingBox {
-    var segments: [GeodesicLineSegment] = MockData.box.mainRingSegments
+    var segments: [GeodesicLineSegment] = MockData.box.linearRings.flatMap { $0.segments }
     
     var box: GeodesicPolygon = MockData.box
     

@@ -1,22 +1,26 @@
 public protocol GeodesicPolygon: CustomStringConvertible {
-    var ringSegements: [[GeodesicLineSegment]] { get }
-    
-    var mainRingSegments: [GeodesicLineSegment] { get }
-    var negativeRingsSegments: [[GeodesicLineSegment]] { get }
+    var points: [GeodesicPoint] { get }
+    var mainRing: GeodesicLine { get }
+    var negativeRings: [GeodesicLine] { get }
+    var linearRings: [GeodesicLine] { get }
 }
 
 public struct SimplePolygon: GeodesicPolygon {
-    public var ringSegements: [[GeodesicLineSegment]] { return [mainRingSegments] + negativeRingsSegments }
+    public var points: [GeodesicPoint] { return linearRings.flatMap { $0.points } }
+    public var linearRings: [GeodesicLine] { return [mainRing] + negativeRings }
+    public let mainRing: GeodesicLine
+    public let negativeRings: [GeodesicLine]
     
-    public let mainRingSegments: [GeodesicLineSegment]
-    public let negativeRingsSegments: [[GeodesicLineSegment]]
-    
-    public init?(mainRingSegments: [GeodesicLineSegment], negativeRingsSegments: [[GeodesicLineSegment]] = []) {
-        guard mainRingSegments.count >= 3, !negativeRingsSegments.contains(where: { $0.count < 3 }) else { return nil }
+    public init?(mainRing: GeodesicLine, negativeRings: [GeodesicLine] = []) {
+        for linearRingSegments in ([mainRing.segments] + negativeRings.map { $0.segments }) {
+            guard linearRingSegments.count >= 3 else { return nil }
+            
+            guard linearRingSegments.first!.point == linearRingSegments.last!.otherPoint else { return nil }
+        }
         
-        self.mainRingSegments = mainRingSegments
-        self.negativeRingsSegments = negativeRingsSegments
+        self.mainRing = mainRing
+        self.negativeRings = negativeRings
     }
     
-    public var description: String { return "SimplePolygon: MainRing: (\(mainRingSegments.map { $0.point })" }
+    public var description: String { return "SimplePolygon: MainRing: (\(mainRing.segments.map { $0.point })" }
 }

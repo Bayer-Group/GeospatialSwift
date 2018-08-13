@@ -29,7 +29,7 @@ extension GeoJson {
         
         public let polygons: [GeoJsonPolygon]
         
-        public var points: [GeoJsonPoint] { return polygons.flatMap { $0.points } }
+        public var points: [GeodesicPoint] { return polygons.flatMap { $0.points } }
         
         public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
         

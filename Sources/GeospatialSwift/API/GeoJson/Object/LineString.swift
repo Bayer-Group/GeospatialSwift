@@ -3,8 +3,8 @@ public enum LineStringInvalidReason {
     case selfIntersects(segmentIndices: [Int])
 }
 
-public protocol GeoJsonLineString: GeoJsonLinearGeometry {
-    var segments: [GeodesicLineSegment] { get }
+public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine {
+    var geoJsonPoints: [GeoJsonPoint] { get }
     
     func invalidReasons(tolerance: Double) -> [LineStringInvalidReason]
 }
@@ -19,7 +19,7 @@ extension GeoJson {
     
     public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
-        public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
+        public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
         public var description: String {
             return """
@@ -32,14 +32,15 @@ extension GeoJson {
             """
         }
         
-        public let points: [GeoJsonPoint]
+        public let points: [GeodesicPoint]
+        public let geoJsonPoints: [GeoJsonPoint]
         
         public var boundingBox: GeodesicBoundingBox {
-            return BoundingBox.best(points.compactMap { $0.boundingBox })!
+            return BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })!
         }
         
         public var length: Double {
-            return Calculator.length(of: segments)
+            return Calculator.length(of: self)
         }
         
         public let segments: [GeodesicLineSegment]
@@ -63,6 +64,7 @@ extension GeoJson {
             guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
             self.points = points
+            self.geoJsonPoints = points
             
             segments = points.enumerated().compactMap { (offset, point) in
                 if points.count == offset + 1 { return nil }
@@ -72,19 +74,19 @@ extension GeoJson {
         }
         
         public func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return Calculator.distance(from: point, to: segments, tolerance: tolerance)
+            return Calculator.distance(from: point, to: self, tolerance: tolerance)
         }
         
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            return Calculator.contains(point, in: segments, tolerance: tolerance)
+            return Calculator.contains(point, in: self, tolerance: tolerance)
         }
         
         public func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
-            let duplicateIndices = points.enumerated().filter { index, point in points.enumerated().contains { $0 > index && $1 == point } }.map { $0.offset }
+            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
             
             guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
             
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: segments)
+            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
             
             guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
             

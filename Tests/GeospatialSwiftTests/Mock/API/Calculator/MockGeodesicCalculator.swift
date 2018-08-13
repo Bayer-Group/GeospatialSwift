@@ -1,6 +1,22 @@
 @testable import GeospatialSwift
 
 final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
+    private(set) var equalsCallCount = 0
+    var equalsResult: Bool = false
+    func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool {
+        equalsCallCount += 1
+        
+        return equalsResult
+    }
+    
+    private(set) var equalsIndicesCallCount = 0
+    var equalsIndicesResult: [Int] = []
+    func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int] {
+        equalsIndicesCallCount += 1
+        
+        return equalsIndicesResult
+    }
+    
     private(set) var hasIntersectionLineCallCount = 0
     var hasIntersectionLineResult: Bool = false
     func hasIntersection(_ lineSegment1: GeodesicLineSegment, with lineSegment2: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -19,7 +35,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var hasSelfIntersectionLineCallCount = 0
     var hasSelfIntersectionLineResult: Bool = false
-    func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+    func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool {
         hasSelfIntersectionLineCallCount += 1
         
         return hasSelfIntersectionLineResult
@@ -27,7 +43,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var hasSelfIntersectionPolygonCallCount = 0
     var hasSelfIntersectionPolygonResult: Bool = false
-    func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+    func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
         hasSelfIntersectionPolygonCallCount += 1
         
         return hasSelfIntersectionPolygonResult
@@ -43,7 +59,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var intersectionIndicesLineCallCount = 0
     var intersectionIndicesLineResult: [Int] = []
-    func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int] {
+    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int] {
         intersectionIndicesLineCallCount += 1
         
         return intersectionIndicesLineResult
@@ -51,7 +67,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var intersectionIndicesPolygonCallCount = 0
     var intersectionIndicesPolygonResult: [[[Int]]] = []
-    func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]] {
+    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult
@@ -59,7 +75,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var lineLengthCallCount = 0
     var lineLengthResult: Double = 0
-    func length(of lineSegments: [GeodesicLineSegment]) -> Double {
+    func length(of line: GeodesicLine) -> Double {
         lineLengthCallCount += 1
         
         return lineLengthResult
@@ -74,7 +90,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     }
     
     func centroid(polygon: GeodesicPolygon) -> GeodesicPoint {
-        return polygon.mainRingSegments.first!.point
+        return polygon.points.first!
     }
     
     private(set) var distanceToPointCallCount = 0
@@ -95,7 +111,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var distanceToLinesCallCount = 0
     var distanceToLinesResult: Double = 0
-    func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double {
+    func distance(from point: GeodesicPoint, to line: GeodesicLine, tolerance: Double) -> Double {
         distanceToLinesCallCount += 1
         
         return distanceToLinesResult
@@ -141,14 +157,6 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
         return haversineDistanceResult
     }
     
-    private(set) var equalsCallCount = 0
-    var equalsResult: Bool = false
-    func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool {
-        equalsCallCount += 1
-        
-        return equalsResult
-    }
-    
     private(set) var containsLineCallCount = 0
     var containsLineResult: Bool = false
     func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -159,7 +167,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var containsLinesCallCount = 0
     var containsLinesResult: Bool = false
-    func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
+    func contains(_ point: GeodesicPoint, in line: GeodesicLine, tolerance: Double) -> Bool {
         containsLinesCallCount += 1
         
         return containsLinesResult

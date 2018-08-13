@@ -50,11 +50,8 @@ final class MockData {
     private static let partialPolygonsCoordinates4 = [[6.0, 7.0, 13.0], [7.0, 7.0, 14.0], [7.0, 8.0, 15.0], [6.0, 8.0, 14.0], [6.0, 7.0, 13.0]]
     static let polygonsCoordinatesJson = [[partialPolygonsCoordinates1, partialPolygonsCoordinates2], [partialPolygonsCoordinates3, partialPolygonsCoordinates4]]
     
-    static let box: GeodesicPolygon = SimplePolygon(mainRingSegments: [
-        LineSegment(point: SimplePoint(longitude: 0, latitude: 0), otherPoint: SimplePoint(longitude: 0, latitude: 1)),
-        LineSegment(point: SimplePoint(longitude: 0, latitude: 1), otherPoint: SimplePoint(longitude: 1, latitude: 1)),
-        LineSegment(point: SimplePoint(longitude: 1, latitude: 1), otherPoint: SimplePoint(longitude: 1, latitude: 0)),
-        LineSegment(point: SimplePoint(longitude: 1, latitude: 0), otherPoint: SimplePoint(longitude: 0, latitude: 0))])!
+    static let box: GeodesicPolygon = SimplePolygon(mainRing:
+        SimpleLine(points: [SimplePoint(longitude: 0, latitude: 0), SimplePoint(longitude: 0, latitude: 1), SimplePoint(longitude: 1, latitude: 1), SimplePoint(longitude: 1, latitude: 0), SimplePoint(longitude: 0, latitude: 0)])!)!
 }
 
 extension MockData {

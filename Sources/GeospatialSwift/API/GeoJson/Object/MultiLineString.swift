@@ -29,7 +29,7 @@ extension GeoJson {
         
         public let lineStrings: [GeoJsonLineString]
         
-        public var points: [GeoJsonPoint] {
+        public var points: [GeodesicPoint] {
             return lineStrings.flatMap { $0.points }
         }
         

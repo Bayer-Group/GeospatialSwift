@@ -5,7 +5,7 @@ import Foundation
 // swiftlint:disable file_length
 public protocol GeodesicCalculatorProtocol {
     func area(of polygon: GeodesicPolygon) -> Double
-    func length(of lineSegments: [GeodesicLineSegment]) -> Double
+    func length(of line: GeodesicLine) -> Double
     
     func centroid(polygon: GeodesicPolygon) -> GeodesicPoint
     
@@ -15,23 +15,24 @@ public protocol GeodesicCalculatorProtocol {
     func distance(from point: GeodesicPoint, to otherPoint: GeodesicPoint, tolerance: Double) -> Double
     func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double
     func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double
-    func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double
+    func distance(from point: GeodesicPoint, to line: GeodesicLine, tolerance: Double) -> Double
     func distance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
     func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
     
-    func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool
+    func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool
+    func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int]
     
     func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
     func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool
-    func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool
+    func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool
+    func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool
     
     func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint?
-    func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int]
-    func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]]
+    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int]
+    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]]
     
     func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
-    func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool
+    func contains(_ point: GeodesicPoint, in line: GeodesicLine, tolerance: Double) -> Bool
     func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
     
     // SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
@@ -112,18 +113,18 @@ public struct GeodesicCalculator: GeodesicCalculatorProtocol {
 
 // SOMEDAY: Area calculations are not geodesic?
 extension GeodesicCalculator {
-    public func length(of lineSegments: [GeodesicLineSegment]) -> Double {
-        return lineSegments.reduce(0.0) { $0 + distance(from: $1.point, to: $1.otherPoint, tolerance: 0) }
+    public func length(of line: GeodesicLine) -> Double {
+        return line.segments.reduce(0.0) { $0 + distance(from: $1.point, to: $1.otherPoint, tolerance: 0) }
     }
     
     public func area(of polygon: GeodesicPolygon) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: centroid(polygon: polygon).latitude)
         
-        let mainRingArea = area(of: polygon.mainRingSegments.map { $0.point }, earthRadius: earthRadius)
+        let mainRingArea = area(of: polygon.mainRing.points, earthRadius: earthRadius)
         
-        guard polygon.negativeRingsSegments.count > 0 else { return mainRingArea }
+        guard polygon.negativeRings.count > 0 else { return mainRingArea }
         
-        return mainRingArea - polygon.negativeRingsSegments.compactMap { $0.map { $0.point } }.reduce(0.0) {
+        return mainRingArea - polygon.negativeRings.map { $0.points }.reduce(0.0) {
             return $0 + area(of: $1, earthRadius: earthRadius)
         }
     }
@@ -182,7 +183,7 @@ extension GeodesicCalculator {
     }
     
     public func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
-        //guard !hasIntersection(lineSegment, with: otherLineSegment, tolerance: tolerance) else { return 0 }
+        guard intersection(of: lineSegment, with: otherLineSegment) == nil else { return 0 }
         
         return min(
             distance(from: lineSegment.point, to: otherLineSegment, tolerance: tolerance),
@@ -192,10 +193,10 @@ extension GeodesicCalculator {
         )
     }
     
-    public func distance(from point: GeodesicPoint, to lineSegments: [GeodesicLineSegment], tolerance: Double) -> Double {
+    public func distance(from point: GeodesicPoint, to line: GeodesicLine, tolerance: Double) -> Double {
         var smallestDistance = Double.greatestFiniteMagnitude
         
-        for lineSegment in lineSegments {
+        for lineSegment in line.segments {
             let distance = self.distance(from: point, to: lineSegment, tolerance: tolerance)
             
             guard distance > 0 else { return 0 }
@@ -213,7 +214,7 @@ extension GeodesicCalculator {
     }
     
     public func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double {
-        return polygon.ringSegements.map { distance(from: point, to: $0, tolerance: tolerance) }.min()!
+        return polygon.linearRings.map { distance(from: point, to: $0, tolerance: tolerance) }.min()!
     }
     
     // Law Of Cosines is not accurate under 0.5 meters.
@@ -295,8 +296,8 @@ extension GeodesicCalculator {
         return distance(from: point, to: lineSegment, tolerance: tolerance) == 0
     }
     
-    public func contains(_ point: GeodesicPoint, in lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
-        return distance(from: point, to: lineSegments, tolerance: tolerance) == 0
+    public func contains(_ point: GeodesicPoint, in line: GeodesicLine, tolerance: Double) -> Bool {
+        return distance(from: point, to: line, tolerance: tolerance) == 0
     }
     
     // SOMEDAY: Negative Tolerance might be broken here.
@@ -305,12 +306,12 @@ extension GeodesicCalculator {
         //guard polygon.mainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return 0 }
         
         // If it's on a line, we're done.
-        if (polygon.ringSegements.map { contains(point, in: $0, tolerance: tolerance) }.first { $0 == true } ?? false) { return true }
+        if (polygon.linearRings.map { contains(point, in: $0, tolerance: tolerance) }.first { $0 == true } ?? false) { return true }
         
-        let mainRingContains = contains(point: point, vertices: polygon.mainRingSegments.map { $0.point })
+        let mainRingContains = contains(point: point, vertices: polygon.mainRing.points)
         // Skip running hole contains calculations if mainRingContains is false
         let holeContains: () -> (Bool) = {
-            return polygon.negativeRingsSegments.compactMap { $0.map { $0.point } }.first { self.contains(point: point, vertices: $0) } != nil
+            return polygon.negativeRings.map { $0.points }.first { self.contains(point: point, vertices: $0) } != nil
         }
         
         let baseContains = mainRingContains && !holeContains()
@@ -346,8 +347,14 @@ extension GeodesicCalculator {
 // MARK: Intersection
 
 extension GeodesicCalculator {
-    public func equals(_ point: GeodesicPoint, _ otherPoint: GeodesicPoint, tolerance: Double) -> Bool {
-        return distance(from: point, to: otherPoint, tolerance: tolerance) == 0
+    public func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool {
+        return points.enumerated().contains { currentIndex, currentPoint in
+            points.enumerated().contains { nextIndex, nextPoint in
+                guard currentIndex < nextIndex else { return false }
+                
+                return distance(from: currentPoint, to: nextPoint, tolerance: tolerance) == 0
+            }
+        }
     }
     
     public func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -356,25 +363,70 @@ extension GeodesicCalculator {
     
     // SOMEDAY: Consider holes
     public func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool {
-        let polygonIntersects = polygon.ringSegements.contains {
+        let polygonIntersects = polygon.linearRings.map { $0.segments }.contains {
             $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
         }
         
         return polygonIntersects || contains(lineSegment.point, in: polygon, tolerance: tolerance)
     }
     
-    public func hasSelfIntersection(_ lineSegments: [GeodesicLineSegment], tolerance: Double) -> Bool {
-        return lineSegments.contains { lineSegment in
-            lineSegments.contains {
-                guard lineSegment != $0 else { return false }
+    public func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool {
+        return line.segments.enumerated().contains { currentLineIndex, currentLineSegment in
+            line.segments.enumerated().contains { nextLineIndex, nextLineSegment in
+                guard currentLineIndex < nextLineIndex else { return false }
                 
-                return hasIntersection($0, with: lineSegment, tolerance: tolerance)
+                // If next line continues from previous ensure no overlapping
+                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point {
+                    return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance)
+                }
+                
+                return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
             }
         }
     }
     
-    public func hasSelfIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
-        return polygon.ringSegements.contains { hasSelfIntersection($0, tolerance: tolerance) }
+    public func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        return polygon.linearRings.contains { hasIntersection($0, tolerance: tolerance) }
+    }
+    
+    public func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int] {
+        return points.enumerated().filter { currentIndex, currentPoint in
+            points.enumerated().contains { nextIndex, nextPoint in
+                guard currentIndex < nextIndex else { return false }
+                
+                return distance(from: currentPoint, to: nextPoint, tolerance: tolerance) == 0
+            }
+            }.map { $0.offset }
+    }
+    
+    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
+    public func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int] {
+        return line.segments.enumerated().filter { currentLineIndex, currentLineSegment in
+            line.segments.enumerated().contains { nextLineIndex, nextLineSegment in
+                guard currentLineIndex < nextLineIndex else { return false }
+                
+                // If next line continues from previous ensure no overlapping
+                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point {
+                    return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance)
+                }
+                
+                return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
+            }
+        }.map { $0.offset }
+    }
+    
+    // SOMEDAY: Add this intersection rule
+    // Polygon where hole intersects with same point as exterior edge point
+    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
+    public func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]] {
+        // TODO: Follow logic like func hasSelfIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool instead?
+        return polygon.linearRings.map { $0.segments }.map { ringSegments in
+            return ringSegments.map { lineSegment in
+                ringSegments.enumerated().filter {
+                    intersection(of: $1, with: lineSegment) != nil
+                }.map { $0.offset }
+            }
+        }
     }
     
     // Does not return a point if overlaping the path
@@ -407,38 +459,23 @@ extension GeodesicCalculator {
         
         return SimplePoint(longitude: resultLongitude, latitude: resultLatitude)
     }
-    
-    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
-    public func intersectionIndices(from lineSegments: [GeodesicLineSegment]) -> [Int] {
-        return lineSegments.enumerated().filter { _, lineSegment in lineSegments.compactMap { intersection(of: $0, with: lineSegment) }.count > 1 }.map { $0.offset }
-    }
-    
-    // SOMEDAY: Add these intersection rules
-    // Polygon where hole intersects with same point as exterior edge point
-    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
-    public func intersectionIndices(from polygon: GeodesicPolygon) -> [[[Int]]] {
-        return polygon.ringSegements.map { ringSegments in
-            return ringSegments.map { lineSegment in
-                ringSegments.enumerated().filter { intersection(of: $1, with: lineSegment) != nil }.map { $0.offset }
-            }
-        }
-    }
 }
 
 // MARK: Centroid Functions
 
 extension GeodesicCalculator {
     public func centroid(polygon: GeodesicPolygon) -> GeodesicPoint {
-        var finalCentroid = centroid(linearRingSegments: polygon.mainRingSegments)
+        var finalCentroid = centroid(linearRing: polygon.mainRing)
         
         let earthRadius = self.earthRadius(latitudeAverage: finalCentroid.latitude)
         
+        // TODO: Easier way to get points for a line.
         // SOMEDAY: Multiple negative rings might be producing a bad result
-        let mainRingArea = area(of: polygon.mainRingSegments.map { $0.point }, earthRadius: earthRadius)
+        let mainRingArea = area(of: polygon.mainRing.points, earthRadius: earthRadius)
         
-        polygon.negativeRingsSegments.forEach { negativeSegements in
-            let negativeCentroid = centroid(linearRingSegments: negativeSegements)
-            let negativeArea = area(of: negativeSegements.map { $0.point }, earthRadius: earthRadius)
+        polygon.negativeRings.forEach { negativeRing in
+            let negativeCentroid = centroid(linearRing: negativeRing)
+            let negativeArea = area(of: negativeRing.points, earthRadius: earthRadius)
             
             let distanceToShiftCentroid = distance(from: finalCentroid, to: negativeCentroid, tolerance: 0) * 2 * negativeArea / mainRingArea
             let bearing = initialBearing(from: negativeCentroid, to: finalCentroid)
@@ -450,17 +487,17 @@ extension GeodesicCalculator {
     }
     
     // SOMEDAY: Not geodesic. Estimation.
-    private func centroid(linearRingSegments: [GeodesicLineSegment]) -> GeodesicPoint {
+    private func centroid(linearRing: GeodesicLine) -> GeodesicPoint {
         var sumY = 0.0
         var sumX = 0.0
         var partialSum = 0.0
         var sum = 0.0
         
-        let offset = linearRingSegments.first!.point
+        let offset = linearRing.points.first!
         let offsetLongitude = offset.longitude * (offset.longitude < 0 ? -1 : 1)
         let offsetLatitude = offset.latitude * (offset.latitude < 0 ? -1 : 1)
         
-        let offsetSegments = linearRingSegments.map { lineSegment in
+        let offsetSegments = linearRing.segments.map { lineSegment in
             return (point: SimplePoint(longitude: lineSegment.point.longitude - offsetLongitude, latitude: lineSegment.point.latitude - offsetLatitude), otherPoint: SimplePoint(longitude: lineSegment.otherPoint.longitude - offsetLongitude, latitude: lineSegment.otherPoint.latitude - offsetLatitude))
         }
         

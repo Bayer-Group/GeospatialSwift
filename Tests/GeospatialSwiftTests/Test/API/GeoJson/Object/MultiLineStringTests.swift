@@ -92,7 +92,7 @@ class MultiLineStringTests: XCTestCase {
         (coordinates as! [[[Double]]]).enumerated().forEach { lineStringsOffset, element in
             XCTAssertEqual(element.count, lineStrings[lineStringsOffset].points.count)
             element.enumerated().forEach { pointsOffset, element in
-                XCTAssertEqual(element, lineStrings[lineStringsOffset].points[pointsOffset].geoJsonCoordinates as! [Double] )
+                XCTAssertEqual(element, lineStrings[lineStringsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
             }
         }
         // swiftlint:enablce force_cast

@@ -27,7 +27,7 @@ class MockGeoJsonCoordinatesGeometry: MockGeoJsonGeometry, GeoJsonCoordinatesGeo
     
     private(set) var pointsCallCount = 0
     var pointsResult: [GeoJsonPoint] = []
-    var points: [GeoJsonPoint] {
+    var points: [GeodesicPoint] {
         pointsCallCount += 1
         
         return pointsResult

@@ -111,9 +111,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .polygon:
         guard let lhs = lhs as? GeoJsonPolygon, let rhs = rhs as? GeoJsonPolygon, lhs.negativeRings.count == rhs.negativeRings.count else { return false }
         
-        guard lhs.mainRing == rhs.mainRing else { return false }
+        guard lhs.geoJsonMainRing == rhs.geoJsonMainRing else { return false }
         
-        for linearRing in lhs.negativeRings where !(rhs.negativeRings).contains { $0 == linearRing } { return false }
+        for linearRing in lhs.geoJsonNegativeRings where !(rhs.geoJsonNegativeRings).contains { $0 == linearRing } { return false }
         
         return true
     case .multiLineString:

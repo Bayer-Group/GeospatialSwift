@@ -1,6 +1,8 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonLineString: MockGeoJsonLinearGeometry, GeoJsonLineString {
+    var geoJsonPoints: [GeoJsonPoint] = []
+    
     func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
         return []
     }

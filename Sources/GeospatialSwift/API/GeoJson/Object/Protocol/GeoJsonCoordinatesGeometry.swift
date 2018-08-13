@@ -10,7 +10,7 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
     
     func distance(to point: GeodesicPoint, tolerance: Double) -> Double
     
-    var points: [GeoJsonPoint] { get }
+    var points: [GeodesicPoint] { get }
 }
 
 public extension GeoJsonCoordinatesGeometry {

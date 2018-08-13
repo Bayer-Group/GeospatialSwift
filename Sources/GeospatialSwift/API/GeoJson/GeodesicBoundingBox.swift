@@ -60,7 +60,7 @@ public class BoundingBox: GeodesicBoundingBox {
         return [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])]
     }
     
-    public var box: GeodesicPolygon { return SimplePolygon(mainRingSegments: segments)! }
+    public var box: GeodesicPolygon { return SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     
     init(boundingCoordinates: BoundingCoordinates) {
         minLongitude = boundingCoordinates.minLongitude
@@ -77,7 +77,7 @@ public class BoundingBox: GeodesicBoundingBox {
     }
     
     public func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
-        return Calculator.contains(point, in: SimplePolygon(mainRingSegments: segments)!, tolerance: tolerance)
+        return Calculator.contains(point, in: box, tolerance: tolerance)
     }
     
     public func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
