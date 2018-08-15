@@ -9,8 +9,8 @@ public protocol GeodesicLineSegment {
 }
 
 internal struct LineSegment: GeodesicLineSegment {
-    let point: GeodesicPoint
-    let otherPoint: GeodesicPoint
+    public let point: GeodesicPoint
+    public let otherPoint: GeodesicPoint
     
     public var midpoint: GeodesicPoint { return Calculator.midpoint(from: point, to: otherPoint) }
     

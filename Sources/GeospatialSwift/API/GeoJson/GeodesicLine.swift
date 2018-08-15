@@ -13,7 +13,7 @@ public struct SimpleLine: GeodesicLine {
         return BoundingBox.best(points.map { BoundingBox(boundingCoordinates: (minLongitude: $0.longitude, minLatitude: $0.latitude, maxLongitude: $0.longitude, maxLatitude: $0.latitude)) })!
     }
     
-    init?(points: [GeodesicPoint]) {
+    public init?(points: [GeodesicPoint]) {
         guard points.count >= 2 else { return nil }
         
         self.points = points
