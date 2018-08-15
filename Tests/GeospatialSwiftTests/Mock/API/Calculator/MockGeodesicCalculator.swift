@@ -1,6 +1,13 @@
 @testable import GeospatialSwift
 
 final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
+    private(set) var destinationPointCallCount = 0
+    func destinationPoint(origin: GeodesicPoint, bearing: Double, distance: Double) -> GeodesicPoint {
+        destinationPointCallCount += 1
+        
+        return origin
+    }
+    
     private(set) var equalsCallCount = 0
     var equalsResult: Bool = false
     func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool {
@@ -188,9 +195,44 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
         return point
     }
     
+    private(set) var normalizeLongitudeCallCount = 0
+    func normalize(longitude: Double) -> Double {
+        normalizeLongitudeCallCount += 1
+        
+        return longitude
+    }
+    
+    private(set) var normalizeLatitudeCallCount = 0
+    func normalize(latitude: Double) -> Double {
+        normalizeLatitudeCallCount += 1
+        
+        return latitude
+    }
+    
     private(set) var normalizeCallCount = 0
     func normalize(_ point: GeodesicPoint) -> GeodesicPoint {
         normalizeCallCount += 1
+        
+        return point
+    }
+    
+    private(set) var normalizePositiveLongitudeCallCount = 0
+    func normalizePositive(longitude: Double) -> Double {
+        normalizePositiveLongitudeCallCount += 1
+        
+        return longitude
+    }
+    
+    private(set) var normalizePositiveLatitudeCallCount = 0
+    func normalizePositive(latitude: Double) -> Double {
+        normalizePositiveLatitudeCallCount += 1
+        
+        return latitude
+    }
+    
+    private(set) var normalizePositiveCallCount = 0
+    func normalizePositive(_ point: GeodesicPoint) -> GeodesicPoint {
+        normalizePositiveCallCount += 1
         
         return point
     }

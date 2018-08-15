@@ -1,11 +1,17 @@
 public protocol GeodesicLine {
     var points: [GeodesicPoint] { get }
     var segments: [GeodesicLineSegment] { get }
+    
+    var boundingBox: GeodesicBoundingBox { get }
 }
 
 public struct SimpleLine: GeodesicLine {
     public let points: [GeodesicPoint]
     public let segments: [GeodesicLineSegment]
+    
+    public var boundingBox: GeodesicBoundingBox {
+        return BoundingBox.best(points.map { BoundingBox(boundingCoordinates: (minLongitude: $0.longitude, minLatitude: $0.latitude, maxLongitude: $0.longitude, maxLatitude: $0.latitude)) })!
+    }
     
     init?(points: [GeodesicPoint]) {
         guard points.count >= 2 else { return nil }

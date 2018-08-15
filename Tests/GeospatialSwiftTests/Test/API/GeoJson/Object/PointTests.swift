@@ -169,19 +169,102 @@ class PointTests: XCTestCase {
     }
     
     func testNormalize_StaysSame() {
+        let point = GeoTestHelper.point(1, 1)
+        
         let normalizedPoint = point.normalize
         
-        AssertEqualAccuracy10(normalizedPoint.longitude, point.longitude)
-        AssertEqualAccuracy10(normalizedPoint.latitude, point.latitude)
+        AssertEqualAccuracy10(normalizedPoint.longitude, 1.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 1.0)
     }
     
-    func testNormalize_Changes() {
-        let point = GeoTestHelper.point(-540, 270)
+    func testNormalize_StaysSame_AlmostMax() {
+        let point = GeoTestHelper.point(179, 89)
+        
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 89.0)
+    }
+    
+    func testNormalize_StaysSame_Max() {
+        let point = GeoTestHelper.point(180, 90)
         
         let normalizedPoint = point.normalize
         
         AssertEqualAccuracy10(normalizedPoint.longitude, 180.0)
         AssertEqualAccuracy10(normalizedPoint.latitude, 90.0)
+    }
+    
+    func testNormalize_Changes_Min() {
+        let point = GeoTestHelper.point(-180, -90)
+        
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 180.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 90.0)
+    }
+    
+    func testNormalize_Changes_PastMin() {
+        let point = GeoTestHelper.point(-181, -91)
+        
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 89.0)
+    }
+    
+    func testNormalize_Changes_PastMax() {
+        let point = GeoTestHelper.point(181, 91)
+        
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, -179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, -89.0)
+    }
+    
+    func testNormalizePostitive_StaysSame_Min() {
+        let point = GeoTestHelper.point(0, 0)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 0.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 0.0)
+    }
+    
+    func testNormalizePostitive_StaysSame() {
+        let point = GeoTestHelper.point(1, 1)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 1.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 1.0)
+    }
+    
+    func testNormalizePostitive_StaysSame_AlmostMax() {
+        let point = GeoTestHelper.point(359, 179)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 359.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 179.0)
+    }
+    
+    func testNormalizePostitive_Negative_Changes() {
+        let point = GeoTestHelper.point(-1, -1)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 359.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 179.0)
+    }
+    
+    func testNormalizePostitive_Changes_Max() {
+        let point = GeoTestHelper.point(360, 180)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 0.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 0.0)
     }
     
     func testEquals() {

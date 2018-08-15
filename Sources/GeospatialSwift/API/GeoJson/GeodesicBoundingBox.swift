@@ -77,6 +77,20 @@ public class BoundingBox: GeodesicBoundingBox {
     }
     
     public func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
+        // SOMEDAY: Lose this logic?
+//        let minPoint = points[0]
+//        let maxPoint = points[2]
+//        let maxLatitude = tolerance != 0 ? Calculator.destinationPoint(origin: maxPoint, bearing: 0, distance: tolerance).latitude : maxPoint.latitude
+//        let maxLongitude = tolerance != 0 ? Calculator.destinationPoint(origin: maxPoint, bearing: 90, distance: tolerance).longitude : maxPoint.longitude
+//        let minLatitude = tolerance != 0 ? Calculator.destinationPoint(origin: minPoint, bearing: 180, distance: tolerance).latitude : minPoint.latitude
+//        let minLongitude = tolerance != 0 ? Calculator.destinationPoint(origin: minPoint, bearing: 270, distance: tolerance).longitude : minPoint.longitude
+//
+//        guard maxLatitude >= minLatitude && maxLongitude >= minLongitude else { return false }
+//
+//        return point.latitude >= minLatitude &&
+//            point.latitude <= maxLatitude  &&
+//            point.longitude >= minLongitude &&
+//            point.longitude <= maxLongitude
         return Calculator.contains(point, in: box, tolerance: tolerance)
     }
     

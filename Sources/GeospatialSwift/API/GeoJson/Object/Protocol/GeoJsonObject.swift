@@ -22,6 +22,8 @@ public protocol GeoJsonObject: CustomStringConvertible {
     
     // SOMEDAY: More fun!
     //func overlaps(geoJsonObject: GeoJsonObject, tolerance: Double) -> Bool
+    
+    func invalidReasons(tolerance: Double) -> [GeoJsonInvalidReason]
 }
 
 extension GeoJsonObject {
@@ -72,6 +74,48 @@ extension GeoJsonObject {
             
             return objectGeometry.closedGeometries
         }
+    }
+}
+
+public enum GeoJsonInvalidReason {
+    case multipointInvalidReasons(_: [MultipointInvalidReason])
+    case lineStringInvalidReasons(_: [LineStringInvalidReason])
+    case multiLineStringInvalidReasons(_: [[LineStringInvalidReason]])
+    case polygonInvalidReasons(_: [PolygonInvalidReason])
+    case multiPolygonInvalidReasons(_: [[PolygonInvalidReason]])
+}
+
+extension GeoJsonObject {
+    // swiftlint:disable:next cyclomatic_complexity
+    public func invalidReasons(tolerance: Double) -> [GeoJsonInvalidReason] {
+        guard let objectGeometries = objectGeometries else { return [] }
+        
+        let invalidReasons = objectGeometries.compactMap { object -> [GeoJsonInvalidReason] in
+            switch object {
+            case _ as GeoJsonPoint:
+                return []
+            case let object as GeoJsonMultiPoint:
+                return [.multipointInvalidReasons(object.invalidReasons(tolerance: tolerance))]
+            case let object as GeoJsonLineString:
+                return [.lineStringInvalidReasons(object.invalidReasons(tolerance: tolerance))]
+            case let object as GeoJsonMultiLineString:
+                return [.multiLineStringInvalidReasons(object.invalidReasons(tolerance: tolerance))]
+            case let object as GeoJsonPolygon:
+                return [.polygonInvalidReasons(object.invalidReasons(tolerance: tolerance))]
+            case let object as GeoJsonMultiPolygon:
+                return [.multiPolygonInvalidReasons(object.invalidReasons(tolerance: tolerance))]
+            case let object as GeoJsonGeometryCollection:
+                return object.invalidReasons(tolerance: tolerance)
+            case let object as GeoJsonFeature:
+                return object.invalidReasons(tolerance: tolerance)
+            case let object as GeoJsonFeatureCollection:
+                return object.invalidReasons(tolerance: tolerance)
+            default:
+                return []
+            }
+        }
+        
+        return invalidReasons.flatMap { $0 }
     }
 }
 

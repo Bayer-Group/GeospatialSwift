@@ -93,7 +93,7 @@ class PolygonTests: XCTestCase {
     func testContains_WithTolerance() {
         XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), false)
         XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471), false)
-        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55471.856696714341524), true)
+        XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 55472), true)
         XCTAssertEqual(polygonDistance.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 100000), true)
     }
     

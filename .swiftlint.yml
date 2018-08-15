@@ -28,3 +28,8 @@ identifier_name:
     - selfIntersects(ringIndices:)
     - ringInvalidReasons(_:)
     - holeOutside(ringIndices:)
+    - multipointInvalidReasons(_:)
+    - lineStringInvalidReasons(_:)
+    - multiLineStringInvalidReasons(_:)
+    - polygonInvalidReasons(_:)
+    - multiPolygonInvalidReasons(_:)

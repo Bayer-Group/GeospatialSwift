@@ -2,6 +2,7 @@ import Foundation
 
 public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
     var normalize: GeodesicPoint { get }
+    var normalizePostitive: GeodesicPoint { get }
 }
 
 extension GeoJson {
@@ -25,6 +26,7 @@ extension GeoJson {
         public var geoJsonCoordinates: [Any] { return altitude != nil ? [longitude, latitude, altitude!] : [longitude, latitude] }
         
         public var normalize: GeodesicPoint { return Calculator.normalize(self) }
+        public var normalizePostitive: GeodesicPoint { return Calculator.normalizePositive(self) }
         
         public var description: String { return "Point: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
         

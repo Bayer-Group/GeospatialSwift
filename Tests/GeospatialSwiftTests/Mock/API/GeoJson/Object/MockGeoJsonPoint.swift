@@ -39,6 +39,14 @@ final class MockGeoJsonPoint: MockGeoJsonCoordinatesGeometry, GeoJsonPoint {
         return normalizeResult
     }
     
+    private(set) var normalizePostitiveCallCount: Int = 0
+    var normalizePostitiveResult: GeodesicPoint = SimplePoint(longitude: 0, latitude: 0)
+    var normalizePostitive: GeodesicPoint {
+        normalizePostitiveCallCount += 1
+        
+        return normalizePostitiveResult
+    }
+    
     private(set) var initialBearingCallCount: Int = 0
     var initialBearingResult: Double = 0
     func initialBearing(to point: GeodesicPoint) -> Double {
