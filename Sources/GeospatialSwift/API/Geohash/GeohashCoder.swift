@@ -5,9 +5,9 @@ public protocol GeohashCoderProtocol {
     
     func geohashBox(geohash: String) -> GeoJsonGeohashBox?
     
-    func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String]
+    func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String]
     
-    func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
+    func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
     
     func geohashWithNeighbors(for point: GeodesicPoint, precision: Int) -> [String]
 }
@@ -47,10 +47,10 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: An array of geohashes
      */
-    public func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String] {
+    public func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] {
         return transform(boundingBox: boundingBox, precision: precision).map { $0.geohash }
     }
-    public func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         return transform(boundingBox: boundingBox, precision: precision)
     }
     
@@ -84,7 +84,7 @@ private let decimalToBase32Map = "0123456789bcdefghjkmnpqrstuvwxyz".map { $0 }
 private let base32BitflowInit: UInt8 = 0b10000
 
 extension GeohashCoder {
-    fileprivate func neighborGeohashes(geohashBox: GeoJsonGeohashBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private func neighborGeohashes(geohashBox: GeoJsonGeohashBox, precision: Int) -> [GeoJsonGeohashBox] {
         let northGeohash = geohashBox.geohashNeighbor(direction: .north, precision: precision)
         let eastGeohash = geohashBox.geohashNeighbor(direction: .east, precision: precision)
         let southGeohash = geohashBox.geohashNeighbor(direction: .south, precision: precision)
@@ -99,7 +99,7 @@ extension GeohashCoder {
         return [northWestGeohash, northGeohash, northEastGeohash, eastGeohash, southEastGeohash, southGeohash, southWestGeohash, westGeohash]
     }
     
-    fileprivate func transform(point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
+    private func transform(point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var parity = Parity.even
@@ -108,7 +108,7 @@ extension GeohashCoder {
         
         var geohash = ""
         
-        let point = Calculator.normalize(point: point)
+        let point = Calculator.normalize(point)
         
         repeat {
             switch parity {
@@ -145,7 +145,7 @@ extension GeohashCoder {
         return GeohashBox(boundingCoordinates: boundingCoordinates, geohashCoder: self, geohash: geohash)
     }
     
-    fileprivate func transform(boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private func transform(boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         var geohashBoxes = [GeoJsonGeohashBox]()
         
         let point = SimplePoint(longitude: boundingBox.minLongitude, latitude: boundingBox.minLatitude)
@@ -156,19 +156,19 @@ extension GeohashCoder {
             
             var latitudeGeohashBox = longitudeGeohashBox.geohashNeighbor(direction: .north, precision: precision)
             
-            while latitudeGeohashBox.overlaps(boundingBox: boundingBox) {
+            while latitudeGeohashBox.overlaps(boundingBox: boundingBox, tolerance: 0) {
                 geohashBoxes.append(latitudeGeohashBox)
                 
                 latitudeGeohashBox = latitudeGeohashBox.geohashNeighbor(direction: .north, precision: precision)
             }
             
             longitudeGeohashBox = longitudeGeohashBox.geohashNeighbor(direction: .east, precision: precision)
-        } while longitudeGeohashBox.overlaps(boundingBox: boundingBox)
+        } while longitudeGeohashBox.overlaps(boundingBox: boundingBox, tolerance: 0)
         
         return geohashBoxes
     }
     
-    fileprivate func transform(geohash: String) -> GeoJsonGeohashBox? {
+    private func transform(geohash: String) -> GeoJsonGeohashBox? {
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var parity = Parity.even

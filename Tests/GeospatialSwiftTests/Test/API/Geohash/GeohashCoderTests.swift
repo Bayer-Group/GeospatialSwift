@@ -61,20 +61,20 @@ class GeohashCoderTests: XCTestCase {
         let geohashBox = geohashCoder.geohashBox(for: SimplePoint(longitude: -450.422566, latitude: -321.298363), precision: 9)
         
         XCTAssertEqual(geohashBox.geohash, "9yzsnmkm3")
-        XCTAssertEqual(geohashBox.minLongitude.description, "-90.4225873947144")
-        XCTAssertEqual(geohashBox.minLatitude.description, "38.7016153335571")
-        XCTAssertEqual(geohashBox.maxLongitude.description, "-90.4225444793701")
-        XCTAssertEqual(geohashBox.maxLatitude.description, "38.7016582489014")
+        XCTAssertEqual(geohashBox.minLongitude, -90.4225873947144, accuracy: 10)
+        XCTAssertEqual(geohashBox.minLatitude, 38.7016153335571, accuracy: 10)
+        XCTAssertEqual(geohashBox.maxLongitude, -90.4225444793701, accuracy: 10)
+        XCTAssertEqual(geohashBox.maxLatitude, 38.7016582489014, accuracy: 10)
     }
     
     func testGeohashBoxFromGeohash() {
         let geohashBox = geohashCoder.geohashBox(geohash: "9yzsnmkm3")!
         
         XCTAssertEqual(geohashBox.geohash, "9yzsnmkm3")
-        XCTAssertEqual(geohashBox.minLongitude.description, "-90.4225873947144")
-        XCTAssertEqual(geohashBox.minLatitude.description, "38.7016153335571")
-        XCTAssertEqual(geohashBox.maxLongitude.description, "-90.4225444793701")
-        XCTAssertEqual(geohashBox.maxLatitude.description, "38.7016582489014")
+        XCTAssertEqual(geohashBox.minLongitude, -90.4225873947144, accuracy: 10)
+        XCTAssertEqual(geohashBox.minLatitude, 38.7016153335571, accuracy: 10)
+        XCTAssertEqual(geohashBox.maxLongitude, -90.4225444793701, accuracy: 10)
+        XCTAssertEqual(geohashBox.maxLatitude, 38.7016582489014, accuracy: 10)
     }
     
     func testGeohashBoxFromGeohash_BadGeohash() {

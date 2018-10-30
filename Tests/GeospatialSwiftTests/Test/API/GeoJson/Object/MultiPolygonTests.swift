@@ -3,7 +3,7 @@ import XCTest
 @testable import GeospatialSwift
 
 class MultiPolygonTests: XCTestCase {
-    var polygons: [GeospatialSwift.Polygon]!
+    var polygons: [Polygon]!
     var multiPolygon: MultiPolygon!
     var distancePoint: SimplePoint!
     
@@ -12,8 +12,7 @@ class MultiPolygonTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        polygons = MockData.polygons as! [GeospatialSwift.Polygon]
+        polygons = MockData.polygons as? [Polygon]
         
         multiPolygon = GeoTestHelper.multiPolygon(polygons)
         
@@ -33,12 +32,19 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.objectGeometries as! [MultiPolygon], multiPolygon.geometries as! [MultiPolygon])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(multiPolygon.coordinatesGeometries.count, 1)
+        XCTAssertEqual(multiPolygon.linearGeometries.count, 0)
+        XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(multiPolygon.objectBoundingBox as? BoundingBox, multiPolygon.boundingBox as? BoundingBox)
     }
     
     func testGeoJson() {
-        XCTAssertEqual(multiPolygon.geoJson.description, "[\"type\": \"MultiPolygon\", \"coordinates\": \(MockData.polygonsCoordinatesJson)]")
+        XCTAssertEqual(multiPolygon.geoJson["type"] as? String, "MultiPolygon")
+        XCTAssertEqual(multiPolygon.geoJson["coordinates"] as? [[[[Double]]]], MockData.polygonsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -46,11 +52,11 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
-        // TODO: Test me.
+    func testContainsWithTolerance() {
+        // SOMEDAY: Test me.
     }
     
     // GeoJsonCoordinatesGeometry Tests
@@ -67,7 +73,7 @@ class MultiPolygonTests: XCTestCase {
             element.enumerated().forEach { linearRingsOffset, element in
                 XCTAssertEqual(element.count, polygons[polygonsOffset].linearRings[linearRingsOffset].points.count)
                 element.enumerated().forEach { pointsOffset, element in
-                    XCTAssertEqual(element, polygons[polygonsOffset].linearRings[linearRingsOffset].points[pointsOffset].geoJsonCoordinates as! [Double] )
+                    XCTAssertEqual(element, polygons[polygonsOffset].geoJsonLinearRings[linearRingsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
                 }
             }
         }
@@ -82,17 +88,13 @@ class MultiPolygonTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiPolygon.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(polygons.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(polygons.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
     
     func testDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
@@ -102,21 +104,29 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.points as! [Point], multiPolygon.polygons.flatMap { $0.points as! [Point] })
     }
     
-    func testCentroid() {
-        // TODO: Test me.
+    // GeoJsonClosedGeometry Tests
+    
+    func testHasHole() {
+        // SOMEDAY: Need to test multipolygon with and without holes.
     }
+    
+    func testArea() {
+        XCTAssertEqual(multiPolygon.area, 37490216.3337727, accuracy: 10)
+    }
+    
+    // SOMEDAY: Test Edge Distance
     
     // MultiPolygon Tests
     
     func testPolygons() {
-        XCTAssertEqual((multiPolygon.polygons as? [GeospatialSwift.Polygon])!, polygons)
+        XCTAssertEqual((multiPolygon.polygons as? [Polygon])!, polygons)
     }
     
     func testEquals() {
         XCTAssertEqual(multiPolygon, multiPolygon)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
         

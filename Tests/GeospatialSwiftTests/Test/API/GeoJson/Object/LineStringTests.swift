@@ -28,12 +28,19 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.objectGeometries as! [LineString], lineString.geometries as! [LineString])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(lineString.coordinatesGeometries.count, 1)
+        XCTAssertEqual(lineString.linearGeometries.count, 1)
+        XCTAssertEqual(lineString.closedGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(lineString.objectBoundingBox as? BoundingBox, lineString.boundingBox as? BoundingBox)
     }
     
     func testGeoJson() {
-        XCTAssertEqual(lineString.geoJson.description, "[\"type\": \"LineString\", \"coordinates\": \(MockData.pointsCoordinatesJson)]")
+        XCTAssertEqual(lineString.geoJson["type"] as? String, "LineString")
+        XCTAssertEqual(lineString.geoJson["coordinates"] as? [[Double]], MockData.pointsCoordinatesJson)
     }
     
     func testObjectDistance() {
@@ -42,21 +49,21 @@ class LineStringTests: XCTestCase {
     
     func testContains() {
         // Away From Line
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0), false)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), false)
         // On Line
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.0, 2.0, 0), errorDistance: 0), true)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.0, 2.0, 0), tolerance: 0), true)
         // On Line Geometrically but not geospatially
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 0), false)
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 0), false)
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 0), false)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 0), false)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 0), false)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 0), false)
         // On Line Geometrically but not geospatially - With error to adjust for curvature to be close enough to the line
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 15), true)
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 15), true)
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 15), true)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 15), true)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 15), true)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 15), true)
         // On Line
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0), true)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), true)
         // Away From Line
-        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(2.5, 2.0, 0), errorDistance: 0), false)
+        XCTAssertEqual(lineString.contains(GeoTestHelper.simplePoint(2.5, 2.0, 0), tolerance: 0), false)
     }
     
     // GeoJsonCoordinatesGeometry Tests
@@ -81,11 +88,7 @@ class LineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = lineString.boundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(points.compactMap { $0.boundingBox })
-        #else
-        let boundingBox = BoundingBox.best(points.flatMap { $0.boundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
@@ -93,103 +96,103 @@ class LineStringTests: XCTestCase {
     func testDistance() {
         let distance = lineString.distance(to: distancePoint)
         
-        XCTAssertEqual(distance.description, "1178603.88358723")
+        XCTAssertEqual(distance, 1178422.47118554, accuracy: 10)
     }
     
-    func testDistance_NoErrorDistance() {
-        let distance = lineString.distance(to: distancePoint, errorDistance: 0.0)
+    func testDistance_NoTolerance() {
+        let distance = lineString.distance(to: distancePoint, tolerance: 0.0)
         
-        XCTAssertEqual(distance.description, "1178603.88358723")
+        XCTAssertEqual(distance, 1178422.47118554, accuracy: 10)
     }
     
-    func testDistance_OutsideErrorDistance() {
-        let distance = lineString.distance(to: distancePoint, errorDistance: 1178603)
+    func testDistance_OutsideTolerance() {
+        let distance = lineString.distance(to: distancePoint, tolerance: 1178422)
         
-        XCTAssertEqual(distance.description, "0.883587231626734")
+        XCTAssertEqual(distance, 0.47118554264307, accuracy: 10)
     }
     
-    func testDistance_OnErrorDistance() {
-        let distance = lineString.distance(to: distancePoint, errorDistance: 1178603.883587234187871)
+    func testDistance_OnTolerance() {
+        let distance = lineString.distance(to: distancePoint, tolerance: 1178603.883587234187871)
         
-        XCTAssertEqual(distance.description, "0.0")
+        XCTAssertEqual(distance, 0.0, accuracy: 10)
     }
     
-    func testDistance_InsideErrorDistance() {
-        let distance = lineString.distance(to: distancePoint, errorDistance: 1178604)
+    func testDistance_InsideTolerance() {
+        let distance = lineString.distance(to: distancePoint, tolerance: 1178604)
         
-        XCTAssertEqual(distance.description, "0.0")
+        XCTAssertEqual(distance, 0.0, accuracy: 10)
     }
     
     func testDistance_FollowingLine() {
         // Away From Line
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), errorDistance: 0).description, "55625.8387686353")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.5, 2.0, 0), tolerance: 0), 55471.8566967143, accuracy: 10)
         //55626.0657600516
         // On Line
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // On Line Geometrically but not geospatially
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), errorDistance: 0).description, "3.04949279781627")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), errorDistance: 0).description, "8.47084773228069")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), errorDistance: 0).description, "3.0494927978385")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.1, 2.0, 0), tolerance: 0), 3.04105126725933, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.0, 0), tolerance: 0), 8.44739894101213, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.9, 2.0, 0), tolerance: 0), 3.0410512672544, accuracy: 10)
         // On Line
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
         // Away From Line
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), errorDistance: 0).description, "55625.8381236702")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.5, 2.0, 0), tolerance: 0), 55471.8560535347, accuracy: 10)
     }
     
     func testDistance_TravelingThroughHorizontally() {
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), errorDistance: 0).description, "39343.8372129913")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), errorDistance: 0).description, "27829.8714075775")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), errorDistance: 0).description, "27823.5192499074")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), errorDistance: 0).description, "27821.4018505861")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27808.4167390362")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), errorDistance: 0).description, "27808.4167390362")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.75, 2.25, 0), tolerance: 0), 39248.6795756426, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 2.25, 0), tolerance: 0), 27762.5616330752, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.25, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.25, 0), tolerance: 0), 27754.112314124, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.25, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.25, 0), tolerance: 0), 27741.159070823, accuracy: 10)
     }
     
     func testDistance_TravelingThroughVertically() {
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), errorDistance: 0).description, "39328.1159053341")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), errorDistance: 0).description, "27791.7327646141")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), errorDistance: 0).description, "27797.8232377557")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), errorDistance: 0).description, "27803.3846582459")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27808.4167390362")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), errorDistance: 0).description, "6.35312571956565")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27836.2255013466")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.25, 0), tolerance: 0), 39328.079908396, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 3.0, 0), tolerance: 0), 27789.8922694512, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.75, 0), tolerance: 0), 27791.4048336645, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.5, 0), tolerance: 0), 27789.9022346475, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.0, 0), tolerance: 0), 6.33553915404217, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
     }
     
     func testDistance_TravelingThroughDiagnally() {
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), errorDistance: 0).description, "248544.004481139")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), errorDistance: 0).description, "111166.927435153")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), errorDistance: 0).description, "55606.7683093096")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 0).description, "27808.4167390362")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 0).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), errorDistance: 0).description, "39346.8329368461")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), tolerance: 0), 248442.216300368, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), tolerance: 0), 111159.565454741, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), tolerance: 0), 55538.6863442482, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 0), 27756.2242840717, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 0), 0.0, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), tolerance: 0), 39226.835607103, accuracy: 10)
     }
     
-    func testDistance_TravelingThroughDiagnally_ErrorDistance() {
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), errorDistance: 100000).description, "148544.004481139")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), errorDistance: 100000).description, "11166.927435153")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), errorDistance: 100000).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), errorDistance: 100000).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), errorDistance: 100000).description, "0.0")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), errorDistance: 100000).description, "0.0")
+    func testDistance_TravelingThroughDiagnally_Tolerance() {
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 4.0, 0), tolerance: 100000), 148442.216300368, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.0, 3.0, 0), tolerance: 100000), 11159.5654547411, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 2.5, 0), tolerance: 100000), 0.0, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 2.25, 0), tolerance: 100000), 0.0, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.0, 2.0, 0), tolerance: 100000), 0.0, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 1.75, 0), tolerance: 100000), 0.0, accuracy: 10)
     }
     
     func testDistance_DiagnalFromPoints_ShouldBeSimilar() {
         // Point 1
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), errorDistance: 0).description, "157401.561045836")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(0.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 2
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), errorDistance: 0).description, "157401.561045836")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(3.0, 1.0, 0), tolerance: 0), 156876.478521843, accuracy: 10)
         // Point 3
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), errorDistance: 0).description, "157281.772062802")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(3.0, 4.0, 0), tolerance: 0), 157217.359221784, accuracy: 10)
     }
     
     func testDistance_NearLineBySameAmount_ShouldBeSimilar() {
         // Line 1
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), errorDistance: 0).description, "27838.3435460507")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), errorDistance: 0).description, "27836.2255013466")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.5, 1.75, 0), tolerance: 0), 27753.4442334685, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(1.75, 1.75, 0), tolerance: 0), 27751.3324991307, accuracy: 10)
         // Line 2
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), errorDistance: 0).description, "27803.3846582458")
-        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), errorDistance: 0).description, "27797.8232377557")
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.5, 0), tolerance: 0), 27747.1366851065, accuracy: 10)
+        XCTAssertEqual(lineString.distance(to: GeoTestHelper.simplePoint(2.25, 2.75, 0), tolerance: 0), 27753.170416259, accuracy: 10)
     }
     
     // GeoJsonMultiCoordinatesGeometry Tests
@@ -198,28 +201,22 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual((lineString.points as? [Point])!, points)
     }
     
-    func testCentroid() {
-        // swiftlint:disable:next force_cast
-        XCTAssertEqual(lineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.0, 2.00030459421549, 4.0))
-    }
+    // GeoJsonLinearGeometry Tests
     
-    func testCentroid_Negative() {
-        // swiftlint:disable:next force_cast
-        XCTAssertEqual(lineString.centroid as! SimplePoint, GeoTestHelper.simplePoint(2.0, 2.00030459421549, 4.0))
+    // SOMEDAY: Verify
+    func testLength() {
+        XCTAssertEqual(lineString.length, 222130.2399313, accuracy: 10)
     }
     
     // LineString Tests
-    
-    // TODO: Verify
-    func testLength() {
-        XCTAssertEqual(lineString.length.description, "222571.167040614")
-    }
     
     func testSegments() {
         let segments = lineString.segments
         
         XCTAssertEqual(segments.count, 2)
     }
+    
+    // SOMEDAY: Test Bearing
     
     func testEquals() {
         XCTAssertEqual(lineString, lineString)

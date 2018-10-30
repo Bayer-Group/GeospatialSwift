@@ -1,10 +1,12 @@
-public typealias GeoJsonLineSegment = (point1: GeodesicPoint, point2: GeodesicPoint)
+public enum LineStringInvalidReason {
+    case duplicates(indices: [Int])
+    case selfIntersects(segmentIndices: [Int])
+}
 
-internal typealias LineString = GeoJson.LineString
-
-public protocol GeoJsonLineString: GeoJsonMultiCoordinatesGeometry {
-    var segments: [GeoJsonLineSegment] { get }
-    var length: Double { get }
+public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine {
+    var geoJsonPoints: [GeoJsonPoint] { get }
+    
+    func invalidReasons(tolerance: Double) -> [LineStringInvalidReason]
 }
 
 extension GeoJson {
@@ -17,7 +19,7 @@ extension GeoJson {
     
     public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
-        public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
+        public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
         public var description: String {
             return """
@@ -30,25 +32,18 @@ extension GeoJson {
             """
         }
         
-        public let points: [GeoJsonPoint]
+        public let points: [GeodesicPoint]
+        public let geoJsonPoints: [GeoJsonPoint]
         
-        public var boundingBox: GeoJsonBoundingBox {
-            #if swift(>=4.1)
-            return BoundingBox.best(points.compactMap { $0.boundingBox })!
-            #else
-            return BoundingBox.best(points.flatMap { $0.boundingBox })!
-            #endif
-        }
-        
-        public var centroid: GeodesicPoint {
-            return Calculator.centroid(linePoints: points)
+        public var boundingBox: GeodesicBoundingBox {
+            return BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })!
         }
         
         public var length: Double {
-            return Calculator.length(lineSegments: segments)
+            return Calculator.length(of: self)
         }
         
-        public let segments: [GeoJsonLineSegment]
+        public let segments: [GeodesicLineSegment]
         
         internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid LineString must have valid coordinates"); return nil }
@@ -69,38 +64,33 @@ extension GeoJson {
             guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
             self.points = points
+            self.geoJsonPoints = points
             
-            #if swift(>=4.1)
             segments = points.enumerated().compactMap { (offset, point) in
                 if points.count == offset + 1 { return nil }
                 
-                return (point, points[offset + 1])
+                return LineSegment(point: point, otherPoint: points[offset + 1])
             }
-            #else
-            segments = points.enumerated().flatMap { (offset, point) in
-                if points.count == offset + 1 { return nil }
-            
-                return (point, points[offset + 1])
-            }
-            #endif
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double {
-            var smallestDistance = Double.greatestFiniteMagnitude
-            
-            for lineSegment in segments {
-                let distance = Calculator.distance(point: point, lineSegment: lineSegment) - errorDistance
-                
-                guard distance > 0 else { return 0 }
-                
-                smallestDistance = min(smallestDistance, distance)
-            }
-            
-            return smallestDistance
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
+            return Calculator.distance(from: point, to: self, tolerance: tolerance)
         }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool {
-            return distance(to: point, errorDistance: errorDistance) == 0
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+            return Calculator.contains(point, in: self, tolerance: tolerance)
+        }
+        
+        public func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
+            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
+            
+            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+            
+            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+            
+            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
+            
+            return []
         }
     }
 }

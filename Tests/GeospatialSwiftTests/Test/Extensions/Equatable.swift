@@ -1,11 +1,21 @@
 @testable import GeospatialSwift
 
+public typealias Point = GeoJson.Point
+public typealias MultiPoint = GeoJson.MultiPoint
+public typealias LineString = GeoJson.LineString
+public typealias MultiLineString = GeoJson.MultiLineString
+public typealias Polygon = GeoJson.Polygon
+public typealias MultiPolygon = GeoJson.MultiPolygon
+public typealias GeometryCollection = GeoJson.GeometryCollection
+public typealias Feature = GeoJson.Feature
+public typealias FeatureCollection = GeoJson.FeatureCollection
+
 extension SimplePoint: Equatable {
     public static func == (lhs: SimplePoint, rhs: SimplePoint) -> Bool { return lhs as GeodesicPoint == rhs as GeodesicPoint }
 }
 
 extension BoundingBox: Equatable {
-    public static func == (lhs: BoundingBox, rhs: BoundingBox) -> Bool { return lhs as GeoJsonBoundingBox == rhs as GeoJsonBoundingBox }
+    public static func == (lhs: BoundingBox, rhs: BoundingBox) -> Bool { return lhs as GeodesicBoundingBox == rhs as GeodesicBoundingBox }
 }
 
 extension Point: Equatable {

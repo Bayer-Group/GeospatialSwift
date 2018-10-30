@@ -2,49 +2,47 @@
 
 final class MockGeohashCoder: GeohashCoderProtocol {
     private(set) var geohashFromPointCallCount = 0
-    private(set) var geohashBoxFromPointCallCount = 0
-    private(set) var geohashBoxFromGeohashCallCount = 0
-    private(set) var geohashesCallCount = 0
-    private(set) var geohashBoxesCallCount = 0
-    private(set) var geohashWithNeighborsCallCount = 0
-    
     var geohashFromPointResult: String = ""
-    lazy var geohashBoxFromPointResult: GeoJsonGeohashBox = MockGeoJsonGeohashBox()
-    lazy var geohashBoxFromGeohashResult: GeoJsonGeohashBox = MockGeoJsonGeohashBox()
-    var geohashesResult: [String] = []
-    var geohashBoxesResult: [GeoJsonGeohashBox] = []
-    var geohashWithNeighborsResult: [String] = []
-    
     func geohash(for point: GeodesicPoint, precision: Int) -> String {
         geohashFromPointCallCount += 1
         
         return geohashFromPointResult
     }
     
+    private(set) var geohashBoxFromPointCallCount = 0
+    lazy var geohashBoxFromPointResult: GeoJsonGeohashBox = MockGeoJsonGeohashBox()
     func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
         geohashBoxFromPointCallCount += 1
         
         return geohashBoxFromPointResult
     }
     
+    private(set) var geohashBoxFromGeohashCallCount = 0
+    lazy var geohashBoxFromGeohashResult: GeoJsonGeohashBox = MockGeoJsonGeohashBox()
     func geohashBox(geohash: String) -> GeoJsonGeohashBox? {
         geohashBoxFromGeohashCallCount += 1
         
         return geohashBoxFromGeohashResult
     }
     
-    func geohashes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [String] {
+    private(set) var geohashesCallCount = 0
+    var geohashesResult: [String] = []
+    func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] {
         geohashesCallCount += 1
         
         return geohashesResult
     }
     
-    func geohashBoxes(for boundingBox: GeoJsonBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
+    private(set) var geohashBoxesCallCount = 0
+    var geohashBoxesResult: [GeoJsonGeohashBox] = []
+    func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
         geohashBoxesCallCount += 1
         
         return geohashBoxesResult
     }
     
+    private(set) var geohashWithNeighborsCallCount = 0
+    var geohashWithNeighborsResult: [String] = []
     func geohashWithNeighbors(for point: GeodesicPoint, precision: Int) -> [String] {
         geohashWithNeighborsCallCount += 1
         

@@ -52,61 +52,61 @@ class BoundingBoxTests: XCTestCase {
     }
     
     func testOverlaps_WhenSame_ThenTrue() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: simpleBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: simpleBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenInside_ThenTrue() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: insideBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: insideBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenOutside_ThenTrue() {
-        let overlaps = insideBoundingBox.overlaps(boundingBox: simpleBoundingBox)
+        let overlaps = insideBoundingBox.overlaps(boundingBox: simpleBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenHorizontalOverlap_ThenTrue() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: horizontalOverlapBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: horizontalOverlapBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenVerticalOverlap_ThenTrue() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: verticalOverlapBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: verticalOverlapBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenHorizontalVerticalOverlap_ThenTrue() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: horizontalVerticalOverlapBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: horizontalVerticalOverlapBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, true)
     }
     
     func testOverlaps_WhenNoOverlap_ThenFalse() {
-        let overlaps = simpleBoundingBox.overlaps(boundingBox: noOverlapBoundingBox)
+        let overlaps = simpleBoundingBox.overlaps(boundingBox: noOverlapBoundingBox, tolerance: 0)
         
         XCTAssertEqual(overlaps, false)
     }
     
     func testContains_WhenInside_ThenTrue() {
-        let contains = simpleBoundingBox.contains(point: simpleBoundingBox.centroid)
+        let contains = simpleBoundingBox.contains(point: simpleBoundingBox.centroid, tolerance: 0)
         
         XCTAssertEqual(contains, true)
     }
     
     func testContains_WhenOn_ThenTrue() {
-        let contains = simpleBoundingBox.contains(point: SimplePoint(longitude: simpleBoundingBox.minLongitude, latitude: simpleBoundingBox.minLatitude))
+        let contains = simpleBoundingBox.contains(point: SimplePoint(longitude: simpleBoundingBox.minLongitude, latitude: simpleBoundingBox.minLatitude), tolerance: 0)
         
         XCTAssertEqual(contains, true)
     }
     
     func testContains_WhenOutside_ThenFalse() {
-        let contains = simpleBoundingBox.contains(point: SimplePoint(longitude: noOverlapBoundingBox.minLongitude, latitude: noOverlapBoundingBox.minLatitude))
+        let contains = simpleBoundingBox.contains(point: SimplePoint(longitude: noOverlapBoundingBox.minLongitude, latitude: noOverlapBoundingBox.minLatitude), tolerance: 0)
         
         XCTAssertEqual(contains, false)
     }
@@ -145,28 +145,28 @@ class BoundingBoxTests: XCTestCase {
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLongitudeAreEqual_ThenAdjust() {
-        let verticalAdjustedBoundingBox = verticalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let verticalAdjustedBoundingBox = verticalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(verticalAdjustedBoundingBox.minLongitude, verticalBoundingBox.minLongitude - boundingBoxMinimumAdjustment)
         XCTAssertEqual(verticalAdjustedBoundingBox.maxLongitude, verticalBoundingBox.maxLongitude + boundingBoxMinimumAdjustment)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLatitudeAreEqual_ThenAdjust() {
-        let horizontalAdjustedBoundingBox = horizontalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let horizontalAdjustedBoundingBox = horizontalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(horizontalAdjustedBoundingBox.minLatitude, horizontalBoundingBox.minLatitude - boundingBoxMinimumAdjustment)
         XCTAssertEqual(horizontalAdjustedBoundingBox.maxLatitude, horizontalBoundingBox.maxLatitude + boundingBoxMinimumAdjustment)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLongitudeAreDifferent_ThenNoAdjustment() {
-        let horizontalAdjustedBoundingBox = horizontalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let horizontalAdjustedBoundingBox = horizontalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(horizontalAdjustedBoundingBox.minLongitude, horizontalBoundingBox.minLongitude)
         XCTAssertEqual(horizontalAdjustedBoundingBox.maxLongitude, horizontalBoundingBox.maxLongitude)
     }
     
     func testAdjustedBoundingBox_WhenMinAndMaxLatitudeAreDifferent_ThenNoAdjustment() {
-        let verticalAdjustedBoundingBox = verticalBoundingBox.adjusted(minimumAdjustment: boundingBoxMinimumAdjustment)
+        let verticalAdjustedBoundingBox = verticalBoundingBox.validBoundingBox(minimumAdjustment: boundingBoxMinimumAdjustment)
         
         XCTAssertEqual(verticalAdjustedBoundingBox.minLatitude, verticalBoundingBox.minLatitude)
         XCTAssertEqual(verticalAdjustedBoundingBox.maxLatitude, verticalBoundingBox.maxLatitude)

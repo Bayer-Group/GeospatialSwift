@@ -5,6 +5,7 @@ import XCTest
 class GeometryCollectionTests: XCTestCase {
     var geometries: [GeoJsonGeometry]!
     var geometryCollection: GeometryCollection!
+    var geometryCollectionNested: GeometryCollection!
     var nilGeometryCollection: GeometryCollection?
     var distancePoint: SimplePoint!
     
@@ -16,6 +17,8 @@ class GeometryCollectionTests: XCTestCase {
         geometries = MockData.geometries
         
         geometryCollection = GeoTestHelper.geometryCollection(geometries)
+        
+        geometryCollectionNested = GeoTestHelper.geometryCollection([GeoTestHelper.geometryCollection([geometryCollection, geometryCollection])])
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -34,43 +37,56 @@ class GeometryCollectionTests: XCTestCase {
         XCTAssertTrue(geometryCollection.objectGeometries?[1] is MultiPoint)
         XCTAssertTrue(geometryCollection.objectGeometries?[2] is LineString)
         XCTAssertTrue(geometryCollection.objectGeometries?[3] is MultiLineString)
-        XCTAssertTrue(geometryCollection.objectGeometries?[4] is GeospatialSwift.Polygon)
+        XCTAssertTrue(geometryCollection.objectGeometries?[4] is Polygon)
         XCTAssertTrue(geometryCollection.objectGeometries?[5] is MultiPolygon)
+    }
+    
+    func testGeometryTypes() {
+        XCTAssertEqual(geometryCollection.coordinatesGeometries.count, 6)
+        XCTAssertEqual(geometryCollection.linearGeometries.count, 2)
+        XCTAssertEqual(geometryCollection.closedGeometries.count, 2)
+        
+        XCTAssertEqual(geometryCollectionNested.coordinatesGeometries.count, 12)
+        XCTAssertEqual(geometryCollectionNested.linearGeometries.count, 4)
+        XCTAssertEqual(geometryCollectionNested.closedGeometries.count, 4)
     }
     
     func testObjectBoundingBox() {
         let resultBoundingBox = geometryCollection.objectBoundingBox
-        #if swift(>=4.1)
+        
         let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.compactMap { $0.objectBoundingBox })
-        #else
-        let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.flatMap { $0.objectBoundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
     
     func testGeoJson() {
-        let pointGeoJson = "[\"type\": \"Point\", \"coordinates\": [1.0, 2.0, 3.0]]"
-        let multiPointGeoJson = "[\"type\": \"MultiPoint\", \"coordinates\": \(MockData.pointsCoordinatesJson)]"
-        let lineStringGeoJson = "[\"type\": \"LineString\", \"coordinates\": \(MockData.pointsCoordinatesJson)]"
-        let multiLineStringGeoJson = "[\"type\": \"MultiLineString\", \"coordinates\": \(MockData.lineStringsCoordinatesJson)]"
-        let polygonGeoJson = "[\"type\": \"Polygon\", \"coordinates\": \(MockData.linearRingsCoordinatesJson)]"
-        let multiPolygonGeoJson = "[\"type\": \"MultiPolygon\", \"coordinates\": \(MockData.polygonsCoordinatesJson)]"
-        let geometriesGeoJson = "[\(pointGeoJson), \(multiPointGeoJson), \(lineStringGeoJson), \(multiLineStringGeoJson), \(polygonGeoJson), \(multiPolygonGeoJson)]"
-        
-        XCTAssertEqual(geometryCollection.geoJson.description, "[\"type\": \"GeometryCollection\", \"geometries\": \(geometriesGeoJson)]")
+        let geometries = (geometryCollection.geoJson["geometries"] as? [[String: Any]])
+        XCTAssertEqual(geometryCollection.geoJson["type"] as? String, "GeometryCollection")
+        XCTAssertEqual(geometries?.count, 6)
+        XCTAssertEqual(geometries?[0]["type"] as? String, "Point")
+        XCTAssertEqual(geometries?[0]["coordinates"] as? [Double], MockData.point.geoJsonCoordinates as? [Double])
+        XCTAssertEqual(geometries?[1]["type"] as? String, "MultiPoint")
+        XCTAssertEqual(geometries?[1]["coordinates"] as? [[Double]], MockData.points.compactMap { $0.geoJsonCoordinates as? [Double] })
+        XCTAssertEqual(geometries?[2]["type"] as? String, "LineString")
+        XCTAssertEqual(geometries?[2]["coordinates"] as? [[Double]], MockData.points.compactMap { $0.geoJsonCoordinates as? [Double] })
+        XCTAssertEqual(geometries?[3]["type"] as? String, "MultiLineString")
+        XCTAssertEqual(geometries?[3]["coordinates"] as? [[[Double]]], MockData.lineStrings.compactMap { $0.geoJsonCoordinates as? [[Double]] })
+        XCTAssertEqual(geometries?[4]["type"] as? String, "Polygon")
+        XCTAssertEqual(geometries?[4]["coordinates"] as? [[[Double]]], MockData.linearRings.compactMap { $0.geoJsonCoordinates as? [[Double]] })
+        XCTAssertEqual(geometries?[5]["type"] as? String, "MultiPolygon")
+        XCTAssertEqual(geometries?[5]["coordinates"] as? [[[[Double]]]], MockData.polygons.compactMap { $0.geoJsonCoordinates as? [[[Double]]] })
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
-        // TODO: Test me.
+    func testContainsWithTolerance() {
+        // SOMEDAY: Test me.
     }
     
     // GeometryCollection Tests
@@ -91,7 +107,7 @@ class GeometryCollectionTests: XCTestCase {
         XCTAssertNotEqual(GeoTestHelper.geometryCollection([point]), GeoTestHelper.geometryCollection(nil))
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals_DifferentGeometries() {
         let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
         

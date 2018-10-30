@@ -1,7 +1,7 @@
-internal typealias MultiPolygon = GeoJson.MultiPolygon
-
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
+    
+    func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]]
 }
 
 extension GeoJson {
@@ -29,11 +29,13 @@ extension GeoJson {
         
         public let polygons: [GeoJsonPolygon]
         
-        public var points: [GeoJsonPoint] { return polygons.flatMap { $0.points } }
+        public var points: [GeodesicPoint] { return polygons.flatMap { $0.points } }
         
-        public var boundingBox: GeoJsonBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
+        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
         
-        public var centroid: GeodesicPoint { return Calculator.centroid(polygons: polygons) }
+        public var hasHole: Bool { return polygons.contains { $0.hasHole } }
+        
+        public var area: Double { return polygons.reduce(0) { $0 + $1.area } }
         
         internal init?(coordinatesJson: [Any]) {
             guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
@@ -50,7 +52,7 @@ extension GeoJson {
             self.init(polygons: polygons)
         }
         
-        // TODO: More strict additions:
+        // SOMEDAY: More strict additions:
         // Multipolygon where two polygons intersect - validate that two polygons are merged as well
         fileprivate init?(polygons: [GeoJsonPolygon]) {
             guard polygons.count >= 1 else { Log.warning("A valid MultiPolygon must have at least one Polygon"); return nil }
@@ -58,12 +60,16 @@ extension GeoJson {
             self.polygons = polygons
         }
         
-        public func edgeDistance(to point: GeodesicPoint, errorDistance: Double) -> Double {
-            return polygons.map { $0.edgeDistance(to: point, errorDistance: errorDistance) }.min()!
+        public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
+            return polygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()!
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return polygons.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return polygons.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] {
+            return polygons.map { $0.invalidReasons(tolerance: tolerance) }
+        }
     }
 }

@@ -1,8 +1,12 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonPolygon: MockGeoJsonClosedGeometry, GeoJsonPolygon {
-    private(set) var linearRingsCallCount: Int = 0
-    private(set) var areaCallCount: Int = 0
+    var geoJsonLinearRings: [GeoJsonLineString] { return [geoJsonMainRing] + geoJsonNegativeRings }
+    var geoJsonMainRing: GeoJsonLineString = MockData.lineStrings.first!
+    var geoJsonNegativeRings: [GeoJsonLineString] = []
+    
+    var mainRing: GeodesicLine { return geoJsonMainRing }
+    var negativeRings: [GeodesicLine] { return geoJsonNegativeRings }
     
     override init() {
         super.init()
@@ -10,15 +14,23 @@ final class MockGeoJsonPolygon: MockGeoJsonClosedGeometry, GeoJsonPolygon {
         geoJsonObjectTypeResult = .polygon
     }
     
-    var linearRings: [GeoJsonLineString] {
-        linearRingsCallCount += 1
-        
-        return [MockGeoJsonLineString()]
+    func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
+        return []
     }
     
-    var area: Double {
-        areaCallCount += 1
+    private(set) var linearRingsCallCount: Int = 0
+    var linearRingsResult: [GeodesicLine] { return geoJsonLinearRings }
+    var linearRings: [GeodesicLine] {
+        linearRingsCallCount += 1
         
-        return 0
+        return linearRingsResult
+    }
+    
+    private(set) var centroidCallCount = 0
+    var centroidResult: GeoJsonPoint = MockGeoJsonPoint()
+    var centroid: GeodesicPoint {
+        centroidCallCount += 1
+        
+        return centroidResult
     }
 }

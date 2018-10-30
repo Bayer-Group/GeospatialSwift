@@ -4,11 +4,6 @@ public protocol GeodesicPoint: CustomStringConvertible {
     var altitude: Double? { get }
 }
 
-public extension GeodesicPoint {
-    public var degreesToRadians: GeodesicPoint { return SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
-    public var radiansToDegrees: GeodesicPoint { return SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
-}
-
 public struct SimplePoint: GeodesicPoint {
     public let longitude: Double
     public let latitude: Double
@@ -21,4 +16,18 @@ public struct SimplePoint: GeodesicPoint {
     }
     
     public var description: String { return "SimplePoint: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
+}
+
+public extension GeodesicPoint {
+    public var degreesToRadians: GeodesicPoint { return SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
+    public var radiansToDegrees: GeodesicPoint { return SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
+}
+
+public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
+    let lhs = Calculator.normalize(lhs)
+    let rhs = Calculator.normalize(rhs)
+    
+    let altitudeIsSame = lhs.altitude != nil && rhs.altitude != nil ? lhs.altitude!.isEqual(to: rhs.altitude!) : lhs.altitude == rhs.altitude
+    
+    return lhs.latitude.isEqual(to: rhs.latitude) && lhs.longitude.isEqual(to: rhs.longitude) && altitudeIsSame
 }

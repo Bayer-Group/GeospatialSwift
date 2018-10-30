@@ -9,7 +9,7 @@ class PointTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        point = GeoTestHelper.point(1, 2, 3)
+        point = MockData.point as? Point
         
         distancePoint = GeoTestHelper.point(10, 10, 10)
     }
@@ -25,12 +25,19 @@ class PointTests: XCTestCase {
         XCTAssertEqual(point.objectGeometries as! [Point], point.geometries as! [Point])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(point.coordinatesGeometries.count, 1)
+        XCTAssertEqual(point.closedGeometries.count, 0)
+        XCTAssertEqual(point.linearGeometries.count, 0)
+    }
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(point.objectBoundingBox as? BoundingBox, point.boundingBox as? BoundingBox)
     }
     
     func testGeoJson() {
-        XCTAssertEqual(point.geoJson.description, "[\"type\": \"Point\", \"coordinates\": [1.0, 2.0, 3.0]]")
+        XCTAssertEqual(point.geoJson["type"] as? String, "Point")
+        XCTAssertEqual(point.geoJson["coordinates"] as? [Double], MockData.point.geoJsonCoordinates as? [Double])
     }
     
     func testObjectDistance() {
@@ -49,26 +56,26 @@ class PointTests: XCTestCase {
         XCTAssertEqual(contains, false)
     }
     
-    func testContains_NoErrorDistance() {
-        let contains = point.contains(point, errorDistance: 0.0)
+    func testContains_NoTolerance() {
+        let contains = point.contains(point, tolerance: 0.0)
         
         XCTAssertEqual(contains, true)
     }
     
-    func testContains_OutsideErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335734)
+    func testContains_OutsideTolerance() {
+        let contains = point.contains(distancePoint, tolerance: 1335387)
         
         XCTAssertEqual(contains, false)
     }
     
-    func testContains_OnErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335734.603511751163751)
+    func testContains_OnTolerance() {
+        let contains = point.contains(distancePoint, tolerance: 1335387.647673850413412)
         
         XCTAssertEqual(contains, true)
     }
     
-    func testContains_InsideErrorDistance() {
-        let contains = point.contains(distancePoint, errorDistance: 1335735)
+    func testContains_InsideTolerance() {
+        let contains = point.contains(distancePoint, tolerance: 1335388)
         
         XCTAssertEqual(contains, true)
     }
@@ -110,7 +117,7 @@ class PointTests: XCTestCase {
     func testDistance() {
         let distance = point.distance(to: distancePoint)
         
-        AssertEqualAccuracy6(distance, 1335734.60351175)
+        AssertEqualAccuracy6(distance, 1335387.64767385)
     }
     
     func testDistance_Self() {
@@ -119,26 +126,26 @@ class PointTests: XCTestCase {
         AssertEqualAccuracy10(distance, 0.0)
     }
     
-    func testDistance_NoErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 0.0)
+    func testDistance_NoTolerance() {
+        let distance = point.distance(to: distancePoint, tolerance: 0.0)
         
-        AssertEqualAccuracy6(distance, 1335734.60351175)
+        AssertEqualAccuracy6(distance, 1335387.64767385)
     }
     
-    func testDistance_OutsideErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 1335734)
+    func testDistance_OutsideTolerance() {
+        let distance = point.distance(to: distancePoint, tolerance: 1335387)
         
-        AssertEqualAccuracy6(distance, 0.603511751163751)
+        AssertEqualAccuracy6(distance, 0.647673850413412)
     }
     
-    func testDistance_OnErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 1335734.60351175069809)
+    func testDistance_OnTolerance() {
+        let distance = point.distance(to: distancePoint, tolerance: 1335387.647673850413412)
         
         AssertEqualAccuracy6(distance, 0.0)
     }
     
-    func testDistance_InsideErrorDistance() {
-        let distance = point.distance(to: distancePoint, errorDistance: 1335735)
+    func testDistance_InsideTolerance() {
+        let distance = point.distance(to: distancePoint, tolerance: 1335735)
         
         AssertEqualAccuracy6(distance, 0.0)
     }
@@ -162,14 +169,25 @@ class PointTests: XCTestCase {
     }
     
     func testNormalize_StaysSame() {
+        let point = GeoTestHelper.point(1, 1)
+        
         let normalizedPoint = point.normalize
         
-        AssertEqualAccuracy10(normalizedPoint.longitude, point.longitude)
-        AssertEqualAccuracy10(normalizedPoint.latitude, point.latitude)
+        AssertEqualAccuracy10(normalizedPoint.longitude, 1.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 1.0)
     }
     
-    func testNormalize_Changes() {
-        let point = GeoTestHelper.point(-540, 270)
+    func testNormalize_StaysSame_AlmostMax() {
+        let point = GeoTestHelper.point(179, 89)
+        
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 89.0)
+    }
+    
+    func testNormalize_StaysSame_Max() {
+        let point = GeoTestHelper.point(180, 90)
         
         let normalizedPoint = point.normalize
         
@@ -177,47 +195,76 @@ class PointTests: XCTestCase {
         AssertEqualAccuracy10(normalizedPoint.latitude, 90.0)
     }
     
-    func testInitialBearing() {
-        let bearing = point.initialBearing(to: distancePoint)
+    func testNormalize_Changes_Min() {
+        let point = GeoTestHelper.point(-180, -90)
         
-        AssertEqualAccuracy10(bearing, 47.8193763709035)
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 180.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 90.0)
     }
     
-    func testInitialBearing_Reverse() {
-        let bearing = distancePoint.initialBearing(to: point)
+    func testNormalize_Changes_PastMin() {
+        let point = GeoTestHelper.point(-181, -91)
         
-        AssertEqualAccuracy10(bearing, 228.764352221902)
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 89.0)
     }
     
-    func testAverageBearing() {
-        let bearing = point.averageBearing(to: distancePoint)
+    func testNormalize_Changes_PastMax() {
+        let point = GeoTestHelper.point(181, 91)
         
-        AssertEqualAccuracy10(bearing, 48.1320345260737)
+        let normalizedPoint = point.normalize
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, -179.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, -89.0)
     }
     
-    func testAverageBearing_Reverse() {
-        let bearing = distancePoint.averageBearing(to: point)
+    func testNormalizePostitive_StaysSame_Min() {
+        let point = GeoTestHelper.point(0, 0)
         
-        AssertEqualAccuracy10(bearing, 228.132034526074)
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 0.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 0.0)
     }
     
-    func testFinalBearing() {
-        let bearing = point.finalBearing(to: distancePoint)
+    func testNormalizePostitive_StaysSame() {
+        let point = GeoTestHelper.point(1, 1)
         
-        AssertEqualAccuracy10(bearing, 48.7643522219023)
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 1.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 1.0)
     }
     
-    func testFinalBearing_Reverse() {
-        let bearing = distancePoint.finalBearing(to: point)
+    func testNormalizePostitive_StaysSame_AlmostMax() {
+        let point = GeoTestHelper.point(359, 179)
         
-        AssertEqualAccuracy10(bearing, 227.819376370904)
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 359.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 179.0)
     }
     
-    func testMidpoint() {
-        let midpoint = point.midpoint(with: distancePoint)
+    func testNormalizePostitive_Negative_Changes() {
+        let point = GeoTestHelper.point(-1, -1)
         
-        AssertEqualAccuracy10(midpoint.latitude, 6.01841622677193)
-        AssertEqualAccuracy10(midpoint.longitude, 5.46685861298068)
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 359.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 179.0)
+    }
+    
+    func testNormalizePostitive_Changes_Max() {
+        let point = GeoTestHelper.point(360, 180)
+        
+        let normalizedPoint = point.normalizePostitive
+        
+        AssertEqualAccuracy10(normalizedPoint.longitude, 0.0)
+        AssertEqualAccuracy10(normalizedPoint.latitude, 0.0)
     }
     
     func testEquals() {
@@ -225,13 +272,37 @@ class PointTests: XCTestCase {
     }
     
     func testEquals_Normalizes() {
-        let point1 = GeoTestHelper.point(-540, 270)
-        let point2 = GeoTestHelper.point(540, -270)
+        let point = GeoTestHelper.point(-540, 270)
+        let otherPoint = GeoTestHelper.point(540, -270)
         
-        XCTAssertEqual(point1, point2)
+        XCTAssertEqual(point, otherPoint)
     }
     
     func testNotEquals() {
         XCTAssertNotEqual(point, GeoTestHelper.point(0, 0, 0))
+    }
+    
+    func testEquals_PrecisionInequality() {
+        XCTAssertNotEqual(GeoTestHelper.point(-92.82512167000001, 10), GeoTestHelper.point(-92.82512167, 10))
+    }
+    
+    func testEquals_MaxedOutPrecisionForDouble_ShowsEqual() {
+        XCTAssertEqual(GeoTestHelper.point(-92.825121670000001, 10), GeoTestHelper.point(-92.82512167, 10))
+    }
+    
+    func testNotEquals_AltitudeAndNoAltitude() {
+        XCTAssertNotEqual(GeoTestHelper.point(0, 0), GeoTestHelper.point(0, 0, 0))
+    }
+    
+    func testNotEquals_AltitudeAndNoAltitude_Alternate() {
+        XCTAssertNotEqual(GeoTestHelper.point(0, 0, 1), GeoTestHelper.point(0, 0, nil))
+    }
+    
+    func testNotEquals_AltitudeMatches() {
+        XCTAssertEqual(GeoTestHelper.point(0, 0, 1), GeoTestHelper.point(0, 0, 1))
+    }
+    
+    func testNotEquals_AltitudeDoesNotMatch() {
+        XCTAssertNotEqual(GeoTestHelper.point(0, 0, 1), GeoTestHelper.point(0, 0, 0))
     }
 }

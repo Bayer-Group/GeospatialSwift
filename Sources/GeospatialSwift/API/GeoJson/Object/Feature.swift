@@ -1,7 +1,5 @@
 import Foundation
 
-internal typealias Feature = GeoJson.Feature
-
 public protocol GeoJsonFeature: GeoJsonObject {
     var geometry: GeoJsonGeometry? { get }
     var id: Any? { get }
@@ -20,7 +18,7 @@ extension GeoJson {
     public struct Feature: GeoJsonFeature {
         public let type: GeoJsonObjectType = .feature
         public var geoJson: GeoJsonDictionary {
-            var geoJson: GeoJsonDictionary = ["type": type.rawValue, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
+            var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
             if let id = id { geoJson["id"] = id }
             return geoJson
         }
@@ -43,7 +41,7 @@ extension GeoJson {
         public let properties: GeoJsonDictionary?
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal let idString: String?
         internal let idDouble: Double?
@@ -77,8 +75,8 @@ extension GeoJson {
             objectBoundingBox = geometry?.objectBoundingBox
         }
         
-        public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? { return geometry?.objectDistance(to: point, errorDistance: errorDistance) }
+        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return geometry?.objectDistance(to: point, tolerance: tolerance) }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return geometry?.contains(point, errorDistance: errorDistance) ?? false }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geometry?.contains(point, tolerance: tolerance) ?? false }
     }
 }

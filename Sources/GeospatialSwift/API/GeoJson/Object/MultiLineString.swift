@@ -1,7 +1,7 @@
-internal typealias MultiLineString = GeoJson.MultiLineString
-
-public protocol GeoJsonMultiLineString: GeoJsonMultiCoordinatesGeometry {
+public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     var lineStrings: [GeoJsonLineString] { get }
+    
+    func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]]
 }
 
 extension GeoJson {
@@ -29,16 +29,16 @@ extension GeoJson {
         
         public let lineStrings: [GeoJsonLineString]
         
-        public var points: [GeoJsonPoint] {
+        public var points: [GeodesicPoint] {
             return lineStrings.flatMap { $0.points }
         }
         
-        public var boundingBox: GeoJsonBoundingBox {
+        public var boundingBox: GeodesicBoundingBox {
             return BoundingBox.best(lineStrings.map { $0.boundingBox })!
         }
         
-        public var centroid: GeodesicPoint {
-            return Calculator.centroid(lines: lineStrings)
+        public var length: Double {
+            return lineStrings.reduce(0) { $0 + $1.length }
         }
         
         internal init?(coordinatesJson: [Any]) {
@@ -62,8 +62,12 @@ extension GeoJson {
             self.lineStrings = lineStrings
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return lineStrings.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return lineStrings.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return lineStrings.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]] {
+            return lineStrings.map { $0.invalidReasons(tolerance: tolerance) }
+        }
     }
 }

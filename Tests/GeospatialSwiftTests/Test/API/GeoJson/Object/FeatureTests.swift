@@ -5,6 +5,7 @@ import XCTest
 class FeatureTests: XCTestCase {
     var geometry: GeoJsonGeometry!
     var feature: Feature!
+    var featureNested: Feature!
     var featureWithPoint: Feature!
     var featureEmpty: Feature!
     var featureWithId1: Feature!
@@ -24,6 +25,8 @@ class FeatureTests: XCTestCase {
         
         let properties: GeoJsonDictionary = ["property1": "value1", "property2": ["key": "value"]]
         feature = GeoTestHelper.feature(geometry, "12345", properties)
+        
+        featureNested = GeoTestHelper.feature(GeoTestHelper.geometryCollection([geometry, geometry]))
         
         featureEmpty = GeoTestHelper.feature(nil, nil, nil)
         
@@ -53,6 +56,20 @@ class FeatureTests: XCTestCase {
         XCTAssertEqual(feature.objectGeometries as! [MultiPolygon], [feature.geometry as! MultiPolygon])
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(feature.coordinatesGeometries.count, 1)
+        XCTAssertEqual(feature.linearGeometries.count, 0)
+        XCTAssertEqual(feature.closedGeometries.count, 1)
+        
+        XCTAssertEqual(featureEmpty.coordinatesGeometries.count, 0)
+        XCTAssertEqual(featureEmpty.linearGeometries.count, 0)
+        XCTAssertEqual(featureEmpty.closedGeometries.count, 0)
+        
+        XCTAssertEqual(featureNested.coordinatesGeometries.count, 2)
+        XCTAssertEqual(featureNested.linearGeometries.count, 0)
+        XCTAssertEqual(featureNested.closedGeometries.count, 2)
+    }
+    
     func testObjectBoundingBox() {
         let resultBoundingBox = feature.objectBoundingBox
         let boundingBox = BoundingBox.best([feature.geometry!.objectBoundingBox!])
@@ -63,35 +80,44 @@ class FeatureTests: XCTestCase {
     }
     
     func testGeoJson() {
-        XCTAssertEqual(feature.geoJson.description, "[\"geometry\": [\"type\": \"MultiPolygon\", \"coordinates\": \(MockData.polygonsCoordinatesJson)], \"type\": \"Feature\", \"id\": \"12345\", \"properties\": [\"property2\": [\"key\": \"value\"], \"property1\": \"value1\"]]")
+        let properties = feature.geoJson["properties"] as? [String: Any]
+        let geometry = feature.geoJson["geometry"] as? [String: Any]
+        XCTAssertEqual(feature.geoJson["type"] as? String, "Feature")
+        XCTAssertEqual(feature.geoJson["id"] as? String, "12345")
+        XCTAssertEqual(properties?["property1"] as? String, "value1")
+        XCTAssertEqual(properties?["property2"] as? [String: String], ["key": "value"])
+        XCTAssertEqual(geometry?["type"] as? String, "MultiPolygon")
+        XCTAssertEqual(geometry?["coordinates"] as? [[[[Double]]]], MockData.polygons.compactMap { $0.geoJsonCoordinates as? [[[Double]]] })
         
-        XCTAssertEqual(featureEmpty.geoJson.description, "[\"type\": \"Feature\", \"geometry\": <null>, \"properties\": <null>]")
+        XCTAssertEqual(featureEmpty.geoJson["type"] as? String, "Feature")
+        XCTAssertEqual(featureEmpty.geoJson["geometry"] as? NSNull, NSNull())
+        XCTAssertEqual(featureEmpty.geoJson["properties"] as? NSNull, NSNull())
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
-        // TODO: Test me.
+    func testContainsWithTolerance() {
+        // SOMEDAY: Test me.
     }
     
     // Feature Tests
     
     func testId() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testIdAsString() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testProperties() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testGeometry() {
@@ -100,7 +126,7 @@ class FeatureTests: XCTestCase {
         XCTAssertNil(featureEmpty.geometry)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testEquals() {
         XCTAssertEqual(feature, feature)
         
@@ -110,7 +136,7 @@ class FeatureTests: XCTestCase {
         XCTAssertEqual(featureWithProperties1, featureWithProperties1Mixed)
     }
     
-    // TODO: Comparing the Json test data and this is confusing.
+    // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
         XCTAssertNotEqual(feature, featureWithPoint)
         

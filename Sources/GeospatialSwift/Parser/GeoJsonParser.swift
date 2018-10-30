@@ -3,48 +3,48 @@ internal protocol GeoJsonParserProtocol {
 }
 
 internal struct GeoJsonParser: GeoJsonParserProtocol {
-    // TODO does not handle optional "bbox" or "crs" members
+    // SOMEDAY: does not handle optional "bbox" or "crs" members
     func geoJsonObject(from geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObject? {
         guard let type = geoJsonObjectType(geoJsonDictionary: geoJsonDictionary) else { return nil }
         
         switch type {
         case .feature:
-            return Feature(geoJsonDictionary: geoJsonDictionary)
+            return GeoJson.Feature(geoJsonDictionary: geoJsonDictionary)
         case .featureCollection:
-            return FeatureCollection(geoJsonDictionary: geoJsonDictionary)
+            return GeoJson.FeatureCollection(geoJsonDictionary: geoJsonDictionary)
         default: return geometry(geoJsonDictionary: geoJsonDictionary, geoJsonObjectType: type)
         }
     }
 }
 
-internal extension GeoJsonParser {
-    fileprivate func geoJsonObjectType(geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObjectType? {
+private extension GeoJsonParser {
+    private func geoJsonObjectType(geoJsonDictionary: GeoJsonDictionary) -> GeoJsonObjectType? {
         guard let typeString = geoJsonDictionary["type"] as? String else { Log.warning("A valid geoJson must have a \"type\" key: String : \(geoJsonDictionary)"); return nil }
-        guard let type = GeoJsonObjectType(rawValue: typeString) else { Log.warning("Invalid GeoJson Geometry type: \(typeString)"); return nil }
+        guard let type = GeoJsonObjectType(name: typeString) else { Log.warning("Invalid GeoJson Geometry type: \(typeString)"); return nil }
         
         return type
     }
     
-    fileprivate func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
-        if geoJsonObjectType == .geometryCollection { return GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
+    private func geometry(geoJsonDictionary: GeoJsonDictionary, geoJsonObjectType: GeoJsonObjectType) -> GeoJsonGeometry? {
+        if geoJsonObjectType == .geometryCollection { return GeoJson.GeometryCollection(geoJsonDictionary: geoJsonDictionary) }
         
         guard let coordinates = geoJsonDictionary["coordinates"] as? [Any] else { Log.warning("A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array: String : \(geoJsonDictionary)"); return nil }
         
         switch geoJsonObjectType {
         case .point:
-            return Point(coordinatesJson: coordinates)
+            return GeoJson.Point(coordinatesJson: coordinates)
         case .multiPoint:
-            return MultiPoint(coordinatesJson: coordinates)
+            return GeoJson.MultiPoint(coordinatesJson: coordinates)
         case .lineString:
-            return LineString(coordinatesJson: coordinates)
+            return GeoJson.LineString(coordinatesJson: coordinates)
         case .multiLineString:
-            return MultiLineString(coordinatesJson: coordinates)
+            return GeoJson.MultiLineString(coordinatesJson: coordinates)
         case .polygon:
-            return Polygon(coordinatesJson: coordinates)
+            return GeoJson.Polygon(coordinatesJson: coordinates)
         case .multiPolygon:
-            return MultiPolygon(coordinatesJson: coordinates)
+            return GeoJson.MultiPolygon(coordinatesJson: coordinates)
         default:
-            Log.warning("\(geoJsonObjectType.rawValue) is not a valid Coordinates Geometry.")
+            Log.warning("\(geoJsonObjectType.name) is not a valid Coordinates Geometry.")
             return nil
         }
     }

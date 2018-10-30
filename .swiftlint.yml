@@ -1,6 +1,7 @@
 excluded:
   - Carthage
   - CarthageAlt
+  - .build
 
 disabled_rules:
  - trailing_whitespace
@@ -22,3 +23,13 @@ identifier_name:
     - Δλ
     - Bx
     - By
+    - duplicates(indices:)
+    - selfIntersects(segmentIndices:)
+    - selfIntersects(ringIndices:)
+    - ringInvalidReasons(_:)
+    - holeOutside(ringIndices:)
+    - multipointInvalidReasons(_:)
+    - lineStringInvalidReasons(_:)
+    - multiLineStringInvalidReasons(_:)
+    - polygonInvalidReasons(_:)
+    - multiPolygonInvalidReasons(_:)

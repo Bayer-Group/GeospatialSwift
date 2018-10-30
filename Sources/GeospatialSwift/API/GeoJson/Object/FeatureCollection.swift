@@ -1,5 +1,3 @@
-internal typealias FeatureCollection = GeoJson.FeatureCollection
-
 public protocol GeoJsonFeatureCollection: GeoJsonObject {
     var features: [GeoJsonFeature] { get }
 }
@@ -14,7 +12,7 @@ extension GeoJson {
     
     public struct FeatureCollection: GeoJsonFeatureCollection {
         public let type: GeoJsonObjectType = .featureCollection
-        public var geoJson: GeoJsonDictionary { return ["type": type.rawValue, "features": features.map { $0.geoJson } ] }
+        public var geoJson: GeoJsonDictionary { return ["type": type.name, "features": features.map { $0.geoJson } ] }
         
         public var description: String {
             return """
@@ -30,7 +28,7 @@ extension GeoJson {
         public let features: [GeoJsonFeature]
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let featuresJson = geoJsonDictionary["features"] as? [GeoJsonDictionary] else { Log.warning("A valid FeatureCollection must have a \"features\" key: String : \(geoJsonDictionary)"); return nil }
@@ -53,29 +51,17 @@ extension GeoJson {
             
             self.features = features
             
-            #if swift(>=4.1)
             let geometries = features.compactMap { $0.objectGeometries }.flatMap { $0 }
-            #else
-            let geometries = features.flatMap { $0.objectGeometries }.flatMap { $0 }
-            #endif
             
             self.objectGeometries = geometries.count > 0 ? geometries : nil
             
-            #if swift(>=4.1)
             objectBoundingBox = BoundingBox.best(geometries.compactMap { $0.objectBoundingBox })
-            #else
-            objectBoundingBox = BoundingBox.best(geometries.flatMap { $0.objectBoundingBox })
-            #endif
         }
         
-        public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? {
-            #if swift(>=4.1)
-            return features.compactMap { $0.objectDistance(to: point, errorDistance: errorDistance) }.min()
-            #else
-            return features.flatMap { $0.objectDistance(to: point, errorDistance: errorDistance) }.min()
-            #endif
+        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {
+            return features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min()
         }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return features.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return features.first { $0.contains(point, tolerance: tolerance) } != nil }
     }
 }

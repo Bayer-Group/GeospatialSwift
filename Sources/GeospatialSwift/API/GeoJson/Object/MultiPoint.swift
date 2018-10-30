@@ -1,6 +1,12 @@
-internal typealias MultiPoint = GeoJson.MultiPoint
+public enum MultipointInvalidReason {
+    case duplicates(indices: [Int])
+}
 
-public protocol GeoJsonMultiPoint: GeoJsonMultiCoordinatesGeometry { }
+public protocol GeoJsonMultiPoint: GeoJsonCoordinatesGeometry {
+    var geoJsonPoints: [GeoJsonPoint] { get }
+    
+    func invalidReasons(tolerance: Double) -> [MultipointInvalidReason]
+}
 
 extension GeoJson {
     /**
@@ -12,7 +18,7 @@ extension GeoJson {
     
     public struct MultiPoint: GeoJsonMultiPoint {
         public var type: GeoJsonObjectType { return .multiPoint }
-        public var geoJsonCoordinates: [Any] { return points.map { $0.geoJsonCoordinates } }
+        public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
         public var description: String {
             return """
@@ -25,18 +31,11 @@ extension GeoJson {
             """
         }
         
-        public let points: [GeoJsonPoint]
+        public var points: [GeodesicPoint] { return geoJsonPoints }
+        public let geoJsonPoints: [GeoJsonPoint]
         
-        public var boundingBox: GeoJsonBoundingBox {
-            #if swift(>=4.1)
-            return BoundingBox.best(points.compactMap { $0.boundingBox })!
-            #else
-            return BoundingBox.best(points.flatMap { $0.boundingBox })!
-            #endif
-        }
-        
-        public var centroid: GeodesicPoint {
-            return Calculator.centroid(points: points)
+        public var boundingBox: GeodesicBoundingBox {
+            return BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })!
         }
         
         internal init?(coordinatesJson: [Any]) {
@@ -57,11 +56,19 @@ extension GeoJson {
         fileprivate init?(points: [GeoJsonPoint]) {
             guard points.count >= 1 else { Log.warning("A valid MultiPoint must have at least one Point"); return nil }
             
-            self.points = points
+            geoJsonPoints = points
         }
         
-        public func distance(to point: GeodesicPoint, errorDistance: Double) -> Double { return points.map { $0.distance(to: point, errorDistance: errorDistance) }.min()! }
+        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return geoJsonPoints.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return points.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geoJsonPoints.first { $0.contains(point, tolerance: tolerance) } != nil }
+        
+        public func invalidReasons(tolerance: Double) -> [MultipointInvalidReason] {
+            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
+            
+            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+            
+            return []
+        }
     }
 }

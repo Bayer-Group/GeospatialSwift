@@ -1,4 +1,4 @@
-public protocol GeoJsonGeohashBox: GeoJsonBoundingBox {
+public protocol GeoJsonGeohashBox: GeodesicBoundingBox {
     var geohash: String { get }
     
     func geohashNeighbor(direction: GeohashCompassPoint, precision: Int) -> GeoJsonGeohashBox

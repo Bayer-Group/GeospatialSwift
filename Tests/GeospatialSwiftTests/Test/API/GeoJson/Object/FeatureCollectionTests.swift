@@ -5,15 +5,17 @@ import XCTest
 class FeatureCollectionTests: XCTestCase {
     var features: [Feature]!
     var featureCollection: FeatureCollection!
+    var featureCollectionNested: FeatureCollection!
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        features = MockData.features as! [Feature]
+        features = MockData.features as? [Feature]
         
         featureCollection = GeoTestHelper.featureCollection(features)
+        
+        featureCollectionNested = GeoTestHelper.featureCollection(features + [GeoTestHelper.feature(GeoTestHelper.geometryCollection(MockData.polygons))])
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -28,39 +30,57 @@ class FeatureCollectionTests: XCTestCase {
         XCTAssertEqual(featureCollection.objectGeometries?.count, 3)
     }
     
+    func testGeometryTypes() {
+        XCTAssertEqual(featureCollection.coordinatesGeometries.count, 3)
+        XCTAssertEqual(featureCollection.linearGeometries.count, 1)
+        XCTAssertEqual(featureCollection.closedGeometries.count, 1)
+        
+        XCTAssertEqual(featureCollectionNested.coordinatesGeometries.count, 5)
+        XCTAssertEqual(featureCollectionNested.linearGeometries.count, 1)
+        XCTAssertEqual(featureCollectionNested.closedGeometries.count, 3)
+    }
+    
     func testObjectBoundingBox() {
         let resultBoundingBox = featureCollection.objectBoundingBox
         
-        #if swift(>=4.1)
         let boundingBox = BoundingBox.best(featureCollection.features.compactMap { $0.geometry?.objectBoundingBox })
-        #else
-        let boundingBox = BoundingBox.best(featureCollection.features.flatMap { $0.geometry?.objectBoundingBox })
-        #endif
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
     }
     
     func testGeoJson() {
-        let lineStringGeoJson = "[\"type\": \"LineString\", \"coordinates\": \(MockData.pointsCoordinatesJson)]"
-        let polygonGeoJson = "[\"type\": \"Polygon\", \"coordinates\": \(MockData.linearRingsCoordinatesJson)]"
-        let featureGeoJson1 = "[\"type\": \"Feature\", \"geometry\": [\"type\": \"Point\", \"coordinates\": [1.0, 2.0, 3.0]], \"properties\": <null>]"
-        let featureGeoJson2 = "[\"type\": \"Feature\", \"geometry\": \(lineStringGeoJson), \"properties\": <null>]"
-        let featureGeoJson3 = "[\"type\": \"Feature\", \"geometry\": \(polygonGeoJson), \"properties\": <null>]"
-        let featuresGeoJson = "[\(featureGeoJson1), \(featureGeoJson2), \(featureGeoJson3)]"
+        let features = (featureCollection.geoJson["features"] as? [[String: Any]])
+        XCTAssertEqual(featureCollection.geoJson["type"] as? String, "FeatureCollection")
+        XCTAssertEqual(features?.count, 3)
+        XCTAssertEqual(features?[0]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[0]["properties"] as? NSNull, NSNull())
+        let feature1 = features?[0]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature1?["type"] as? String, "Point")
+        XCTAssertEqual(feature1?["coordinates"] as? [Double], MockData.point.geoJsonCoordinates as? [Double])
         
-        XCTAssertEqual(featureCollection.geoJson.description, "[\"type\": \"FeatureCollection\", \"features\": \(featuresGeoJson)]")
+        XCTAssertEqual(features?[1]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[1]["properties"] as? NSNull, NSNull())
+        let feature2 = features?[1]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature2?["type"] as? String, "LineString")
+        XCTAssertEqual(feature2?["coordinates"] as? [[Double]], MockData.pointsCoordinatesJson)
+        
+        XCTAssertEqual(features?[2]["type"] as? String, "Feature")
+        XCTAssertEqual(features?[2]["properties"] as? NSNull, NSNull())
+        let feature3 = features?[2]["geometry"] as? [String: Any]
+        XCTAssertEqual(feature3?["type"] as? String, "Polygon")
+        XCTAssertEqual(feature3?["coordinates"] as? [[[Double]]], MockData.linearRingsCoordinatesJson)
     }
     
     func testObjectDistance() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
     func testContains() {
-        // TODO: Test me.
+        // SOMEDAY: Test me.
     }
     
-    func testContainsWithErrorDistance() {
-        // TODO: Test me.
+    func testContainsWithTolerance() {
+        // SOMEDAY: Test me.
     }
     
     // Feature Collection Tests
@@ -70,7 +90,7 @@ class FeatureCollectionTests: XCTestCase {
         
         XCTAssertTrue(featureCollection.features[0].geometry is Point)
         XCTAssertTrue(featureCollection.features[1].geometry is LineString)
-        XCTAssertTrue(featureCollection.features[2].geometry is GeospatialSwift.Polygon)
+        XCTAssertTrue(featureCollection.features[2].geometry is Polygon)
     }
     
     func testEquals() {

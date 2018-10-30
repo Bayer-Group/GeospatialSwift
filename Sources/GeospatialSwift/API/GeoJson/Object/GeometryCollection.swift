@@ -1,5 +1,3 @@
-internal typealias GeometryCollection = GeoJson.GeometryCollection
-
 public protocol GeoJsonGeometryCollection: GeoJsonGeometry { }
 
 extension GeoJson {
@@ -12,7 +10,7 @@ extension GeoJson {
     
     public struct GeometryCollection: GeoJsonGeometryCollection {
         public let type: GeoJsonObjectType = .geometryCollection
-        public var geoJson: GeoJsonDictionary { return ["type": type.rawValue, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
+        public var geoJson: GeoJsonDictionary { return ["type": type.name, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
         
         public var description: String {
             return """
@@ -26,7 +24,7 @@ extension GeoJson {
         }
         
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeoJsonBoundingBox?
+        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
@@ -44,21 +42,13 @@ extension GeoJson {
         fileprivate init(geometries: [GeoJsonGeometry]?) {
             self.objectGeometries = geometries
             
-            #if swift(>=4.1)
             objectBoundingBox = BoundingBox.best(geometries?.compactMap { $0.objectBoundingBox } ?? [])
-            #else
-            objectBoundingBox = BoundingBox.best(geometries?.flatMap { $0.objectBoundingBox } ?? [])
-            #endif
         }
         
-        public func objectDistance(to point: GeodesicPoint, errorDistance: Double) -> Double? {
-            #if swift(>=4.1)
-            return objectGeometries?.compactMap { $0.objectDistance(to: point, errorDistance: errorDistance) }.min()
-            #else
-            return objectGeometries?.flatMap { $0.objectDistance(to: point, errorDistance: errorDistance) }.min()
-            #endif
+        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {
+            return objectGeometries?.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min()
         }
         
-        public func contains(_ point: GeodesicPoint, errorDistance: Double) -> Bool { return objectGeometries?.first { $0.contains(point, errorDistance: errorDistance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return objectGeometries?.first { $0.contains(point, tolerance: tolerance) } != nil }
     }
 }
