@@ -62,7 +62,7 @@ public class BoundingBox: GeodesicBoundingBox {
     
     public var box: GeodesicPolygon { return SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     
-    init(boundingCoordinates: BoundingCoordinates) {
+    public init(boundingCoordinates: BoundingCoordinates) {
         minLongitude = boundingCoordinates.minLongitude
         minLatitude = boundingCoordinates.minLatitude
         maxLongitude = boundingCoordinates.maxLongitude
@@ -124,7 +124,7 @@ public class BoundingBox: GeodesicBoundingBox {
 }
 
 public extension BoundingBox {
-    public static func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox? {
+    static func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox? {
         guard let firstBoundingBox = boundingBoxes.first else { return nil }
         
         guard let boundingBoxesTail = boundingBoxes.tail, !boundingBoxesTail.isEmpty else { return firstBoundingBox }

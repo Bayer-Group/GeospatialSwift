@@ -174,7 +174,7 @@ extension GeohashCoder {
         var parity = Parity.even
         
         for character in geohash {
-            guard let bitmap = decimalToBase32Map.index(of: character) else { Log.warning("Invalid geohash: \(geohash)"); return nil }
+            guard let bitmap = decimalToBase32Map.firstIndex(of: character) else { Log.warning("Invalid geohash: \(geohash)"); return nil }
             
             var mask = Int(base32BitflowInit)
             

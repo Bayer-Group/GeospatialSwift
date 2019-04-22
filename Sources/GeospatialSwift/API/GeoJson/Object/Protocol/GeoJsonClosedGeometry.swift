@@ -10,5 +10,5 @@ public protocol GeoJsonClosedGeometry: GeoJsonCoordinatesGeometry {
 }
 
 public extension GeoJsonClosedGeometry {
-    public func edgeDistance(to point: GeodesicPoint) -> Double { return edgeDistance(to: point, tolerance: 0) }
+    func edgeDistance(to point: GeodesicPoint) -> Double { return edgeDistance(to: point, tolerance: 0) }
 }
