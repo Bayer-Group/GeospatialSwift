@@ -1,7 +1,12 @@
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
     
-    func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]]
+    func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason]
+}
+
+public enum MultiPolygonInvalidReason {
+    case polygonInvalid(reasons: [Int: [PolygonInvalidReason]])
+    case polygonsIntersect(indices: [Int])
 }
 
 extension GeoJson {
@@ -66,10 +71,94 @@ extension GeoJson {
         
         public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+            // If it's on a line, we're done.
+            for polygon in polygons {
+                for segment in polygon.geoJsonLinearRings {
+                    if segment.contains(point, tolerance: tolerance) {
+                        return false
+                    }
+                }
+                
+                let mainRingContains = Calculator.contains(point, in: polygon.geoJsonMainRing, tolerance: tolerance)
+                // Skip running hole contains calculations if mainRingContains is false
+                var holeContains = false
+                
+                for negativePolygon in polygon.geoJsonNegativeRings {
+                    if Calculator.contains(point, in: negativePolygon, tolerance: tolerance) {
+                        holeContains = true
+                        break
+                    }
+                }
+                
+                let baseContains = mainRingContains && !holeContains
+                
+                if tolerance < 0 && baseContains {
+                    if polygon.edgeDistance(to: point, tolerance: tolerance) >= -tolerance { return true }
+                }
+                
+                if tolerance > 0 {
+                    if baseContains || polygon.edgeDistance(to: point, tolerance: tolerance) <= tolerance { return true }
+                }
+            }
+            
+            return false
+        }
         
-        public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] {
-            return polygons.map { $0.invalidReasons(tolerance: tolerance) }
+        public func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason] {
+            var reasons = [MultiPolygonInvalidReason]()
+            
+            //reasons.append(.polygonInvalid(reasons: polygons.map { $0.invalidReasons(tolerance: tolerance) }))
+            polygons.enumerated().forEach { index, polygon in
+                let reason = polygon.invalidReasons(tolerance: tolerance)
+                if reason.count>0 {
+                    reasons.append(.polygonInvalid(reasons: [index: polygon.invalidReasons(tolerance: tolerance)]))
+                }
+            }
+        
+            for index in 0..<polygons.count {
+                for indexOther in 0..<index {
+                    if hasIntersection(polygons[index], with: polygons[indexOther], tolerance: tolerance) {
+                        reasons.append(.polygonsIntersect(indices: [index, indexOther]))
+                    }
+                }
+            }
+            
+            return reasons
+        }
+        
+        public func hasIntersection(_ polygon: GeoJsonPolygon, with otherPolygon: GeoJsonPolygon, tolerance: Double) -> Bool {
+            for segment in polygon.mainRing.segments {
+                if hasIntersection(segment, with: otherPolygon, tolerance: tolerance) { return true }
+            }
+            
+            return false
+        }
+        
+        private func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeoJsonPolygon, tolerance: Double) -> Bool {
+            let polygonIntersects = polygon.linearRings.map { $0.segments }.contains {
+                $0.contains { hasIntersectionForMultiPolygon($0, with: lineSegment, tolerance: tolerance) }
+            }
+            
+            return polygonIntersects || (contains(lineSegment.point, tolerance: tolerance) && (contains(lineSegment.otherPoint, tolerance: tolerance)))
+        }
+        
+        private func hasIntersectionForMultiPolygon(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+            if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
+                //segments touching is valid for MultiPolygon
+                return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)
+            }
+            
+            return false
+        }
+        
+        private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+            if Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
+            if !Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
+            if Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && !Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
+            if !Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
+            
+            return false
         }
     }
 }

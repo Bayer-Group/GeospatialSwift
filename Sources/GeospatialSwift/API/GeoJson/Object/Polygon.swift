@@ -112,19 +112,26 @@ extension GeoJson {
         // Polygon with reversed winding order
         // Polygon with hole where hole has invalid winding order
         public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
-            let ringInvalidReasons = geoJsonLinearRings.compactMap { $0.invalidReasons(tolerance: tolerance) }
+            var geoJsonLinearRingsDropLastPoint = [GeoJsonLineString]()
+            geoJsonLinearRings.forEach {
+                if let geoJsonLinearRingDropLastPoint = LineString(coordinatesJson: $0.geoJsonCoordinates.dropLast()) {
+                    geoJsonLinearRingsDropLastPoint.append(geoJsonLinearRingDropLastPoint)
+                }
+            }
+            let ringInvalidReasons = geoJsonLinearRingsDropLastPoint.compactMap { $0.invalidReasons(tolerance: tolerance) }.filter { $0.count>0 }
             
             guard ringInvalidReasons.isEmpty else { return [.ringInvalidReasons(ringInvalidReasons)] }
             
-            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
+            let pointDropLast = geoJsonLinearRingsDropLastPoint.flatMap { $0.geoJsonPoints }
+            let duplicateIndices = Calculator.equalsIndices(pointDropLast, tolerance: tolerance)
             
             guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
             
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance).filter { !$0.isEmpty }
             
             guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
             
-            let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: mainRing, tolerance: tolerance) } }.map { $0.offset }
+            let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: self, tolerance: tolerance) } }.map { $0.offset }
             
             guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
             

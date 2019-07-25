@@ -26,6 +26,7 @@ final class MockData {
     static let lineStrings: [GeoJsonLineString] = linesPoints.map { geoJson.lineString(points: $0)! }
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
+    static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let geometries: [GeoJsonGeometry] = [
         MockData.point,
         geoJson.multiPoint(points: MockData.points)!,
@@ -42,10 +43,10 @@ final class MockData {
     
     static let pointsCoordinatesJson = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]]
     static let lineStringsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]
-    static let linearRingsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]]
+    static let linearRingsCoordinatesJson = [[[0.0, 0.0, 3.0], [3.0, 0.0, 4.0], [3.0, 3.0, 5.0], [0.0, 3.0, 4.0]], [[1.0, 1.0, 3.0], [1.0, 2.0, 4.0], [2.0, 2.0, 5.0], [2.0, 1.0, 4.0]]]
     
-    private static let partialPolygonsCoordinates1 = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0], [1.0, 3.0, 4.0], [1.0, 2.0, 3.0]]
-    private static let partialPolygonsCoordinates2 = [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [2.0, 4.0, 4.0], [2.0, 3.0, 3.0]]
+    private static let partialPolygonsCoordinates1 = [[0.0, 0.0, 3.0], [3.0, 0.0, 4.0], [3.0, 3.0, 5.0], [0.0, 3.0, 4.0], [0.0, 0.0, 3.0]]
+    private static let partialPolygonsCoordinates2 = [[1.0, 1.0, 3.0], [1.0, 2.0, 4.0], [2.0, 2.0, 5.0], [2.0, 1.0, 4.0], [1.0, 1.0, 3.0]]
     private static let partialPolygonsCoordinates3 = [[5.0, 6.0, 13.0], [6.0, 6.0, 14.0], [6.0, 7.0, 15.0], [5.0, 7.0, 14.0], [5.0, 6.0, 13.0]]
     private static let partialPolygonsCoordinates4 = [[6.0, 7.0, 13.0], [7.0, 7.0, 14.0], [7.0, 8.0, 15.0], [6.0, 8.0, 14.0], [6.0, 7.0, 13.0]]
     static let polygonsCoordinatesJson = [[partialPolygonsCoordinates1, partialPolygonsCoordinates2], [partialPolygonsCoordinates3, partialPolygonsCoordinates4]]
@@ -70,8 +71,8 @@ extension MockData {
     
     private static let polygonPointsList: [[[GeoJsonPoint]]] = [
         [
-            [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 3, 4), GeoTestHelper.point(1, 2, 3)],
-            [GeoTestHelper.point(2, 3, 3), GeoTestHelper.point(3, 3, 4), GeoTestHelper.point(3, 4, 5), GeoTestHelper.point(2, 4, 4), GeoTestHelper.point(2, 3, 3)]
+            [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4), GeoTestHelper.point(3, 3, 5), GeoTestHelper.point(0, 3, 4), GeoTestHelper.point(0, 0, 3)],
+            [GeoTestHelper.point(1, 1, 3), GeoTestHelper.point(1, 2, 4), GeoTestHelper.point(2, 2, 5), GeoTestHelper.point(2, 1, 4), GeoTestHelper.point(1, 1, 3)]
         ],
         [
             [GeoTestHelper.point(5, 6, 13), GeoTestHelper.point(6, 6, 14), GeoTestHelper.point(6, 7, 15), GeoTestHelper.point(5, 7, 14), GeoTestHelper.point(5, 6, 13)],
@@ -80,4 +81,15 @@ extension MockData {
     ]
     
     private static let linearRingsList: [[GeoJsonLineString]] = polygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
+    
+    private static let touchingPolygonPointsList: [[[GeoJsonPoint]]] = [
+        [
+            [GeoTestHelper.point(0, 0), GeoTestHelper.point(0, 1), GeoTestHelper.point(1, 1), GeoTestHelper.point(1, 0), GeoTestHelper.point(0, 0)]
+        ],
+        [
+            [GeoTestHelper.point(1, 1), GeoTestHelper.point(1, 2), GeoTestHelper.point(2, 2), GeoTestHelper.point(2, 1), GeoTestHelper.point(1, 1)]
+        ]
+    ]
+    
+    private static let touchingLinearRingsList: [[GeoJsonLineString]] = touchingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
 }

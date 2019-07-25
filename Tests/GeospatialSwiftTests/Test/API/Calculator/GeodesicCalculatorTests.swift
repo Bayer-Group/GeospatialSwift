@@ -129,15 +129,6 @@ class GeodesicCalculatorTests: XCTestCase {
         XCTAssertEqual(intersects, true)
     }
     
-    func testHasIntersection_LineTouchingPolygon_PointOutside_OtherPointTouching() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 2.0, latitude: 2.0), otherPoint: SimplePoint(longitude: 1.0, latitude: 1.0))
-        let polygon = MockData.box
-        
-        let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
-        
-        XCTAssertEqual(intersects, false)
-    }
-    
     func testHasIntersection_LineSegments_Cross() {
         let line = SimpleLine(points: [
             SimplePoint(longitude: 0, latitude: 0),

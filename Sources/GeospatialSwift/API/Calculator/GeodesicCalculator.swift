@@ -27,7 +27,6 @@ public protocol GeodesicCalculatorProtocol {
     func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool
     func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool
     func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    func hasIntersection(_ polygon: GeodesicPolygon, with otherPolygon: GeodesicPolygon, tolerance: Double) -> Bool
     
     func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint?
     func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int]
@@ -354,28 +353,6 @@ extension GeodesicCalculator {
         return baseContains
     }
     
-    public func containsForMultiPolygon(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool {
-        // Must at least be within the bounding box.
-        // guard polygon.boundingBox.contains(point: point, tolerance: tolerance) else { return false }
-        
-        // If it's on a line, we're done.
-        if (polygon.linearRings.map { contains(point, in: $0, tolerance: tolerance) }.first { $0 == true } ?? false) { return false }
-        
-        let mainRingContains = contains(point: point, vertices: polygon.mainRing.points)
-        // Skip running hole contains calculations if mainRingContains is false
-        let holeContains: () -> (Bool) = {
-            return polygon.negativeRings.map { $0.points }.first { self.contains(point: point, vertices: $0) } != nil
-        }
-        
-        let baseContains = mainRingContains && !holeContains()
-        
-        if tolerance < 0 && baseContains { return edgeDistance(from: point, to: polygon, tolerance: 0) >= -tolerance }
-        
-        if tolerance > 0 { return baseContains || edgeDistance(from: point, to: polygon, tolerance: 0) <= tolerance }
-        
-        return baseContains
-    }
-    
     // SOMEDAY: Not geodesic.
     private func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
         guard !vertices.isEmpty else { return false }
@@ -414,39 +391,12 @@ extension GeodesicCalculator {
         return distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0
     }
     
-    private func hasIntersectionForMultiPolygon(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-        if distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
-            //segments touching is valid for MultiPolygon
-            return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)
-        }
-        
-        return false
-    }
-    
-    private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-        if contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && !contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
-        if !contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
-        if contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && !contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
-        if !contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
-        
-        return false
-    }
-    
-    // SOMEDAY: Consider holes
     public func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool {
         let polygonIntersects = polygon.linearRings.map { $0.segments }.contains {
-            $0.contains { hasIntersectionForMultiPolygon($0, with: lineSegment, tolerance: tolerance) }
+            $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
         }
         
-        return polygonIntersects || containsForMultiPolygon(lineSegment.point, in: polygon, tolerance: tolerance)
-    }
-    
-    public func hasIntersection(_ polygon: GeodesicPolygon, with otherPolygon: GeodesicPolygon, tolerance: Double) -> Bool {
-        for segment in polygon.mainRing.segments {
-            if hasIntersection(segment, with: otherPolygon, tolerance: tolerance) { return true }
-        }
-        
-        return false
+        return polygonIntersects || contains(lineSegment.point, in: polygon, tolerance: tolerance)
     }
     
     public func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool {
@@ -498,13 +448,31 @@ extension GeodesicCalculator {
     // Polygon where hole intersects with same point as exterior edge point
     // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
     public func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]] {
-        return polygon.linearRings.map { $0.segments }.map { ringSegments in
-            return ringSegments.map { lineSegment in
-                ringSegments.enumerated().filter {
-                    intersection(of: $1, with: lineSegment) != nil
-                }.map { $0.offset }
+//        return polygon.linearRings.map { $0.segments }.map { ringSegments in
+////            return ringSegments.map { lineSegment in
+////                ringSegments.enumerated().filter {
+////                    intersection(of: $1, with: lineSegment) != nil
+////                }.map { $0.offset }
+////            }
+//        }
+        var intersectionIndices = [[[Int]]]()
+        let rings = polygon.linearRings
+        for index in 1..<rings.count {
+            var intersectionIndex = [[Int]]()
+            let segments = rings[index].segments
+            for segment in segments {
+                for indexOther in 0..<index {
+                    let segmentsOther = rings[indexOther].segments
+                    for segmentOther in segmentsOther {
+                        if hasIntersection(segment, with: segmentOther, tolerance: tolerance) {
+                            intersectionIndex.append([index, indexOther])
+                        }
+                    }
+                }
             }
+            intersectionIndices.append(intersectionIndex)
         }
+        return intersectionIndices
     }
     
     // Does not return a point if overlaping the path

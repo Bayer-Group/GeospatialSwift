@@ -5,6 +5,7 @@ import XCTest
 class MultiPolygonTests: XCTestCase {
     var polygons: [Polygon]!
     var multiPolygon: MultiPolygon!
+    var touchingMultiPolygon: MultiPolygon!
     var distancePoint: SimplePoint!
     
     var point: GeoJsonPoint!
@@ -19,6 +20,8 @@ class MultiPolygonTests: XCTestCase {
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
         point = GeoTestHelper.point(0, 0, 0)
+        
+        touchingMultiPolygon = GeoTestHelper.multiPolygon(MockData.touchingPolygons)
     }
     
     // GeoJsonObject Tests
@@ -36,6 +39,10 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.coordinatesGeometries.count, 1)
         XCTAssertEqual(multiPolygon.linearGeometries.count, 0)
         XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
+    }
+    
+    func testTouchingMultiPolygonsValid() {
+        XCTAssertEqual(touchingMultiPolygon.invalidReasons(tolerance: 0).count, 0)
     }
     
     func testObjectBoundingBox() {
