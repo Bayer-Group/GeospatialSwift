@@ -27,6 +27,7 @@ final class MockData {
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
+    static let sharingEdgePolygons: [GeoJsonPolygon] = sharingEdgeLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let geometries: [GeoJsonGeometry] = [
         MockData.point,
         geoJson.multiPoint(points: MockData.points)!,
@@ -92,4 +93,15 @@ extension MockData {
     ]
     
     private static let touchingLinearRingsList: [[GeoJsonLineString]] = touchingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
+    
+    private static let sharingEdgePolygonPointsList: [[[GeoJsonPoint]]] = [
+        [
+            [GeoTestHelper.point(0, 0), GeoTestHelper.point(0, 1), GeoTestHelper.point(1, 1), GeoTestHelper.point(1, 0), GeoTestHelper.point(0, 0)]
+        ],
+        [
+            [GeoTestHelper.point(1, 0), GeoTestHelper.point(2, 0), GeoTestHelper.point(2, 1), GeoTestHelper.point(1, 1), GeoTestHelper.point(1, 0)]
+        ]
+    ]
+    
+    private static let sharingEdgeLinearRingsList: [[GeoJsonLineString]] = sharingEdgePolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
 }

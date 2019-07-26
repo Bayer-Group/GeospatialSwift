@@ -72,33 +72,20 @@ extension GeoJson {
         public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
         
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            // If it's on a line, we're done.
+            for polygon in polygons {
+                if polygon.contains(point) { return true }
+            }
+            
+            return false
+        }
+        
+        private func isOnEdge(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+            // Exception: If it's on a line, we're done.
             for polygon in polygons {
                 for segment in polygon.geoJsonLinearRings {
                     if segment.contains(point, tolerance: tolerance) {
-                        return false
+                        return true
                     }
-                }
-                
-                let mainRingContains = Calculator.contains(point, in: polygon.geoJsonMainRing, tolerance: tolerance)
-                // Skip running hole contains calculations if mainRingContains is false
-                var holeContains = false
-                
-                for negativePolygon in polygon.geoJsonNegativeRings {
-                    if Calculator.contains(point, in: negativePolygon, tolerance: tolerance) {
-                        holeContains = true
-                        break
-                    }
-                }
-                
-                let baseContains = mainRingContains && !holeContains
-                
-                if tolerance < 0 && baseContains {
-                    if polygon.edgeDistance(to: point, tolerance: tolerance) >= -tolerance { return true }
-                }
-                
-                if tolerance > 0 {
-                    if baseContains || polygon.edgeDistance(to: point, tolerance: tolerance) <= tolerance { return true }
                 }
             }
             
@@ -140,7 +127,7 @@ extension GeoJson {
                 $0.contains { hasIntersectionForMultiPolygon($0, with: lineSegment, tolerance: tolerance) }
             }
             
-            return polygonIntersects || (contains(lineSegment.point, tolerance: tolerance) && (contains(lineSegment.otherPoint, tolerance: tolerance)))
+            return polygonIntersects || (contains(lineSegment.point, tolerance: tolerance) && !isOnEdge(lineSegment.point, tolerance: tolerance) )  || (contains(lineSegment.otherPoint, tolerance: tolerance) && !isOnEdge(lineSegment.otherPoint, tolerance: tolerance))
         }
         
         private func hasIntersectionForMultiPolygon(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -153,10 +140,10 @@ extension GeoJson {
         }
         
         private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
-            if !Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: 0) && Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: 0) { return true }
-            if Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && !Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
-            if !Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: 0) && Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: 0) { return true }
+            if Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: tolerance) { return true }
+            if !Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: tolerance) && Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: tolerance) { return true }
+            if Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: tolerance) { return true }
+            if !Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: tolerance) && Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: tolerance) { return true }
             
             return false
         }

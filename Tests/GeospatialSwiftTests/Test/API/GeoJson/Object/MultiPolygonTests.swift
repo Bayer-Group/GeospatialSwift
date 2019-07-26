@@ -6,6 +6,7 @@ class MultiPolygonTests: XCTestCase {
     var polygons: [Polygon]!
     var multiPolygon: MultiPolygon!
     var touchingMultiPolygon: MultiPolygon!
+    var sharingEdgeMultiPolygons: MultiPolygon!
     var distancePoint: SimplePoint!
     
     var point: GeoJsonPoint!
@@ -22,6 +23,8 @@ class MultiPolygonTests: XCTestCase {
         point = GeoTestHelper.point(0, 0, 0)
         
         touchingMultiPolygon = GeoTestHelper.multiPolygon(MockData.touchingPolygons)
+        
+        sharingEdgeMultiPolygons = GeoTestHelper.multiPolygon(MockData.sharingEdgePolygons)
     }
     
     // GeoJsonObject Tests
@@ -41,8 +44,18 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
     }
     
-    func testTouchingMultiPolygonsValid() {
+    func testTouchingMultiPolygonsIsValid() {
         XCTAssertEqual(touchingMultiPolygon.invalidReasons(tolerance: 0).count, 0)
+    }
+    
+    func testSharingEdgeMultiPolygonsIsInvalid() {
+        let invalidReasons = sharingEdgeMultiPolygons.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 1)
+        if case MultiPolygonInvalidReason.polygonsIntersect(indices: [1, 0]) = invalidReasons.first! {
+            XCTAssertTrue(true)
+        } else {
+            XCTAssertTrue(false)
+        }
     }
     
     func testObjectBoundingBox() {
