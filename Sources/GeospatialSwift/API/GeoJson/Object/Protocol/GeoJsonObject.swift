@@ -80,7 +80,7 @@ extension GeoJsonObject {
 public enum GeoJsonInvalidReason {
     case multipointInvalidReasons(_: [MultipointInvalidReason])
     case lineStringInvalidReasons(_: [LineStringInvalidReason])
-    case multiLineStringInvalidReasons(_: [[LineStringInvalidReason]])
+    case multiLineStringInvalidReasons(_: [MultiLineStringInvalidReason])
     case polygonInvalidReasons(_: [PolygonInvalidReason])
     case multiPolygonInvalidReasons(_: [MultiPolygonInvalidReason])
 }

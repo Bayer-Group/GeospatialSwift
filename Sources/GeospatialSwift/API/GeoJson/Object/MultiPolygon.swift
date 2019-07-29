@@ -79,19 +79,6 @@ extension GeoJson {
             return false
         }
         
-        private func isOnEdge(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            // Exception: If it's on a line, we're done.
-            for polygon in polygons {
-                for segment in polygon.geoJsonLinearRings {
-                    if segment.contains(point, tolerance: tolerance) {
-                        return true
-                    }
-                }
-            }
-            
-            return false
-        }
-        
         public func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason] {
             var reasons = [MultiPolygonInvalidReason]()
             
@@ -103,7 +90,7 @@ extension GeoJson {
                 }
             }
         
-            for index in 0..<polygons.count {
+            for index in 1..<polygons.count {
                 for indexOther in 0..<index {
                     if hasIntersection(polygons[index], with: polygons[indexOther], tolerance: tolerance) {
                         reasons.append(.polygonsIntersect(indices: [index, indexOther]))
@@ -124,13 +111,26 @@ extension GeoJson {
         
         private func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeoJsonPolygon, tolerance: Double) -> Bool {
             let polygonIntersects = polygon.linearRings.map { $0.segments }.contains {
-                $0.contains { hasIntersectionForMultiPolygon($0, with: lineSegment, tolerance: tolerance) }
+                $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
             }
             
             return polygonIntersects || (contains(lineSegment.point, tolerance: tolerance) && !isOnEdge(lineSegment.point, tolerance: tolerance) )  || (contains(lineSegment.otherPoint, tolerance: tolerance) && !isOnEdge(lineSegment.otherPoint, tolerance: tolerance))
         }
         
-        private func hasIntersectionForMultiPolygon(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+        private func isOnEdge(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+            // Exception: If it's on a line, we're done.
+            for polygon in polygons {
+                for segment in polygon.geoJsonLinearRings {
+                    if segment.contains(point, tolerance: tolerance) {
+                        return true
+                    }
+                }
+            }
+            
+            return false
+        }
+        
+        private func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
             if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
                 //segments touching is valid for MultiPolygon
                 return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)

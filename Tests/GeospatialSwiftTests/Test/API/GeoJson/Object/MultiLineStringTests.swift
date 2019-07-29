@@ -4,15 +4,19 @@ import XCTest
 
 class MultiLineStringTests: XCTestCase {
     var lineStrings: [LineString]!
+    var selfIntersectingLineStrings: [LineString]!
     var multiLineString: MultiLineString!
+    var selfIntersectingMultiLineString: MultiLineString!
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
         lineStrings = MockData.lineStrings as? [LineString]
+        selfIntersectingLineStrings = MockData.selfIntersectingLineStrings as? [LineString]
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
+        selfIntersectingMultiLineString = GeoTestHelper.multiLineString(selfIntersectingLineStrings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -26,6 +30,14 @@ class MultiLineStringTests: XCTestCase {
     func testObjectGeometries() {
         // swiftlint:disable:next force_cast
         XCTAssertEqual(multiLineString.objectGeometries as! [MultiLineString], multiLineString.geometries as! [MultiLineString])
+    }
+    
+    func testMultiLineIsValid() {
+        XCTAssertEqual(multiLineString.invalidReasons(tolerance: 0).count, 0)
+    }
+    
+    func testSelfInterSectingMultiLineIsInvalid() {
+        XCTAssertEqual(selfIntersectingMultiLineString.invalidReasons(tolerance: 0).count, 1)
     }
     
     func testGeometryTypes() {

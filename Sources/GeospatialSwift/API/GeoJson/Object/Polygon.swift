@@ -112,6 +112,8 @@ extension GeoJson {
         // Polygon with reversed winding order
         // Polygon with hole where hole has invalid winding order
         public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
+            //Polygon repeats the first point at the end to close the shape
+            //To apply the logic for LineString, we need to drop the last point
             var geoJsonLinearRingsDropLastPoint = [GeoJsonLineString]()
             geoJsonLinearRings.forEach {
                 if let geoJsonLinearRingDropLastPoint = LineString(coordinatesJson: $0.geoJsonCoordinates.dropLast()) {

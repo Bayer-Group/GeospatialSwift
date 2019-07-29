@@ -1,7 +1,12 @@
 public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     var lineStrings: [GeoJsonLineString] { get }
     
-    func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]]
+    func invalidReasons(tolerance: Double) -> [MultiLineStringInvalidReason]
+}
+
+public enum MultiLineStringInvalidReason {
+    case lineStringInValid(reason: [Int: [LineStringInvalidReason]])
+    case lineStringsIntersect(indices: [Int])
 }
 
 extension GeoJson {
@@ -66,8 +71,64 @@ extension GeoJson {
         
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
         
-        public func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]] {
-            return lineStrings.map { $0.invalidReasons(tolerance: tolerance) }
+        public func invalidReasons(tolerance: Double) -> [MultiLineStringInvalidReason] {
+            var reasons = [MultiLineStringInvalidReason]()
+            lineStrings.enumerated().forEach { index, lineString in
+                let reason = lineString.invalidReasons(tolerance: tolerance)
+                if reason.count > 0 {
+                    reasons.append(.lineStringInValid(reason: [index: reason]))
+                }
+            }
+            
+            for index in 1..<lineStrings.count {
+                for indexOther in 0..<index {
+                    if hasIntersection(lineStrings[index], with: lineStrings[indexOther], tolerance: tolerance) {
+                        reasons.append(.lineStringsIntersect(indices: [index, indexOther]))
+                    }
+                }
+            }
+            
+            return reasons
+        }
+        
+        func hasIntersection(_ lineString: GeoJsonLineString, with otherLineString: GeoJsonLineString, tolerance: Double) -> Bool {
+            for segment in lineString.segments {
+                if hasIntersection(otherLineString, with: segment, tolerance: tolerance) {
+                    return true
+                }
+            }
+            
+            return false
+        }
+        
+        private func hasIntersection(_ lineString: GeoJsonLineString, with lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+            for segment in lineString.segments {
+                if hasIntersection(segment, with: lineSegment, tolerance: tolerance) {
+                    return true
+                }
+            }
+            
+            return false
+        }
+        
+        private func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+            if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
+                //segments touching is valid for MultiPolygon
+                return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)
+            }
+            
+            return false
+        }
+        
+        private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+            if lineSegment != otherLineSegment {
+                if lineSegment.point == otherLineSegment.point { return true }
+                if lineSegment.point == otherLineSegment.otherPoint { return true }
+                if lineSegment.otherPoint == otherLineSegment.otherPoint { return true }
+                if lineSegment.otherPoint == otherLineSegment.point { return true }
+            }
+            
+            return false
         }
     }
 }

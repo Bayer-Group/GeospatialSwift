@@ -24,6 +24,7 @@ final class MockData {
     static let point: GeoJsonPoint = geoJson.point(longitude: 1, latitude: 2, altitude: 3)
     static let points: [GeoJsonPoint] = linesPoints.first!
     static let lineStrings: [GeoJsonLineString] = linesPoints.map { geoJson.lineString(points: $0)! }
+    static let selfIntersectingLineStrings: [GeoJsonLineString] =  selfIntersectingLinesPoints.map { geoJson.lineString(points: $0)! }
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
@@ -43,7 +44,7 @@ final class MockData {
     ]
     
     static let pointsCoordinatesJson = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]]
-    static let lineStringsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]
+    static let lineStringsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 3.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]
     static let linearRingsCoordinatesJson = [[[0.0, 0.0, 3.0], [3.0, 0.0, 4.0], [3.0, 3.0, 5.0], [0.0, 3.0, 4.0]], [[1.0, 1.0, 3.0], [1.0, 2.0, 4.0], [2.0, 2.0, 5.0], [2.0, 1.0, 4.0]]]
     
     private static let partialPolygonsCoordinates1 = [[0.0, 0.0, 3.0], [3.0, 0.0, 4.0], [3.0, 3.0, 5.0], [0.0, 3.0, 4.0], [0.0, 0.0, 3.0]]
@@ -64,8 +65,13 @@ extension MockData {
     }
     
     private static let linesPoints: [[GeoJsonPoint]] = [
-        [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)],
+        [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)],
         [GeoTestHelper.point(2, 3, 3), GeoTestHelper.point(3, 3, 4), GeoTestHelper.point(3, 4, 5), GeoTestHelper.point(4, 5, 6)]
+    ]
+    
+    private static let selfIntersectingLinesPoints: [[GeoJsonPoint]] = [
+        [GeoTestHelper.point(1, 0, 3), GeoTestHelper.point(0, 1, 4), GeoTestHelper.point(0, 0, 5)],
+        [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4)]
     ]
     
     private static let polygonPoints: [[GeoJsonPoint]] = polygonPointsList.first!
