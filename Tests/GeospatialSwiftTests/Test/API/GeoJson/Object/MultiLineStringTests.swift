@@ -5,8 +5,10 @@ import XCTest
 class MultiLineStringTests: XCTestCase {
     var lineStrings: [LineString]!
     var selfIntersectingLineStrings: [LineString]!
+    var selfCrossingLineStrings: [LineString]!
     var multiLineString: MultiLineString!
     var selfIntersectingMultiLineString: MultiLineString!
+    var selfCrossingMultiLineString: MultiLineString!
     var distancePoint: SimplePoint!
     
     override func setUp() {
@@ -14,9 +16,11 @@ class MultiLineStringTests: XCTestCase {
         
         lineStrings = MockData.lineStrings as? [LineString]
         selfIntersectingLineStrings = MockData.selfIntersectingLineStrings as? [LineString]
+        selfCrossingLineStrings = MockData.selfCrossingLineStrings as? [LineString]
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
         selfIntersectingMultiLineString = GeoTestHelper.multiLineString(selfIntersectingLineStrings)
+        selfCrossingMultiLineString = GeoTestHelper.multiLineString(selfCrossingLineStrings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -37,7 +41,23 @@ class MultiLineStringTests: XCTestCase {
     }
     
     func testSelfInterSectingMultiLineIsInvalid() {
-        XCTAssertEqual(selfIntersectingMultiLineString.invalidReasons(tolerance: 0).count, 1)
+        let invalidReasons = selfIntersectingMultiLineString.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 1)
+        if case MultiLineStringInvalidReason.lineStringsIntersect(indices: [1, 0]) = invalidReasons[0] {
+            XCTAssertTrue(true)
+        } else {
+            XCTAssertTrue(false)
+        }
+    }
+    
+    func testSelfCrossingMultiLineIsInvalid() {
+        let invalidReasons = selfCrossingMultiLineString.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 1)
+        if case MultiLineStringInvalidReason.lineStringsIntersect(indices: [1, 0]) = invalidReasons[0] {
+            XCTAssertTrue(true)
+        } else {
+            XCTAssertTrue(false)
+        }
     }
     
     func testGeometryTypes() {

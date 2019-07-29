@@ -114,13 +114,13 @@ extension GeoJson {
         private func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
             if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
                 //segments touching is valid for MultiPolygon
-                return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)
+                return !isSharingPoint(lineSegment, with: otherLineSegment, tolerance: tolerance)
             }
             
             return false
         }
         
-        private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
+        private func isSharingPoint(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
             if lineSegment != otherLineSegment {
                 if lineSegment.point == otherLineSegment.point { return true }
                 if lineSegment.point == otherLineSegment.otherPoint { return true }
