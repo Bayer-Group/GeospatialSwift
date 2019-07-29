@@ -442,6 +442,15 @@ extension GeodesicCalculator {
 //                return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
 //            }
 //        }.map { $0.offset }
+        if line.segments.count == 1 { return [:] }
+        
+        if line.segments.count == 2 {
+            if line.segments[0].point == line.segments[1].otherPoint {
+                return [0: [1]]
+            }
+            return [:]
+        }
+        
         var intersectionIndices = [Int: [Int]]()
         for index in 2..<line.segments.count {
             var intersectionIndex = [Int]()

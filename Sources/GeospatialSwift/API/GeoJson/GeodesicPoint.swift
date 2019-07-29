@@ -31,3 +31,12 @@ public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
     
     return lhs.latitude.isEqual(to: rhs.latitude) && lhs.longitude.isEqual(to: rhs.longitude) && altitudeIsSame
 }
+
+public func != (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {
+    let lhs = Calculator.normalize(lhs)
+    let rhs = Calculator.normalize(rhs)
+    
+    let altitudeIsSame = lhs.altitude != nil && rhs.altitude != nil ? lhs.altitude!.isEqual(to: rhs.altitude!) : lhs.altitude == rhs.altitude
+    
+    return !(lhs.latitude.isEqual(to: rhs.latitude) && lhs.longitude.isEqual(to: rhs.longitude) && altitudeIsSame)
+}
