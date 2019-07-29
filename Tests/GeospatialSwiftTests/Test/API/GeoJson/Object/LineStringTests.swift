@@ -4,15 +4,19 @@ import XCTest
 
 class LineStringTests: XCTestCase {
     var points: [Point]!
+    var selfIntersectingPoints: [Point]!
     var lineString: LineString!
+    var selfIntersectingLineString: LineString!
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
         points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        selfIntersectingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4)]
         
         lineString = GeoTestHelper.lineString(points)
+        selfIntersectingLineString = GeoTestHelper.lineString(selfIntersectingPoints)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -32,6 +36,21 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.coordinatesGeometries.count, 1)
         XCTAssertEqual(lineString.linearGeometries.count, 1)
         XCTAssertEqual(lineString.closedGeometries.count, 0)
+    }
+    
+    func testLineStringIsValid() {
+        XCTAssertEqual(lineString.invalidReasons(tolerance: 0).count, 0)
+    }
+    
+    func testSelfInterSectingLineStringIsInvalid() {
+        let reason = selfIntersectingLineString.invalidReasons(tolerance: 0)
+        XCTAssertEqual(reason.count, 1)
+        
+        if case LineStringInvalidReason.selfIntersects(segmentIndices: [2: [0]]) = reason[0] {
+            XCTAssertTrue(true)
+        } else {
+            XCTAssertTrue(false)
+        }
     }
     
     func testObjectBoundingBox() {

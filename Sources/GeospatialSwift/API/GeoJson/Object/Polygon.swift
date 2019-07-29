@@ -1,6 +1,6 @@
 public enum PolygonInvalidReason {
     case duplicates(indices: [Int])
-    case selfIntersects(ringIndices: [[[Int]]])
+    case selfIntersects(ringIndices: [Int: [[Int]]])
     case holeOutside(ringIndices: [Int])
     case ringInvalidReasons(_: [[LineStringInvalidReason]])
 }
@@ -129,7 +129,7 @@ extension GeoJson {
             
             guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
             
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance).filter { !$0.isEmpty }
+            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
             
             guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
             

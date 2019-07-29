@@ -1,6 +1,6 @@
 public enum LineStringInvalidReason {
     case duplicates(indices: [Int])
-    case selfIntersects(segmentIndices: [Int])
+    case selfIntersects(segmentIndices: [Int: [Int]])
 }
 
 public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine {

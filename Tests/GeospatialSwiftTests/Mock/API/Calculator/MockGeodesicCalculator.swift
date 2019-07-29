@@ -65,16 +65,16 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     }
     
     private(set) var intersectionIndicesLineCallCount = 0
-    var intersectionIndicesLineResult: [Int] = []
-    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int] {
+    var intersectionIndicesLineResult: [Int: [Int]] = [:]
+    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int: [Int]] {
         intersectionIndicesLineCallCount += 1
         
         return intersectionIndicesLineResult
     }
     
     private(set) var intersectionIndicesPolygonCallCount = 0
-    var intersectionIndicesPolygonResult: [[[Int]]] = []
-    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]] {
+    var intersectionIndicesPolygonResult: [Int: [[Int]]] = [:]
+    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int: [[Int]]] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult
