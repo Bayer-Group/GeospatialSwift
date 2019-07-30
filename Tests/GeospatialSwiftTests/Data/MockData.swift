@@ -44,7 +44,7 @@ final class MockData {
         geoJson.feature(geometry: geoJson.polygon(linearRings: MockData.linearRings)!, id: nil, properties: nil)!
     ]
     
-    static let pointsCoordinatesJson = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 5.0]]
+    static let pointsCoordinatesJson = [[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 3.0]]
     static let lineStringsCoordinatesJson = [[[1.0, 2.0, 3.0], [2.0, 2.0, 4.0], [2.0, 3.0, 3.0]], [[2.0, 3.0, 3.0], [3.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]]]
     static let linearRingsCoordinatesJson = [[[0.0, 0.0, 3.0], [3.0, 0.0, 4.0], [3.0, 3.0, 5.0], [0.0, 3.0, 4.0]], [[1.0, 1.0, 3.0], [1.0, 2.0, 4.0], [2.0, 2.0, 5.0], [2.0, 1.0, 4.0]]]
     

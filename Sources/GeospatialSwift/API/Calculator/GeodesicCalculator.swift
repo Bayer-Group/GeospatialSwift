@@ -445,7 +445,7 @@ extension GeodesicCalculator {
         if line.segments.count == 1 { return [:] }
         
         if line.segments.count == 2 {
-            if line.segments[0].point == line.segments[1].otherPoint {
+            if contains(line.segments[1].otherPoint, in: line.segments[0], tolerance: tolerance) {
                 return [0: [1]]
             }
             return [:]
@@ -454,13 +454,19 @@ extension GeodesicCalculator {
         var intersectionIndices = [Int: [Int]]()
         for index in 2..<line.segments.count {
             var intersectionIndex = [Int]()
+            if contains(line.segments[index].otherPoint, in: line.segments[index-1], tolerance: tolerance) {
+                intersectionIndex.append(index-1)
+            }
+            
             for indexOther in 0..<index-1 {
                 if hasIntersection(line.segments[index], with: line.segments[indexOther], tolerance: tolerance)
                 {
                     intersectionIndex.append(indexOther)
                 }
             }
-            intersectionIndices[index] = intersectionIndex
+            if !intersectionIndex.isEmpty {
+                intersectionIndices[index] = intersectionIndex
+            }
         }
         
         return intersectionIndices

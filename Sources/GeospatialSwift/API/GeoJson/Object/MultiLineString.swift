@@ -5,8 +5,18 @@ public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
 }
 
 public enum MultiLineStringInvalidReason {
-    case lineStringInValid(reason: [Int: [LineStringInvalidReason]])
-    case lineStringsIntersect(indices: [Int])
+    case lineStringInvalid(reasonByIndex: [Int: [LineStringInvalidReason]])
+    case lineStringsIntersect(intersection: [LineStringsIntersection])
+}
+
+public struct LineStringsIntersection {
+    let firstSegmentIndexPath: SegmentIndexPath
+    let secondSegmentIndexPath: [SegmentIndexPath]
+}
+
+public struct SegmentIndexPath {
+    let lineStringIndex: Int
+    let segmentIndex: Int
 }
 
 extension GeoJson {
@@ -76,59 +86,147 @@ extension GeoJson {
             lineStrings.enumerated().forEach { index, lineString in
                 let reason = lineString.invalidReasons(tolerance: tolerance)
                 if reason.count > 0 {
-                    reasons.append(.lineStringInValid(reason: [index: reason]))
+                    reasons.append(.lineStringInvalid(reasonByIndex: [index: reason]))
                 }
             }
             
-            for index in 1..<lineStrings.count {
-                for indexOther in 0..<index {
-                    if hasIntersection(lineStrings[index], with: lineStrings[indexOther], tolerance: tolerance) {
-                        reasons.append(.lineStringsIntersect(indices: [index, indexOther]))
+            var lineStringsIntersections = [LineStringsIntersection]()
+            (1..<lineStrings.count).forEach { index in
+                (0..<index).forEach { indexOther in
+                    let intersectionSegmentIndices = intersections(lineStrings[index], with: lineStrings[indexOther], tolerance: tolerance)
+                    intersectionSegmentIndices.forEach { firstSegmentIndex, secondSegmentIndices in
+                        lineStringsIntersections.append(LineStringsIntersection(firstSegmentIndexPath: SegmentIndexPath(lineStringIndex: index, segmentIndex: firstSegmentIndex), secondSegmentIndexPath: secondSegmentIndices.map { SegmentIndexPath(lineStringIndex: indexOther, segmentIndex: $0) }))
+                    }
+                }
+            }
+            if !lineStringsIntersections.isEmpty {
+                reasons.append(.lineStringsIntersect(intersection: lineStringsIntersections))
+            }
+            return reasons
+        }
+        
+        func intersections(_ lineString: GeoJsonLineString, with otherLineString: GeoJsonLineString, tolerance: Double) -> [Int: [Int]] {
+            var intersectionSegmentIndices = [Int: [Int]]()
+            
+            if lineString.segments.count > 1 {
+                let intersectionsStartPoint = intersectionsForStartPoint(otherLineString, with: lineString.segments[0], tolerance: tolerance)
+                if !intersectionsStartPoint.isEmpty {
+                    intersectionSegmentIndices[0] = intersectionsStartPoint
+                }
+                
+                (1..<lineString.segments.count-1).forEach { index in
+                    let indicesOther = intersections(otherLineString, with: lineString.segments[index], tolerance: tolerance)
+                    if !indicesOther.isEmpty {
+                        intersectionSegmentIndices[index] = indicesOther
+                    }
+                }
+                
+                let lastIndex = lineString.segments.count-1
+                let intersectionsEndPoint = intersectionsForEndPoint(otherLineString, with: lineString.segments[lastIndex], tolerance: tolerance)
+                if !intersectionsEndPoint.isEmpty {
+                    intersectionSegmentIndices[lastIndex] = intersectionsEndPoint
+                }
+            } else {
+                let intersectionsStartPoint = intersectionsForStartPoint(otherLineString, with: lineString.segments[0], tolerance: tolerance)
+                if !intersectionsStartPoint.isEmpty {
+                    intersectionSegmentIndices[0] = intersectionsStartPoint
+                }
+                
+                let intersectionsEndPoint = intersectionsForEndPoint(otherLineString, with: lineString.segments[0], tolerance: tolerance)
+                if !intersectionsEndPoint.isEmpty {
+                    if intersectionSegmentIndices[0] == nil {
+                        intersectionSegmentIndices[0] = intersectionsEndPoint
+                    } else {
+                        intersectionSegmentIndices[0]!.append(contentsOf: intersectionsEndPoint)
                     }
                 }
             }
             
-            return reasons
+            return intersectionSegmentIndices
         }
         
-        func hasIntersection(_ lineString: GeoJsonLineString, with otherLineString: GeoJsonLineString, tolerance: Double) -> Bool {
-            for segment in lineString.segments {
-                if hasIntersection(otherLineString, with: segment, tolerance: tolerance) {
-                    return true
+        private func intersections(_ lineString: GeoJsonLineString, with lineSegment: GeodesicLineSegment, tolerance: Double) -> [Int] {
+            var indices = [Int]()
+            (0..<lineString.segments.count).forEach { index in
+                if hasIntersection(lineString.segments[index], with: lineSegment, tolerance: tolerance) {
+                    indices.append(index)
                 }
             }
             
-            return false
+            return indices
         }
         
-        private func hasIntersection(_ lineString: GeoJsonLineString, with lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            for segment in lineString.segments {
-                if hasIntersection(segment, with: lineSegment, tolerance: tolerance) {
-                    return true
+        //lineSegment is start point
+        private func intersectionsForStartPoint(_ lineString: GeoJsonLineString, with lineSegment: GeodesicLineSegment, tolerance: Double) -> [Int] {
+            var indices = [Int]()
+            
+            //first segment of lineString
+            if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
+                //shares start point, not overlapping
+                if lineString.segments[0].point == lineSegment.point && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[0], tolerance: tolerance) {
+                    //do nothing
+                } else {
+                    indices.append(0)
                 }
             }
             
-            return false
+            (1..<lineString.segments.count-1).forEach { index in
+                if hasIntersection(lineString.segments[index], with: lineSegment, tolerance: tolerance) {
+                    indices.append(index)
+                }
+            }
+            
+            let lastIndex = lineString.segments.count - 1
+            //last segment of lineString
+            if Calculator.distance(from: lineString.segments[lastIndex], to: lineSegment, tolerance: tolerance) == 0 {
+                //last segment end is lineSegment start, not overlapping
+                if lineString.segments[lastIndex].otherPoint == lineSegment.point && !Calculator.contains(lineString.segments[lastIndex].point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[lastIndex], tolerance: tolerance) {
+                    //do nothing
+                } else {
+                    indices.append(lastIndex)
+                }
+            }
+            
+            return indices
+        }
+        
+        //lineSegment is end point
+        private func intersectionsForEndPoint(_ lineString: GeoJsonLineString, with lineSegment: GeodesicLineSegment, tolerance: Double) -> [Int] {
+            var indices = [Int]()
+            
+            //first segment of lineString
+            if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
+                //first segment start is lineSegment end, not overlapping
+                if lineString.segments[0].point == lineSegment.otherPoint && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[0], tolerance: tolerance) {
+                    //do nothing
+                } else {
+                    indices.append(0)
+                }
+            }
+            
+            (1..<lineString.segments.count-1).forEach { index in
+                if hasIntersection(lineString.segments[index], with: lineSegment, tolerance: tolerance) {
+                    indices.append(index)
+                }
+            }
+            
+            let lastIndex = lineString.segments.count - 1
+            //last segment of lineString
+            if Calculator.distance(from: lineString.segments[lastIndex], to: lineSegment, tolerance: tolerance) == 0 {
+                //last segment end is lineSegment end, not overlapping
+                if lineString.segments[lastIndex].otherPoint == lineSegment.otherPoint && !Calculator.contains(lineString.segments[lastIndex].point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[lastIndex], tolerance: tolerance) {
+                    //do nothing
+                } else {
+                    indices.append(lastIndex)
+                }
+            }
+            
+            return indices
         }
         
         private func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
-                //sharing points is valid for MultiPolygon
-                return !isSharingPoint(lineSegment, with: otherLineSegment, tolerance: tolerance)
-            }
-            
-            return false
+            return Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0
         }
-        
-        private func isSharingPoint(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if lineSegment != otherLineSegment {
-                if lineSegment.point == otherLineSegment.point { return true }
-                if lineSegment.point == otherLineSegment.otherPoint { return true }
-                if lineSegment.otherPoint == otherLineSegment.otherPoint { return true }
-                if lineSegment.otherPoint == otherLineSegment.point { return true }
-            }
-            
-            return false
-        }
+
     }
 }

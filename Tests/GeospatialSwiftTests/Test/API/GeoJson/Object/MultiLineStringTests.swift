@@ -43,20 +43,24 @@ class MultiLineStringTests: XCTestCase {
     func testSelfInterSectingMultiLineIsInvalid() {
         let invalidReasons = selfIntersectingMultiLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(invalidReasons.count, 1)
-        if case MultiLineStringInvalidReason.lineStringsIntersect(indices: [1, 0]) = invalidReasons[0] {
-            XCTAssertTrue(true)
-        } else {
-            XCTAssertTrue(false)
+        
+        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
+            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
+            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
+            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
+            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
         }
     }
     
     func testSelfCrossingMultiLineIsInvalid() {
         let invalidReasons = selfCrossingMultiLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(invalidReasons.count, 1)
-        if case MultiLineStringInvalidReason.lineStringsIntersect(indices: [1, 0]) = invalidReasons[0] {
-            XCTAssertTrue(true)
-        } else {
-            XCTAssertTrue(false)
+
+        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
+            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
+            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
+            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
+            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
         }
     }
     

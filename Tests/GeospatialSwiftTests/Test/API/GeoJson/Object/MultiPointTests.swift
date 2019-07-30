@@ -10,7 +10,7 @@ class MultiPointTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
         
         multiPoint = GeoTestHelper.multiPoint(points)
         

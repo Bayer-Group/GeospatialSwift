@@ -12,8 +12,10 @@ class LineStringTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
         selfIntersectingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4)]
+        #warning("todo")
+        //selfOverlappingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4)]
         
         lineString = GeoTestHelper.lineString(points)
         selfIntersectingLineString = GeoTestHelper.lineString(selfIntersectingPoints)
