@@ -452,18 +452,21 @@ extension GeodesicCalculator {
         }
         
         var intersectionIndices = [Int: [Int]]()
-        for index in 2..<line.segments.count {
+        (1..<line.segments.count).forEach { index in
             var intersectionIndex = [Int]()
+            
+            if index > 1{
+                (0..<index-1).forEach { indexOther in
+                    if hasIntersection(line.segments[index], with: line.segments[indexOther], tolerance: tolerance) {
+                        intersectionIndex.append(indexOther)
+                    }
+                }
+            }
+            
             if contains(line.segments[index].otherPoint, in: line.segments[index-1], tolerance: tolerance) {
                 intersectionIndex.append(index-1)
             }
             
-            for indexOther in 0..<index-1 {
-                if hasIntersection(line.segments[index], with: line.segments[indexOther], tolerance: tolerance)
-                {
-                    intersectionIndex.append(indexOther)
-                }
-            }
             if !intersectionIndex.isEmpty {
                 intersectionIndices[index] = intersectionIndex
             }

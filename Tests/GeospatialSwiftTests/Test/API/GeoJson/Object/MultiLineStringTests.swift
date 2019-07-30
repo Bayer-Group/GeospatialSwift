@@ -6,9 +6,12 @@ class MultiLineStringTests: XCTestCase {
     var lineStrings: [LineString]!
     var selfIntersectingLineStrings: [LineString]!
     var selfCrossingLineStrings: [LineString]!
+    var sharingStartAndEndMultiLineStrings: [LineString]!
     var multiLineString: MultiLineString!
     var selfIntersectingMultiLineString: MultiLineString!
     var selfCrossingMultiLineString: MultiLineString!
+    var sharingStartAndEndMultiLineString: MultiLineString!
+    
     var distancePoint: SimplePoint!
     
     override func setUp() {
@@ -17,10 +20,12 @@ class MultiLineStringTests: XCTestCase {
         lineStrings = MockData.lineStrings as? [LineString]
         selfIntersectingLineStrings = MockData.selfIntersectingLineStrings as? [LineString]
         selfCrossingLineStrings = MockData.selfCrossingLineStrings as? [LineString]
+        sharingStartAndEndMultiLineStrings = MockData.sharingStartAndEndLineStrings as? [LineString]
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
         selfIntersectingMultiLineString = GeoTestHelper.multiLineString(selfIntersectingLineStrings)
         selfCrossingMultiLineString = GeoTestHelper.multiLineString(selfCrossingLineStrings)
+        sharingStartAndEndMultiLineString = GeoTestHelper.multiLineString(sharingStartAndEndMultiLineStrings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -36,15 +41,20 @@ class MultiLineStringTests: XCTestCase {
         XCTAssertEqual(multiLineString.objectGeometries as! [MultiLineString], multiLineString.geometries as! [MultiLineString])
     }
     
-    func testMultiLineIsValid() {
+    func testMultiLineString_StartAndEndTouching_IsValid() {
         XCTAssertEqual(multiLineString.invalidReasons(tolerance: 0).count, 0)
     }
     
-    func testSelfInterSectingMultiLineIsInvalid() {
+    func testMultiLineString_SharingStartAndEnd_IsValid() {
+        XCTAssertEqual(sharingStartAndEndMultiLineString.invalidReasons(tolerance: 0).count, 0)
+    }
+    
+    func testSelfInterSectingMultiLineString_IsInvalid() {
         let invalidReasons = selfIntersectingMultiLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(invalidReasons.count, 1)
         
         if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
+            XCTAssertEqual(intersectionIndices.count, 1)
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
@@ -52,11 +62,12 @@ class MultiLineStringTests: XCTestCase {
         }
     }
     
-    func testSelfCrossingMultiLineIsInvalid() {
+    func testSelfCrossingMultiLine_IsInvalid() {
         let invalidReasons = selfCrossingMultiLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(invalidReasons.count, 1)
 
         if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
+            XCTAssertEqual(intersectionIndices.count, 1)
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)

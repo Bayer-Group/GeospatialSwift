@@ -26,6 +26,7 @@ final class MockData {
     static let lineStrings: [GeoJsonLineString] = linesPoints.map { geoJson.lineString(points: $0)! }
     static let selfIntersectingLineStrings: [GeoJsonLineString] =  selfIntersectingLinesPoints.map { geoJson.lineString(points: $0)! }
     static let selfCrossingLineStrings: [GeoJsonLineString] =  selfCrossingLinesPoints.map { geoJson.lineString(points: $0)! }
+    static let sharingStartAndEndLineStrings: [GeoJsonLineString] = sharingStartAndEndLinesPoints.map { geoJson.lineString(points: $0)! }
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
@@ -78,6 +79,13 @@ extension MockData {
     private static let selfCrossingLinesPoints: [[GeoJsonPoint]] = [
         [GeoTestHelper.point(1, -1, 3), GeoTestHelper.point(0, 1, 4), GeoTestHelper.point(0, 0, 5)],
         [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4)]
+    ]
+    
+    private static let sharingStartAndEndLinesPoints: [[GeoJsonPoint]] = [
+        [GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(0, 1, 0), GeoTestHelper.point(1, 1, 0)],
+        [GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(-1, 0, 0)],
+        [GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 0, 0), GeoTestHelper.point(1, 1, 0)],
+        [GeoTestHelper.point(1, 1, 0), GeoTestHelper.point(2, 1, 0)]
     ]
     
     private static let polygonPoints: [[GeoJsonPoint]] = polygonPointsList.first!

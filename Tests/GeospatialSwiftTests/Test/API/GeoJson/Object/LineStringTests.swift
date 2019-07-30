@@ -5,20 +5,23 @@ import XCTest
 class LineStringTests: XCTestCase {
     var points: [Point]!
     var selfIntersectingPoints: [Point]!
+    var selfOverlappingPoints: [Point]!
     var lineString: LineString!
     var selfIntersectingLineString: LineString!
+    var selfOverlappingLineString: LineString!
+    
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
         points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
-        selfIntersectingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4)]
-        #warning("todo")
-        //selfOverlappingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4)]
+        selfIntersectingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4, 0)]
+        selfOverlappingPoints = [GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(3, 0, 0), GeoTestHelper.point(1, 0, 0), GeoTestHelper.point(2, 0, 0)]
         
         lineString = GeoTestHelper.lineString(points)
         selfIntersectingLineString = GeoTestHelper.lineString(selfIntersectingPoints)
+        selfOverlappingLineString = GeoTestHelper.lineString(selfOverlappingPoints)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -40,11 +43,11 @@ class LineStringTests: XCTestCase {
         XCTAssertEqual(lineString.closedGeometries.count, 0)
     }
     
-    func testLineStringIsValid() {
+    func testLineString_IsValid() {
         XCTAssertEqual(lineString.invalidReasons(tolerance: 0).count, 0)
     }
     
-    func testSelfInterSectingLineStringIsInvalid() {
+    func testSelfInterSectingLineString_IsInvalid() {
         let reason = selfIntersectingLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(reason.count, 1)
         
@@ -52,6 +55,20 @@ class LineStringTests: XCTestCase {
             XCTAssertTrue(true)
         } else {
             XCTAssertTrue(false)
+        }
+    }
+    
+    func testSelfOverlappingLineString_IsInvalid() {
+        let reason = selfOverlappingLineString.invalidReasons(tolerance: 0)
+        XCTAssertEqual(reason.count, 1)
+        //[2: [1]]
+        if case LineStringInvalidReason.selfIntersects(segmentIndices: let segmentIndices) = reason[0] {
+            XCTAssertEqual(segmentIndices.count, 2)
+            XCTAssertEqual(segmentIndices[1]!.count, 1)
+            XCTAssertEqual(segmentIndices[1]![0], 0)
+            XCTAssertEqual(segmentIndices[2]!.count, 2)
+            XCTAssertEqual(segmentIndices[2]![0], 0)
+            XCTAssertEqual(segmentIndices[2]![1], 1)
         }
     }
     
