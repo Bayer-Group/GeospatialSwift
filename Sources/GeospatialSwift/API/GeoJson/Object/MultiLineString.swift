@@ -145,26 +145,26 @@ extension GeoJson {
                         //shares start point, not overlapping
                         if otherLineSegmentFirstSegment.point == lineSegment.point && !Calculator.contains(otherLineSegmentFirstSegment.otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) {
                             //do nothing
-                        } else if otherLineSegmentFirstSegment.point == lineSegment.otherPoint && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentFirstSegment.point, in: lineSegment, tolerance: tolerance){
+                        } else if otherLineSegmentFirstSegment.point == lineSegment.otherPoint && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentFirstSegment.point, in: lineSegment, tolerance: tolerance) {
                             //do nothing
                         } else {
                             indices.append(0)
                         }
                     }
                     
-                    (1..<otherLineString.segments.count-1).forEach { index in
+                    (1..<otherLineString.segments.count - 1).forEach { index in
                         if hasIntersection(otherLineString.segments[index], with: lineSegment, tolerance: tolerance) {
                             indices.append(index)
                         }
                     }
                     
-                    let lastIndex = otherLineString.segments.count-1
+                    let lastIndex = otherLineString.segments.count - 1
                     let otherLineSegmentLastSegment = otherLineString.segments[lastIndex]
                     if hasIntersection(lineSegment, with: otherLineSegmentLastSegment, tolerance: tolerance) {
                         //shares start point, not overlapping
                         if otherLineSegmentLastSegment.otherPoint == lineSegment.point && !Calculator.contains(otherLineSegmentLastSegment.point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentLastSegment, tolerance: tolerance) {
                             //do nothing
-                        } else if otherLineSegmentLastSegment.otherPoint == lineSegment.otherPoint && !Calculator.contains(lineSegment.point, in: otherLineSegmentLastSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentLastSegment.point, in: lineSegment, tolerance: tolerance){
+                        } else if otherLineSegmentLastSegment.otherPoint == lineSegment.otherPoint && !Calculator.contains(lineSegment.point, in: otherLineSegmentLastSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentLastSegment.point, in: lineSegment, tolerance: tolerance) {
                             //do nothing
                         } else {
                             indices.append(lastIndex)

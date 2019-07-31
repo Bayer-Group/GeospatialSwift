@@ -53,10 +53,13 @@ Geospatial.geoJson
 * Point
   * Normalize
 * MultiPoint
+  * Non-Simple Validation
 * LineString
   * Length
+  * Non-Simple Validation
 * MultiLineString
   * Length
+  * Non-Simple Validation
 * Polygon
   * Centroid
   * Area

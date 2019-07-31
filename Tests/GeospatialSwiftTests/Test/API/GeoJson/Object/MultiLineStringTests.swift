@@ -6,11 +6,14 @@ class MultiLineStringTests: XCTestCase {
     var lineStrings: [LineString]!
     var selfIntersectingLineStrings: [LineString]!
     var selfCrossingLineStrings: [LineString]!
-    var sharingStartAndEndMultiLineStrings: [LineString]!
+    var sharingStartAndEndLineStrings: [LineString]!
+    var doubleNLineStrings: [LineString]!
+    
     var multiLineString: MultiLineString!
     var selfIntersectingMultiLineString: MultiLineString!
     var selfCrossingMultiLineString: MultiLineString!
     var sharingStartAndEndMultiLineString: MultiLineString!
+    var doubleNMultiLineString: MultiLineString!
     
     var distancePoint: SimplePoint!
     
@@ -20,12 +23,14 @@ class MultiLineStringTests: XCTestCase {
         lineStrings = MockData.lineStrings as? [LineString]
         selfIntersectingLineStrings = MockData.selfIntersectingLineStrings as? [LineString]
         selfCrossingLineStrings = MockData.selfCrossingLineStrings as? [LineString]
-        sharingStartAndEndMultiLineStrings = MockData.sharingStartAndEndLineStrings as? [LineString]
+        sharingStartAndEndLineStrings = MockData.sharingStartAndEndLineStrings as? [LineString]
+        doubleNLineStrings = MockData.doubleNLineStrings as? [LineString]
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
         selfIntersectingMultiLineString = GeoTestHelper.multiLineString(selfIntersectingLineStrings)
         selfCrossingMultiLineString = GeoTestHelper.multiLineString(selfCrossingLineStrings)
-        sharingStartAndEndMultiLineString = GeoTestHelper.multiLineString(sharingStartAndEndMultiLineStrings)
+        sharingStartAndEndMultiLineString = GeoTestHelper.multiLineString(sharingStartAndEndLineStrings)
+        doubleNMultiLineString = GeoTestHelper.multiLineString(doubleNLineStrings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -62,7 +67,7 @@ class MultiLineStringTests: XCTestCase {
         }
     }
     
-    func testSelfCrossingMultiLine_IsInvalid() {
+    func testSelfCrossingMultiLineString_IsInvalid() {
         let invalidReasons = selfCrossingMultiLineString.invalidReasons(tolerance: 0)
         XCTAssertEqual(invalidReasons.count, 1)
 
@@ -72,6 +77,45 @@ class MultiLineStringTests: XCTestCase {
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
+        }
+    }
+    
+    func testDoubleNMultiLineString_IsInvalid() {
+        let invalidReasons = doubleNMultiLineString.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 1)
+        
+        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
+            XCTAssertEqual(intersectionIndices.count, 3)
+            
+            intersectionIndices.forEach {
+                switch $0.firstSegmentIndexPath.segmentIndex {
+                case 0:
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath.count, 3)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[1].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[1].segmentIndex, 1)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[2].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[2].segmentIndex, 2)
+                case 1:
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath.count, 3)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[0].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[0].segmentIndex, 0)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[1].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[1].segmentIndex, 1)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[2].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[2].segmentIndex, 2)
+                case 2:
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath.count, 3)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[0].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[0].segmentIndex, 0)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[1].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[1].segmentIndex, 1)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[2].lineStringIndex, 0)
+                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[2].segmentIndex, 2)
+                default: ()
+                }
+            }
         }
     }
     
