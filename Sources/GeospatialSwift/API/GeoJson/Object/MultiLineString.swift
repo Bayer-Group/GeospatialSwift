@@ -10,13 +10,13 @@ public enum MultiLineStringInvalidReason {
 }
 
 public struct LineStringsIntersection {
-    let firstSegmentIndexPath: SegmentIndexPath
-    let secondSegmentIndexPath: [SegmentIndexPath]
+    public let firstSegmentIndexPath: SegmentIndexPath
+    public let secondSegmentIndexPath: [SegmentIndexPath]
 }
 
 public struct SegmentIndexPath {
-    let lineStringIndex: Int
-    let segmentIndex: Int
+    public let lineStringIndex: Int
+    public let segmentIndex: Int
 }
 
 extension GeoJson {

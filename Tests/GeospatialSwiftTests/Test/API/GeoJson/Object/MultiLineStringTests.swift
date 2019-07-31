@@ -64,6 +64,8 @@ class MultiLineStringTests: XCTestCase {
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
+        } else {
+            XCTFail("Mike")
         }
     }
     
@@ -77,6 +79,8 @@ class MultiLineStringTests: XCTestCase {
             XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
             XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
+        } else {
+            XCTFail("Mike")
         }
     }
     
@@ -116,6 +120,8 @@ class MultiLineStringTests: XCTestCase {
                 default: ()
                 }
             }
+        } else {
+            XCTFail("Mike")
         }
     }
     
