@@ -148,9 +148,9 @@ extension GeoJsonObject {
                 }
             }
         }
-        let x = GeoJsonInvalidGeometry.multiLineStringInvalidGeometry(invalidGeoJson)
+        let xxx = GeoJsonInvalidGeometry.multiLineStringInvalidGeometry(invalidGeoJson)
         
-        return [x]
+        return [xxx]
     }
     
 }
