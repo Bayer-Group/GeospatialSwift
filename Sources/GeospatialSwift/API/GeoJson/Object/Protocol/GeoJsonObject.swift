@@ -85,6 +85,14 @@ public enum GeoJsonInvalidReason {
     case multiPolygonInvalidReasons(_: [MultiPolygonInvalidReason])
 }
 
+public enum GeoJsonInvalidGeometry {
+    case multiPointInvalidGeometry(_: [GeoJsonMultiPoint])
+    case lineStringInvalidGeometry(_: [GeoJsonLineString])
+    case multiLineStringInvalidGeometry(_: [GeoJsonLineString])
+    case polygonInvalidGeometry(_: [GeoJsonLineString])
+    case multiPolygonInvalidGeometry(_: [GeoJsonLineString])
+}
+
 extension GeoJsonObject {
     // swiftlint:disable:next cyclomatic_complexity
     public func invalidReasons(tolerance: Double) -> [GeoJsonInvalidReason] {
@@ -118,11 +126,11 @@ extension GeoJsonObject {
         return invalidReasons.flatMap { $0 }
     }
     
-    public func invalidObject(tolerance: Double) -> [Any] {
+    public func invalidObject(tolerance: Double) -> [GeoJsonInvalidGeometry] {
         guard let objectGeometries = objectGeometries else { return [] }
         
         let invalidReasons = objectGeometries.map { $0.invalidReasons(tolerance: tolerance) }
-        var invalidGeoJson = [Any]()
+        var invalidGeoJson = [GeoJsonInvalidGeometry]()
         
         invalidReasons.enumerated().forEach { index, reason in
             if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = reason[0] {
@@ -135,13 +143,11 @@ extension GeoJsonObject {
                         let firstSegmentIndexPath = intersection[0].firstSegmentIndexPath
                         let point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
                         let point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
-                        let invalidLine = SimpleLine(points: [point1, point2])
-                        invalidGeoJson.append(invalidLine)
+                        invalidGeoJson.append(.multiLineStringInvalidGeometry([GeoJson.LineString(coordinatesJson: [point1.geoJsonCoordinates] + [point2.geoJsonCoordinates])!]))
                     }
                 }
             }
         }
-        
         
         return invalidGeoJson
     }
