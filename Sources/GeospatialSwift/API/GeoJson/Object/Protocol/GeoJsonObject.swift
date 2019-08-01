@@ -117,6 +117,35 @@ extension GeoJsonObject {
         
         return invalidReasons.flatMap { $0 }
     }
+    
+    public func invalidObject(tolerance: Double) -> [Any] {
+        guard let objectGeometries = objectGeometries else { return [] }
+        
+        let invalidReasons = objectGeometries.map { $0.invalidReasons(tolerance: tolerance) }
+        var invalidGeoJson = [Any]()
+        
+        invalidReasons.enumerated().forEach { index, reason in
+            if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = reason[0] {
+                if case MultiLineStringInvalidReason.lineStringInvalid(reasonByIndex: let indices) = multiLineStringInvalidReasons[0] {
+                    
+                }
+                if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersection) = multiLineStringInvalidReasons[0] {
+                    
+                    if let lineIntersect = objectGeometries[index] as? GeoJsonMultiLineString {
+                        let firstSegmentIndexPath = intersection[0].firstSegmentIndexPath
+                        let point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
+                        let point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
+                        let invalidLine = SimpleLine(points: [point1, point2])
+                        invalidGeoJson.append(invalidLine)
+                    }
+                }
+            }
+        }
+        
+        
+        return invalidGeoJson
+    }
+    
 }
 
 // swiftlint:disable:next cyclomatic_complexity
