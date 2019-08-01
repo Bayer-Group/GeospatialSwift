@@ -87,8 +87,8 @@ public enum GeoJsonInvalidReason {
 
 public enum GeoJsonInvalidGeometry {
     case multiPointInvalidGeometry(_: [GeoJsonMultiPoint])
-    case lineStringInvalidGeometry(_: [GeoJsonLineString])
-    case multiLineStringInvalidGeometry(_: [GeoJsonLineString])
+    case lineStringInvalidGeometry(_: [(GeoJsonPoint, GeoJsonPoint)])
+    case multiLineStringInvalidGeometry(_: [(GeoJsonPoint, GeoJsonPoint)])
     case polygonInvalidGeometry(_: [GeoJsonLineString])
     case multiPolygonInvalidGeometry(_: [GeoJsonLineString])
 }
@@ -130,7 +130,7 @@ extension GeoJsonObject {
         guard let objectGeometries = objectGeometries else { return [] }
         
         let invalidReasons = objectGeometries.map { $0.invalidReasons(tolerance: tolerance) }
-        var invalidGeoJson = [GeoJsonInvalidGeometry]()
+        var invalidGeoJson = [(GeoJsonPoint, GeoJsonPoint)]()
         
         invalidReasons.enumerated().forEach { index, reason in
             if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = reason[0] {
@@ -143,13 +143,14 @@ extension GeoJsonObject {
                         let firstSegmentIndexPath = intersection[0].firstSegmentIndexPath
                         let point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
                         let point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
-                        invalidGeoJson.append(.multiLineStringInvalidGeometry([GeoJson.LineString(coordinatesJson: [point1.geoJsonCoordinates] + [point2.geoJsonCoordinates])!]))
+                        invalidGeoJson.append((point1, point2))
                     }
                 }
             }
         }
+        let x = GeoJsonInvalidGeometry.multiLineStringInvalidGeometry(invalidGeoJson)
         
-        return invalidGeoJson
+        return [x]
     }
     
 }
