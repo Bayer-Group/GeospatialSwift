@@ -148,12 +148,12 @@ extension GeoJsonObject {
                     }
                     if case LineStringInvalidReason.selfIntersects(segmentIndices: let segmentIndices) = lineStringInvalidReasons[0] {
                         segmentIndices.forEach { index, otherIndices in
-                            if let lineString = objectGeometries[index] as? GeoJsonLineString {
-                                invalidMultiLineStringGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
+                            if let lineString = objectGeometries[0] as? GeoJsonLineString {
+                                invalidLineStringGeoJson.append([lineString.geoJsonPoints[index], lineString.geoJsonPoints[index + 1]])
                             }
                             otherIndices.forEach {
-                                if let lineString = objectGeometries[$0] as? GeoJsonLineString {
-                                    invalidMultiLineStringGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
+                                if let lineString = objectGeometries[0] as? GeoJsonLineString {
+                                    invalidLineStringGeoJson.append([lineString.geoJsonPoints[$0], lineString.geoJsonPoints[$0 + 1]])
                                 }
                             }
                         }
