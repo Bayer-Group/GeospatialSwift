@@ -87,7 +87,7 @@ public enum GeoJsonInvalidReason {
 
 public enum GeoJsonInvalidGeometry {
     case multiPointInvalidGeometry(_: [GeoJsonMultiPoint])
-    case lineStringInvalidGeometry(_: [(GeoJsonPoint, GeoJsonPoint)])
+    case lineStringInvalidGeometry(_: [[GeoJsonPoint]])
     case multiLineStringInvalidGeometry(_: [(GeoJsonPoint, GeoJsonPoint)])
     case polygonInvalidGeometry(_: [GeoJsonLineString])
     case multiPolygonInvalidGeometry(_: [GeoJsonLineString])
@@ -130,16 +130,42 @@ extension GeoJsonObject {
         guard let objectGeometries = objectGeometries else { return [] }
         
         let invalidReasons = objectGeometries.map { $0.invalidReasons(tolerance: tolerance) }
-        var invalidGeoJson = [(GeoJsonPoint, GeoJsonPoint)]()
+        var invalidLineStringGeoJson = [[GeoJsonPoint]]()
+        var invalidMultiLineStringGeoJson = [(GeoJsonPoint, GeoJsonPoint)]()
+        
+        var mode = -1
         
         invalidReasons.enumerated().forEach { index, reason in
             
             reason.forEach {
+                if case GeoJsonInvalidReason.lineStringInvalidReasons(let lineStringInvalidReasons) = $0, !lineStringInvalidReasons.isEmpty {
+                    if case LineStringInvalidReason.duplicates(indices: let pointIndices) = lineStringInvalidReasons[0] {
+                        pointIndices.forEach {
+                            if let duplicatePoint = objectGeometries[$0] as? GeoJsonPoint {
+                                    invalidLineStringGeoJson.append([duplicatePoint])
+                            }
+                        }
+                    }
+                    if case LineStringInvalidReason.selfIntersects(segmentIndices: let segmentIndices) = lineStringInvalidReasons[0] {
+                        segmentIndices.forEach { index, otherIndices in
+                            if let lineString = objectGeometries[index] as? GeoJsonLineString {
+                                invalidMultiLineStringGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
+                            }
+                            otherIndices.forEach {
+                                if let lineString = objectGeometries[$0] as? GeoJsonLineString {
+                                    invalidMultiLineStringGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
+                                }
+                            }
+                        }
+                    }
+                    mode = 0
+                }
+                
                 if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = $0, !multiLineStringInvalidReasons.isEmpty {
                     if case MultiLineStringInvalidReason.lineStringInvalid(reasonByIndex: let indices) = multiLineStringInvalidReasons[0] {
                         indices.forEach { index, _ in
                             if let lineString = objectGeometries[index] as? GeoJsonLineString {
-                                invalidGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
+                                invalidMultiLineStringGeoJson.append((lineString.geoJsonPoints[0], lineString.geoJsonPoints[1]))
                             }
                         }
                     }
@@ -149,22 +175,27 @@ extension GeoJsonObject {
                             let firstSegmentIndexPath = intersection[0].firstSegmentIndexPath
                             var point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
                             var point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
-                            invalidGeoJson.append((point1, point2))
+                            invalidMultiLineStringGeoJson.append((point1, point2))
                             
                             intersection[0].secondSegmentIndexPath.forEach {
                                 point1 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex]
                                 point2 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex + 1]
-                                invalidGeoJson.append((point1, point2))
+                                invalidMultiLineStringGeoJson.append((point1, point2))
                             }
                         }
                     }
+                    mode = 1
                 }
             }
             
         }
-        let xxx = GeoJsonInvalidGeometry.multiLineStringInvalidGeometry(invalidGeoJson)
         
-        return [xxx]
+        switch mode {
+        case 0: return [GeoJsonInvalidGeometry.lineStringInvalidGeometry(invalidLineStringGeoJson)]
+        case 1: return [GeoJsonInvalidGeometry.multiLineStringInvalidGeometry(invalidMultiLineStringGeoJson)]
+        default: return []
+        }
+        
     }
     
 }
