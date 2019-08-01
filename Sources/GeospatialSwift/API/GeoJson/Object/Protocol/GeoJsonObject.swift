@@ -135,7 +135,7 @@ extension GeoJsonObject {
         invalidReasons.enumerated().forEach { index, reason in
             
             reason.forEach {
-                if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = $0 {
+                if case GeoJsonInvalidReason.multiLineStringInvalidReasons(let multiLineStringInvalidReasons) = $0, !multiLineStringInvalidReasons.isEmpty {
                     if case MultiLineStringInvalidReason.lineStringInvalid(reasonByIndex: let indices) = multiLineStringInvalidReasons[0] {
                         indices.forEach { index, _ in
                             if let lineString = objectGeometries[index] as? GeoJsonLineString {
