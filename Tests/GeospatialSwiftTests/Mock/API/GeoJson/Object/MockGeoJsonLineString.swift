@@ -2,12 +2,8 @@
 
 final class MockGeoJsonLineString: MockGeoJsonLinearGeometry, GeoJsonLineString {
     var geoJsonPoints: [GeoJsonPoint] = []
-    
-    func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
-        return []
-    }
-    
-    var invalidReason: LineStringInvalidReason?
+
+    var simpleViolation: LineStringSimpleViolation?
     
     override init() {
         super.init()

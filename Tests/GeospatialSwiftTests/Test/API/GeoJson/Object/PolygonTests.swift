@@ -65,7 +65,7 @@ class PolygonTests: XCTestCase {
     }
     
     func testPolygonIsValid() {
-        XCTAssertEqual(polygon.invalidReasons(tolerance: 0).count, 0)
+        XCTAssertEqual(polygon.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testObjectBoundingBox() {

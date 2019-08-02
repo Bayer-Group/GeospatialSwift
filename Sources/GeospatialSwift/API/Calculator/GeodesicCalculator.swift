@@ -21,7 +21,7 @@ public protocol GeodesicCalculatorProtocol {
     func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
     
     func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool
-    func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int]
+    func indices(ofPoints points: [GeodesicPoint], clusteredWithinTolarance tolerance: Double) -> [[Int]]
     
     func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
     func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool
@@ -418,14 +418,26 @@ extension GeodesicCalculator {
         return polygon.linearRings.contains { hasIntersection($0, tolerance: tolerance) }
     }
     
-    public func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int] {
-        return points.enumerated().filter { currentIndex, currentPoint in
-            points.enumerated().contains { nextIndex, nextPoint in
-                guard currentIndex < nextIndex else { return false }
-                
-                return distance(from: currentPoint, to: nextPoint, tolerance: tolerance) == 0
+    public func indices(ofPoints points: [GeodesicPoint], clusteredWithinTolarance tolerance: Double) -> [[Int]] {
+        var uniquePoints = [GeodesicPoint]()
+        var duplicateIndices = [[Int]]()
+        
+        points.enumerated().forEach { pointIndex, point in
+            var isUnique = true
+            for index in (0..<uniquePoints.count) {
+                if distance(from: point, to: uniquePoints[index], tolerance: tolerance) == 0 {
+                    duplicateIndices[index].append(pointIndex)
+                    isUnique = false
+                    break
+                }
             }
-            }.map { $0.offset }
+            if isUnique {
+                uniquePoints.append(point)
+                duplicateIndices.append([pointIndex])
+            }
+        }
+        
+        return duplicateIndices.filter { $0.count > 1 }
     }
     
     // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
@@ -455,7 +467,7 @@ extension GeodesicCalculator {
         (1..<line.segments.count).forEach { index in
             var intersectionIndex = [Int]()
             
-            if index > 1{
+            if index > 1 {
                 (0..<index-1).forEach { indexOther in
                     if hasIntersection(line.segments[index], with: line.segments[indexOther], tolerance: tolerance) {
                         intersectionIndex.append(indexOther)
@@ -463,8 +475,8 @@ extension GeodesicCalculator {
                 }
             }
             
-            if contains(line.segments[index].otherPoint, in: line.segments[index-1], tolerance: tolerance) {
-                intersectionIndex.append(index-1)
+            if contains(line.segments[index].otherPoint, in: line.segments[index - 1], tolerance: tolerance) {
+                intersectionIndex.append(index - 1)
             }
             
             if !intersectionIndex.isEmpty {

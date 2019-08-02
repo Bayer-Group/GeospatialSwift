@@ -1,10 +1,6 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonMultiPolygon: MockGeoJsonClosedGeometry, GeoJsonMultiPolygon {
-    func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason] {
-        return []
-    }
-    
     private(set) var polygonsCallCount = 0
     var polygonsResult: [GeoJsonPolygon] = []
     var polygons: [GeoJsonPolygon] {

@@ -32,4 +32,8 @@ class MockGeoJsonCoordinatesGeometry: MockGeoJsonGeometry, GeoJsonCoordinatesGeo
         
         return pointsResult
     }
+    
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+        return []
+    }
 }

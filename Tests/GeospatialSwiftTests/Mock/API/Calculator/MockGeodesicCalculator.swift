@@ -16,13 +16,10 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
         return equalsResult
     }
     
-    private(set) var equalsIndicesCallCount = 0
-    var equalsIndicesResult: [Int] = []
-    func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int] {
-        equalsIndicesCallCount += 1
-        
-        return equalsIndicesResult
+    func indices(ofPoints points: [GeodesicPoint], clusteredWithinTolarance tolerance: Double) -> [[Int]] {
+        return []
     }
+    
     
     private(set) var hasIntersectionLineCallCount = 0
     var hasIntersectionLineResult: Bool = false

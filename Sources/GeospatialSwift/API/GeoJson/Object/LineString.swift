@@ -1,4 +1,4 @@
-public enum LineStringInvalidReason {
+public enum LineStringSimpleViolation {
     case duplicates(indices: [Int])
     case selfIntersects(segmentIndices: [Int: [Int]])
 }
@@ -6,7 +6,7 @@ public enum LineStringInvalidReason {
 public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine {
     var geoJsonPoints: [GeoJsonPoint] { get }
     
-    func invalidReasons(tolerance: Double) -> [LineStringInvalidReason]
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
 }
 
 extension GeoJson {
@@ -80,15 +80,46 @@ extension GeoJson {
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
             return Calculator.contains(point, in: self, tolerance: tolerance)
         }
+//
+//        public func simpleViolations(tolerance: Double) -> [LineStringSimpleViolation] {
+//            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
+//
+//            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+//
+//            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+//
+//            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
+//
+//            return []
+//        }
         
-        public func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
-            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
+        public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+            let duplicatePoints = Calculator.indices(ofPoints: points, clusteredWithinTolarance: tolerance).map { geoJsonPoints[$0[0]] }
             
-            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+            guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .duplicate)] }
             
             let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
             
-            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
+            guard selfIntersectsIndices.isEmpty else {
+                var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
+                selfIntersectsIndices.forEach { firstIndex, secondIndices in
+                    var point = Point(longitude: segments[firstIndex].point.longitude, latitude: segments[firstIndex].point.latitude)
+                    var otherPoint = Point(longitude: segments[firstIndex].otherPoint.longitude, latitude: segments[firstIndex].otherPoint.latitude)
+                    simpleViolationGeometries.append(point)
+                    simpleViolationGeometries.append(otherPoint)
+                    simpleViolationGeometries.append(LineString(points: [point, otherPoint])!)
+                    
+                    secondIndices.forEach {
+                        point = Point(longitude: segments[$0].point.longitude, latitude: segments[$0].point.latitude)
+                        otherPoint = Point(longitude: segments[$0].otherPoint.longitude, latitude: segments[$0].otherPoint.latitude)
+                        simpleViolationGeometries.append(point)
+                        simpleViolationGeometries.append(otherPoint)
+                        simpleViolationGeometries.append(LineString(points: [point, otherPoint])!)
+                    }
+                }
+                
+                return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .selfIntersection)]
+            }
             
             return []
         }

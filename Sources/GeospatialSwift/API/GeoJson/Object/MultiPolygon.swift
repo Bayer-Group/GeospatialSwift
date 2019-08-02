@@ -1,11 +1,11 @@
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
     
-    func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason]
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
 }
 
-public enum MultiPolygonInvalidReason {
-    case polygonInvalid(reasons: [Int: [PolygonInvalidReason]])
+public enum MultiPolygonSimpleViolation {
+    case polygonInvalid(reasons: [Int: [PolygonSimpleViolation]])
     case polygonsIntersect(indices: [Int])
 }
 
@@ -79,26 +79,26 @@ extension GeoJson {
             return false
         }
         
-        public func invalidReasons(tolerance: Double) -> [MultiPolygonInvalidReason] {
-            var reasons = [MultiPolygonInvalidReason]()
+        public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+            var reasons = [MultiPolygonSimpleViolation]()
             
-            //reasons.append(.polygonInvalid(reasons: polygons.map { $0.invalidReasons(tolerance: tolerance) }))
-            polygons.enumerated().forEach { index, polygon in
-                let reason = polygon.invalidReasons(tolerance: tolerance)
-                if reason.count>0 {
-                    reasons.append(.polygonInvalid(reasons: [index: polygon.invalidReasons(tolerance: tolerance)]))
-                }
-            }
-        
-            for index in 1..<polygons.count {
-                for indexOther in 0..<index {
-                    if hasIntersection(polygons[index], with: polygons[indexOther], tolerance: tolerance) {
-                        reasons.append(.polygonsIntersect(indices: [index, indexOther]))
-                    }
-                }
-            }
+//            //reasons.append(.polygonInvalid(reasons: polygons.map { $0.simpleViolations(tolerance: tolerance) }))
+//            polygons.enumerated().forEach { index, polygon in
+//                let reason = polygon.simpleViolations(tolerance: tolerance)
+//                if reason.count>0 {
+//                    reasons.append(.polygonInvalid(reasons: [index: polygon.simpleViolations(tolerance: tolerance)]))
+//                }
+//            }
+//        
+//            for index in 1..<polygons.count {
+//                for indexOther in 0..<index {
+//                    if hasIntersection(polygons[index], with: polygons[indexOther], tolerance: tolerance) {
+//                        reasons.append(.polygonsIntersect(indices: [index, indexOther]))
+//                    }
+//                }
+//            }
             
-            return reasons
+            return []
         }
         
         public func hasIntersection(_ polygon: GeoJsonPolygon, with otherPolygon: GeoJsonPolygon, tolerance: Double) -> Bool {

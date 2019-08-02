@@ -14,7 +14,7 @@ final class MockGeoJsonPolygon: MockGeoJsonClosedGeometry, GeoJsonPolygon {
         geoJsonObjectTypeResult = .polygon
     }
     
-    func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
+    func simpleViolations(tolerance: Double) -> [PolygonSimpleViolation] {
         return []
     }
     

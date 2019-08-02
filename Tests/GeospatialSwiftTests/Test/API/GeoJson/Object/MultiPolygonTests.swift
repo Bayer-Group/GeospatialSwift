@@ -45,17 +45,12 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testTouchingMultiPolygonsIsValid() {
-        XCTAssertEqual(touchingMultiPolygon.invalidReasons(tolerance: 0).count, 0)
+        XCTAssertEqual(touchingMultiPolygon.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testSharingEdgeMultiPolygonsIsInvalid() {
-        let invalidReasons = sharingEdgeMultiPolygons.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 1)
-        if case MultiPolygonInvalidReason.polygonsIntersect(indices: [1, 0]) = invalidReasons.first! {
-            XCTAssertTrue(true)
-        } else {
-            XCTAssertTrue(false)
-        }
+        let simpleViolations = sharingEdgeMultiPolygons.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testObjectBoundingBox() {

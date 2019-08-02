@@ -44,32 +44,28 @@ class LineStringTests: XCTestCase {
     }
     
     func testLineString_IsValid() {
-        XCTAssertEqual(lineString.invalidReasons(tolerance: 0).count, 0)
+        XCTAssertEqual(lineString.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testSelfInterSectingLineString_IsInvalid() {
-        let reason = selfIntersectingLineString.invalidReasons(tolerance: 0)
-        XCTAssertEqual(reason.count, 1)
-        
-        if case LineStringInvalidReason.selfIntersects(segmentIndices: [2: [0]]) = reason[0] {
-            XCTAssertTrue(true)
-        } else {
-            XCTAssertTrue(false)
-        }
+        let simpleViolations = selfIntersectingLineString.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        let geometry = simpleViolations[0].problems
+        XCTAssertEqual(geometry[0].points[0].longitude, 1.0)
+        XCTAssertEqual(geometry[0].points[0].latitude, 3.0)
+        XCTAssertEqual(geometry[1].points[0].longitude, 1.0)
+        XCTAssertEqual(geometry[1].points[0].latitude, -4.0)
+        XCTAssertEqual(geometry[3].points[0].longitude, 2.0)
+        XCTAssertEqual(geometry[3].points[0].latitude, 0.0)
+        XCTAssertEqual(geometry[4].points[0].longitude, 0.0)
+        XCTAssertEqual(geometry[4].points[0].latitude, 0.0)
     }
     
     func testSelfOverlappingLineString_IsInvalid() {
-        let reason = selfOverlappingLineString.invalidReasons(tolerance: 0)
-        XCTAssertEqual(reason.count, 1)
-        //[2: [1]]
-        if case LineStringInvalidReason.selfIntersects(segmentIndices: let segmentIndices) = reason[0] {
-            XCTAssertEqual(segmentIndices.count, 2)
-            XCTAssertEqual(segmentIndices[1]!.count, 1)
-            XCTAssertEqual(segmentIndices[1]![0], 0)
-            XCTAssertEqual(segmentIndices[2]!.count, 2)
-            XCTAssertEqual(segmentIndices[2]![0], 0)
-            XCTAssertEqual(segmentIndices[2]![1], 1)
-        }
+        let simpleViolations = selfOverlappingLineString.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        let geometry = simpleViolations[0].problems
+        XCTAssertEqual(geometry.count, 15)
     }
     
     func testObjectBoundingBox() {

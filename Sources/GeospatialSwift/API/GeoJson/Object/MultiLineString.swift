@@ -1,11 +1,11 @@
 public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     var lineStrings: [GeoJsonLineString] { get }
     
-    func invalidReasons(tolerance: Double) -> [MultiLineStringInvalidReason]
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
 }
 
-public enum MultiLineStringInvalidReason {
-    case lineStringInvalid(reasonByIndex: [Int: [LineStringInvalidReason]])
+public enum MultiLineStringSimpleViolation {
+    case lineStringInvalid(reasonByIndex: [Int: [LineStringSimpleViolation]])
     case lineStringsIntersect(intersection: [LineStringsIntersection])
 }
 
@@ -81,28 +81,42 @@ extension GeoJson {
         
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
         
-        public func invalidReasons(tolerance: Double) -> [MultiLineStringInvalidReason] {
-            var reasons = [MultiLineStringInvalidReason]()
+        public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+            var violations = [GeoJsonSimpleViolation]()
             lineStrings.enumerated().forEach { index, lineString in
-                let reason = lineString.invalidReasons(tolerance: tolerance)
-                if reason.count > 0 {
-                    reasons.append(.lineStringInvalid(reasonByIndex: [index: reason]))
+                let violation = lineString.simpleViolations(tolerance: tolerance)
+                if violation.count > 0 {
+                    violations += violation
                 }
             }
-            
-            var lineStringsIntersections = [LineStringsIntersection]()
+
+            var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
             (1..<lineStrings.count).forEach { index in
                 (0..<index).forEach { indexOther in
                     let intersectionSegmentIndices = intersections(lineStrings[index], with: lineStrings[indexOther], tolerance: tolerance)
                     intersectionSegmentIndices.forEach { firstSegmentIndex, secondSegmentIndices in
-                        lineStringsIntersections.append(LineStringsIntersection(firstSegmentIndexPath: SegmentIndexPath(lineStringIndex: index, segmentIndex: firstSegmentIndex), secondSegmentIndexPath: secondSegmentIndices.map { SegmentIndexPath(lineStringIndex: indexOther, segmentIndex: $0) }))
+                        
+                        var point = Point(longitude: lineStrings[index].segments[firstSegmentIndex].point.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].point.latitude)
+                        var otherPoint = Point(longitude: lineStrings[index].segments[firstSegmentIndex].otherPoint.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].otherPoint.latitude)
+                        simpleViolationGeometries.append(point)
+                        simpleViolationGeometries.append(otherPoint)
+                        simpleViolationGeometries.append(LineString(coordinatesJson: [point.geoJsonCoordinates, otherPoint.geoJsonCoordinates])!)
+                        
+                        secondSegmentIndices.forEach {
+                            point = Point(longitude: lineStrings[indexOther].segments[$0].point.longitude, latitude: lineStrings[indexOther].segments[$0].point.latitude)
+                            otherPoint = Point(longitude: lineStrings[indexOther].segments[$0].otherPoint.longitude, latitude: lineStrings[indexOther].segments[$0].otherPoint.latitude)
+                            simpleViolationGeometries.append(point)
+                            simpleViolationGeometries.append(otherPoint)
+                            simpleViolationGeometries.append(LineString(coordinatesJson: [point.geoJsonCoordinates, otherPoint.geoJsonCoordinates])!)
+                        }
                     }
                 }
             }
-            if !lineStringsIntersections.isEmpty {
-                reasons.append(.lineStringsIntersect(intersection: lineStringsIntersections))
+            if !simpleViolationGeometries.isEmpty {
+                violations.append(GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .selfIntersection))
             }
-            return reasons
+            
+            return violations
         }
         
         func intersections(_ lineString: GeoJsonLineString, with otherLineString: GeoJsonLineString, tolerance: Double) -> [Int: [Int]] {

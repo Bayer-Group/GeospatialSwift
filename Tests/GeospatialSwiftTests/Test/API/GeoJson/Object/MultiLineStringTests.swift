@@ -47,82 +47,26 @@ class MultiLineStringTests: XCTestCase {
     }
     
     func testMultiLineString_StartAndEndTouching_IsValid() {
-        XCTAssertEqual(multiLineString.invalidReasons(tolerance: 0).count, 0)
+        XCTAssertEqual(multiLineString.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testMultiLineString_SharingStartAndEnd_IsValid() {
-        XCTAssertEqual(sharingStartAndEndMultiLineString.invalidReasons(tolerance: 0).count, 0)
+        XCTAssertEqual(sharingStartAndEndMultiLineString.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testSelfInterSectingMultiLineString_IsInvalid() {
-        let invalidReasons = selfIntersectingMultiLineString.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 1)
-        
-        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
-            XCTAssertEqual(intersectionIndices.count, 1)
-            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
-            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
-            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
-            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
-        } else {
-            XCTFail("Mike")
-        }
+        let simpleViolations = selfIntersectingMultiLineString.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testSelfCrossingMultiLineString_IsInvalid() {
-        let invalidReasons = selfCrossingMultiLineString.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 1)
-
-        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
-            XCTAssertEqual(intersectionIndices.count, 1)
-            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.lineStringIndex, 1)
-            XCTAssertEqual(intersectionIndices[0].firstSegmentIndexPath.segmentIndex, 0)
-            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
-            XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
-        } else {
-            XCTFail("Mike")
-        }
+        let simpleViolations = selfCrossingMultiLineString.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testDoubleNMultiLineString_IsInvalid() {
-        let invalidReasons = doubleNMultiLineString.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 1)
-        
-        if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersectionIndices) = invalidReasons[0] {
-            XCTAssertEqual(intersectionIndices.count, 3)
-            
-            intersectionIndices.forEach {
-                switch $0.firstSegmentIndexPath.segmentIndex {
-                case 0:
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath.count, 3)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[0].segmentIndex, 0)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[1].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[1].segmentIndex, 1)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[2].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[0].secondSegmentIndexPath[2].segmentIndex, 2)
-                case 1:
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath.count, 3)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[0].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[0].segmentIndex, 0)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[1].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[1].segmentIndex, 1)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[2].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[1].secondSegmentIndexPath[2].segmentIndex, 2)
-                case 2:
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath.count, 3)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[0].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[0].segmentIndex, 0)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[1].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[1].segmentIndex, 1)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[2].lineStringIndex, 0)
-                    XCTAssertEqual(intersectionIndices[2].secondSegmentIndexPath[2].segmentIndex, 2)
-                default: ()
-                }
-            }
-        } else {
-            XCTFail("Mike")
-        }
+        let simpleViolations = doubleNMultiLineString.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testGeometryTypes() {

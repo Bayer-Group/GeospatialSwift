@@ -28,20 +28,13 @@ class MultiPointTests: XCTestCase {
     }
     
     func testMultiPoints_AllUnique_IsValid() {
-        let invalidReasons = multiPoint.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 0)
+        let simpleViolations = multiPoint.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 0)
     }
     
     func testMultiPoints_WithDuplicate_IsInvalid() {
-        let invalidReasons = multiPointWithDuplicate.invalidReasons(tolerance: 0)
-        XCTAssertEqual(invalidReasons.count, 1)
-        
-        if case MultipointInvalidReason.duplicates(indices: let indices) = invalidReasons[0] {
-            XCTAssertEqual(indices.count, 1)
-            XCTAssertEqual(indices[0], 0)
-        } else {
-            XCTFail("Not a multiPoint")
-        }
+        let simpleViolations = multiPointWithDuplicate.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testObjectGeometries() {

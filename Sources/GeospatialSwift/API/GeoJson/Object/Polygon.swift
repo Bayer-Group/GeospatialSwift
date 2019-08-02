@@ -1,8 +1,8 @@
-public enum PolygonInvalidReason {
+public enum PolygonSimpleViolation {
     case duplicates(indices: [Int])
     case selfIntersects(ringIndices: [Int: [[Int]]])
     case holeOutside(ringIndices: [Int])
-    case ringInvalidReasons(_: [[LineStringInvalidReason]])
+    case ringSimpleViolations(_: [[LineStringSimpleViolation]])
 }
 
 public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon {
@@ -11,7 +11,7 @@ public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon {
     var geoJsonNegativeRings: [GeoJsonLineString] { get }
     var centroid: GeodesicPoint { get }
     
-    func invalidReasons(tolerance: Double) -> [PolygonInvalidReason]
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
 }
 
 // SOMEDAY: Create Polygon by mainRing and negativeRings instead of [LinearRings] which does not imply a main ring needs to exist to be valid.
@@ -111,32 +111,36 @@ extension GeoJson {
         // Polygon where area threshold removes geometry AFTER clipping
         // Polygon with reversed winding order
         // Polygon with hole where hole has invalid winding order
-        public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
-            //Polygon repeats the first point at the end to close the shape
-            //To apply the logic for LineString, we need to drop the last point
-            var geoJsonLinearRingsDropLastPoint = [GeoJsonLineString]()
-            geoJsonLinearRings.forEach {
-                if let geoJsonLinearRingDropLastPoint = LineString(coordinatesJson: $0.geoJsonCoordinates.dropLast()) {
-                    geoJsonLinearRingsDropLastPoint.append(geoJsonLinearRingDropLastPoint)
-                }
-            }
-            let ringInvalidReasons = geoJsonLinearRingsDropLastPoint.compactMap { $0.invalidReasons(tolerance: tolerance) }.filter { $0.count>0 }
-            
-            guard ringInvalidReasons.isEmpty else { return [.ringInvalidReasons(ringInvalidReasons)] }
-            
-            let pointDropLast = geoJsonLinearRingsDropLastPoint.flatMap { $0.geoJsonPoints }
-            let duplicateIndices = Calculator.equalsIndices(pointDropLast, tolerance: tolerance)
-            
-            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
-            
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
-            
-            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
-            
-            let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: self, tolerance: tolerance) } }.map { $0.offset }
-            
-            guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
-            
+//        public func simpleViolations(tolerance: Double) -> [PolygonSimpleViolation] {
+//            //Polygon repeats the first point at the end to close the shape
+//            //To apply the logic for LineString, we need to drop the last point
+//            var geoJsonLinearRingsDropLastPoint = [GeoJsonLineString]()
+//            geoJsonLinearRings.forEach {
+//                if let geoJsonLinearRingDropLastPoint = LineString(coordinatesJson: $0.geoJsonCoordinates.dropLast()) {
+//                    geoJsonLinearRingsDropLastPoint.append(geoJsonLinearRingDropLastPoint)
+//                }
+//            }
+//            let ringSimpleViolations = geoJsonLinearRingsDropLastPoint.compactMap { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }
+//
+//            guard ringSimpleViolations.isEmpty else { return [.ringSimpleViolations(ringSimpleViolations)] }
+//
+//            let pointDropLast = geoJsonLinearRingsDropLastPoint.flatMap { $0.geoJsonPoints }
+//            let duplicateIndices = Calculator.equalsIndices(pointDropLast, tolerance: tolerance)
+//
+//            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
+//
+//            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+//
+//            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
+//
+//            let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: self, tolerance: tolerance) } }.map { $0.offset }
+//
+//            guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
+//
+//            return []
+//        }
+        
+        public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
             return []
         }
     }
