@@ -5,14 +5,18 @@ import XCTest
 class MultiPointTests: XCTestCase {
     var points: [Point]!
     var multiPoint: MultiPoint!
+    var pointsWithDuplicate: [Point]!
+    var multiPointWithDuplicate: MultiPoint!
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
         points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
+        pointsWithDuplicate = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(1, 3, 3), GeoTestHelper.point(1, 2, 3)]
         
         multiPoint = GeoTestHelper.multiPoint(points)
+        multiPointWithDuplicate = GeoTestHelper.multiPoint(pointsWithDuplicate)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -21,6 +25,23 @@ class MultiPointTests: XCTestCase {
     
     func testGeoJsonObjectType() {
         XCTAssertEqual(multiPoint.type, .multiPoint)
+    }
+    
+    func testMultiPoints_AllUnique_IsValid() {
+        let invalidReasons = multiPoint.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 0)
+    }
+    
+    func testMultiPoints_WithDuplicate_IsInvalid() {
+        let invalidReasons = multiPointWithDuplicate.invalidReasons(tolerance: 0)
+        XCTAssertEqual(invalidReasons.count, 1)
+        
+        if case MultipointInvalidReason.duplicates(indices: let indices) = invalidReasons[0] {
+            XCTAssertEqual(indices.count, 1)
+            XCTAssertEqual(indices[0], 0)
+        } else {
+            XCTFail("Not a multiPoint")
+        }
     }
     
     func testObjectGeometries() {
