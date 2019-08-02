@@ -30,8 +30,8 @@ public extension GeoJsonCoordinatesGeometry {
 }
 
 public struct GeoJsonSimpleViolation {
-    let problems: [GeoJsonCoordinatesGeometry]
-    let reason: GeoJsonSimpleViolationReason
+    public let problems: [GeoJsonCoordinatesGeometry]
+    public let reason: GeoJsonSimpleViolationReason
     //    case multipointSimpleViolations(_: [MultipointSimpleViolation])
     //    case lineStringSimpleViolations(_: [LineStringSimpleViolation])
     //    case multiLineStringSimpleViolations(_: [MultiLineStringSimpleViolation])
