@@ -206,17 +206,18 @@ extension GeoJsonObject {
                             invalidLineString.append(contentsOf: invalidObjectForLineString(invalidReasons: [xxx]))
                         }
                         if case MultiLineStringInvalidReason.lineStringsIntersect(intersection: let intersection) = $0 {
-                            
                             if let lineIntersect = objectGeometries[index] as? GeoJsonMultiLineString {
-                                let firstSegmentIndexPath = intersection[0].firstSegmentIndexPath
-                                var point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
-                                var point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
-                                invalidMultiLineStringGeoJson.append([point1, point2])
-                                
-                                intersection[0].secondSegmentIndexPath.forEach {
-                                    point1 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex]
-                                    point2 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex + 1]
+                                intersection.forEach {
+                                    let firstSegmentIndexPath = $0.firstSegmentIndexPath
+                                    var point1 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex]
+                                    var point2 = lineIntersect.lineStrings[firstSegmentIndexPath.lineStringIndex].geoJsonPoints[firstSegmentIndexPath.segmentIndex + 1]
                                     invalidMultiLineStringGeoJson.append([point1, point2])
+                                    
+                                    $0.secondSegmentIndexPath.forEach {
+                                        point1 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex]
+                                        point2 = lineIntersect.lineStrings[$0.lineStringIndex].geoJsonPoints[$0.segmentIndex + 1]
+                                        invalidMultiLineStringGeoJson.append([point1, point2])
+                                    }
                                 }
                             }
                         }
