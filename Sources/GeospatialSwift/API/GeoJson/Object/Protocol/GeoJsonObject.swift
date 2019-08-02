@@ -131,8 +131,9 @@ extension GeoJsonObject {
         let reasons = objectGeometries.map { $0.invalidReasons(tolerance: tolerance) }
         
         switch objectGeometries[0] {
+        case _ as GeoJsonMultiPoint: return objectGeometries.flatMap { $0.invalidObjectForMultiPoint(invalidReasons: reasons) }
         case _ as GeoJsonLineString: return objectGeometries.flatMap { $0.invalidObjectForLineString(invalidReasons: reasons) }
-        case  _ as GeoJsonMultiLineString: return objectGeometries.flatMap { $0.invalidObjectForMultiLineString(invalidReasons: reasons, tolerance: tolerance) }
+        case _ as GeoJsonMultiLineString: return objectGeometries.flatMap { $0.invalidObjectForMultiLineString(invalidReasons: reasons, tolerance: tolerance) }
         default: return []
         }
     }
