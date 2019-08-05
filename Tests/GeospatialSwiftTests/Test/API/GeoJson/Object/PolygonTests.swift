@@ -7,6 +7,11 @@ class PolygonTests: XCTestCase {
     var linearRings: [LineString]!
     var polygon: Polygon!
     var polygonDistance: Polygon!
+    var sharingCornerLinearRings: [LineString]!
+    var sharingCornerPolygon: Polygon!
+    var ringIntersectingLinearRings: [LineString]!
+    var ringIntersectingPolygon: Polygon!
+    
     var distancePoint: SimplePoint!
     
     var point: GeoJsonPoint!
@@ -35,6 +40,12 @@ class PolygonTests: XCTestCase {
         polygonDistance = GeoTestHelper.polygon([GeoTestHelper.lineString([GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 2, 3)])])
         
         polygon = GeoTestHelper.polygon(linearRings)
+        
+        sharingCornerLinearRings = MockData.sharingCornerLinearRings as? [LineString]
+        sharingCornerPolygon = GeoTestHelper.polygon(sharingCornerLinearRings)
+        
+        ringIntersectingLinearRings = MockData.ringIntersectingLinearRings as? [LineString]
+        ringIntersectingPolygon = GeoTestHelper.polygon(ringIntersectingLinearRings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -66,6 +77,14 @@ class PolygonTests: XCTestCase {
     
     func testPolygonIsValid() {
         XCTAssertEqual(polygon.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testPolygonSharingCorner_IsValid() {
+        XCTAssertEqual(sharingCornerPolygon.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testPolygonringIntersecting_IsInvalid() {
+        XCTAssertEqual(ringIntersectingPolygon.simpleViolations(tolerance: 0).count, 1)
     }
     
     func testObjectBoundingBox() {

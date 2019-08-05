@@ -6,9 +6,11 @@ class LineStringTests: XCTestCase {
     var points: [Point]!
     var selfIntersectingPoints: [Point]!
     var selfOverlappingPoints: [Point]!
+    var closedPoints: [Point]!
     var lineString: LineString!
     var selfIntersectingLineString: LineString!
     var selfOverlappingLineString: LineString!
+    var closedLineString: LineString!
     
     var distancePoint: SimplePoint!
     
@@ -18,10 +20,12 @@ class LineStringTests: XCTestCase {
         points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
         selfIntersectingPoints = [GeoTestHelper.point(2, 0, 0), GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(1, 3, 0), GeoTestHelper.point(1, -4, 0)]
         selfOverlappingPoints = [GeoTestHelper.point(0, 0, 0), GeoTestHelper.point(3, 0, 0), GeoTestHelper.point(1, 0, 0), GeoTestHelper.point(2, 0, 0)]
+        closedPoints = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3), GeoTestHelper.point(1, 2, 3)]
         
         lineString = GeoTestHelper.lineString(points)
         selfIntersectingLineString = GeoTestHelper.lineString(selfIntersectingPoints)
         selfOverlappingLineString = GeoTestHelper.lineString(selfOverlappingPoints)
+        closedLineString = GeoTestHelper.lineString(closedPoints)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -45,6 +49,10 @@ class LineStringTests: XCTestCase {
     
     func testLineString_IsValid() {
         XCTAssertEqual(lineString.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testClosedLineString_IsValid() {
+        XCTAssertEqual(closedLineString.simpleViolations(tolerance: 0).count, 0)
     }
     
     func testSelfInterSectingLineString_IsInvalid() {

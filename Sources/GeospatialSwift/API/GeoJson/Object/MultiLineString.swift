@@ -4,21 +4,6 @@ public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
     func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
 }
 
-public enum MultiLineStringSimpleViolation {
-    case lineStringInvalid(reasonByIndex: [Int: [LineStringSimpleViolation]])
-    case lineStringsIntersect(intersection: [LineStringsIntersection])
-}
-
-public struct LineStringsIntersection {
-    public let firstSegmentIndexPath: SegmentIndexPath
-    public let secondSegmentIndexPath: [SegmentIndexPath]
-}
-
-public struct SegmentIndexPath {
-    public let lineStringIndex: Int
-    public let segmentIndex: Int
-}
-
 extension GeoJson {
     /**
      Creates a GeoJsonMultiLineString

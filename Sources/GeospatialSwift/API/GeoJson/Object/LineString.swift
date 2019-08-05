@@ -60,7 +60,7 @@ extension GeoJson {
             self.init(points: points)
         }
         
-        fileprivate init?(points: [GeoJsonPoint]) {
+        internal init?(points: [GeoJsonPoint]) {
             guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
             self.points = points
@@ -94,7 +94,15 @@ extension GeoJson {
 //        }
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
-            let duplicatePoints = Calculator.indices(ofPoints: points, clusteredWithinTolarance: tolerance).map { geoJsonPoints[$0[0]] }
+            //For polygons, each ring is a simple lineString, whose start = end
+            //We drop last if last = first. If there is a pointMid = last = first, we lose the violation pointMid = last, but we still capture pointMid = first, which is at the same location.
+            var pointsForDuplicateCheck = [GeodesicPoint]()
+            if points[0] == points[points.count - 1] {
+                pointsForDuplicateCheck = points.dropLast()
+            } else {
+                pointsForDuplicateCheck = points
+            }
+            let duplicatePoints = Calculator.indices(ofPoints: pointsForDuplicateCheck, clusteredWithinTolarance: tolerance).map { geoJsonPoints[$0[0]] }
             
             guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .duplicate)] }
             

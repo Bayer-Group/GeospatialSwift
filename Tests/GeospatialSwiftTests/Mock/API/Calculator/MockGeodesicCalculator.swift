@@ -70,8 +70,8 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     }
     
     private(set) var intersectionIndicesPolygonCallCount = 0
-    var intersectionIndicesPolygonResult: [Int: [[Int]]] = [:]
-    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int: [[Int]]] {
+    var intersectionIndicesPolygonResult: [IntersectionForPolygon] = []
+    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [IntersectionForPolygon] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult

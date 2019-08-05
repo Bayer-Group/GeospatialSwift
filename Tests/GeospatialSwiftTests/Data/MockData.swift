@@ -31,6 +31,10 @@ final class MockData {
     
     static let linearRings: [GeoJsonLineString] = linearRingsList.first!
     static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(linearRings: $0)! }
+    static let sharingCornerLinearRings: [GeoJsonLineString] = sharingCornerRingsList.first!
+    static let sharingCornerPolygons: [GeoJsonPolygon] = sharingCornerRingsList.map { geoJson.polygon(linearRings: $0)! }
+    static let ringIntersectingLinearRings: [GeoJsonLineString] = ringIntersectingRingsList.first!
+    static let ringIntersectingPolygons: [GeoJsonPolygon] = ringIntersectingRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let sharingEdgePolygons: [GeoJsonPolygon] = sharingEdgeLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let geometries: [GeoJsonGeometry] = [
@@ -110,6 +114,24 @@ extension MockData {
     ]
     
     private static let linearRingsList: [[GeoJsonLineString]] = polygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
+
+    private static let sharingCornerPolygonPointsList: [[[GeoJsonPoint]]] = [
+        [
+            [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4), GeoTestHelper.point(3, 3, 5), GeoTestHelper.point(0, 3, 4), GeoTestHelper.point(0, 0, 3)],
+            [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(2, 1, 4), GeoTestHelper.point(1, 2, 5), GeoTestHelper.point(0, 0, 3)]
+        ]
+    ]
+    
+    private static let sharingCornerRingsList: [[GeoJsonLineString]] = sharingCornerPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
+    
+    private static let ringIntersectingPolygonPointsList: [[[GeoJsonPoint]]] = [
+        [
+            [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4), GeoTestHelper.point(3, 3, 5), GeoTestHelper.point(0, 3, 4), GeoTestHelper.point(0, 0, 3)],
+            [GeoTestHelper.point(2, 1, 3), GeoTestHelper.point(4, 1, 4), GeoTestHelper.point(4, 2, 5), GeoTestHelper.point(2, 2, 3), GeoTestHelper.point(2, 1, 3)]
+        ]
+    ]
+    
+    private static let ringIntersectingRingsList: [[GeoJsonLineString]] = ringIntersectingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
     
     private static let touchingPolygonPointsList: [[[GeoJsonPoint]]] = [
         [

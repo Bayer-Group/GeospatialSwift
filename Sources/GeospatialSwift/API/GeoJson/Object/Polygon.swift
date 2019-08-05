@@ -141,6 +141,54 @@ extension GeoJson {
 //        }
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+            let ringSimpleViolations = geoJsonLinearRings.compactMap { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }
+
+            guard ringSimpleViolations.isEmpty else { return ringSimpleViolations.flatMap { $0 } }
+            
+            var dupPoints = [GeoJsonPoint]()
+            (1..<linearRings.count).forEach { index in
+                
+                (0..<index).forEach { indexOther in
+                    //drop last point, which equals the first point
+                    let pointsDropLast = linearRings[index].points.dropLast()
+                    let pointsOtherDropLast = linearRings[indexOther].points.dropLast()
+                    //1 pair of duplicacy is allowed
+                    let duplicatePoints = pointsDropLast.filter { point in
+                        pointsOtherDropLast.contains(where: { point == $0 })
+                    }
+                    if duplicatePoints.count > 1 {
+                        duplicatePoints.forEach { point in
+                            if !dupPoints.contains(where: { point == $0 }) {
+                                dupPoints.append(Point(longitude: point.longitude, latitude: point.latitude))
+                            }
+                        }
+                    }
+                }
+            }
+            guard dupPoints.isEmpty else { return [GeoJsonSimpleViolation(problems: dupPoints, reason: .duplicate)] }
+            
+            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+            
+            guard selfIntersectsIndices.isEmpty else {
+                var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
+                
+                selfIntersectsIndices.forEach { intersection in
+                    let segmentIndexPath = intersection.indexPath
+                    //let segmentIndexPathOther = intersection.indexPathOther
+                    let segment = linearRings[segmentIndexPath.ringIndex].segments[segmentIndexPath.segmentIndex]
+                    
+                    var point = Point(longitude: segment.point.longitude, latitude: segment.point.latitude)
+                    var pointOther = Point(longitude: segment.otherPoint.longitude, latitude: segment.otherPoint.latitude)
+                    
+                    simpleViolationGeometries.append(point)
+                    simpleViolationGeometries.append(pointOther)
+                    simpleViolationGeometries.append(LineString(points: [point, pointOther])!)
+                    
+                }
+                
+                return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .selfIntersection)]
+            }
+            
             return []
         }
     }
