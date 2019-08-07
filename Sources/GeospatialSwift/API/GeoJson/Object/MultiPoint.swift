@@ -59,18 +59,10 @@ extension GeoJson {
         
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geoJsonPoints.first { $0.contains(point, tolerance: tolerance) } != nil }
         
-//        public func simpleViolations(tolerance: Double) -> [MultipointSimpleViolation] {
-//            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
-//
-//            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
-//
-//            return []
-//        }
-        
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
             let duplicatePoints = Calculator.indices(ofPoints: points, clusteredWithinTolarance: tolerance).map { geoJsonPoints[$0[0]] }
             
-            guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .duplicate)] }
+            guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .pointDuplication)] }
             
             return []
         }
