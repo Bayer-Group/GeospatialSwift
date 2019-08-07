@@ -81,15 +81,15 @@ extension GeoJson {
                     let intersectionSegmentIndices = intersections(lineStrings[index], with: lineStrings[indexOther], tolerance: tolerance)
                     intersectionSegmentIndices.forEach { firstSegmentIndex, secondSegmentIndices in
                         
-                        var point = Point(longitude: lineStrings[index].segments[firstSegmentIndex].point.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].point.latitude)
-                        var otherPoint = Point(longitude: lineStrings[index].segments[firstSegmentIndex].otherPoint.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].otherPoint.latitude)
+                        var point = Point(longitude: lineStrings[index].segments[firstSegmentIndex].startPoint.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].startPoint.latitude)
+                        var otherPoint = Point(longitude: lineStrings[index].segments[firstSegmentIndex].endPoint.longitude, latitude: lineStrings[index].segments[firstSegmentIndex].endPoint.latitude)
                         simpleViolationGeometries.append(point)
                         simpleViolationGeometries.append(otherPoint)
                         simpleViolationGeometries.append(LineString(coordinatesJson: [point.geoJsonCoordinates, otherPoint.geoJsonCoordinates])!)
                         
                         secondSegmentIndices.forEach {
-                            point = Point(longitude: lineStrings[indexOther].segments[$0].point.longitude, latitude: lineStrings[indexOther].segments[$0].point.latitude)
-                            otherPoint = Point(longitude: lineStrings[indexOther].segments[$0].otherPoint.longitude, latitude: lineStrings[indexOther].segments[$0].otherPoint.latitude)
+                            point = Point(longitude: lineStrings[indexOther].segments[$0].startPoint.longitude, latitude: lineStrings[indexOther].segments[$0].startPoint.latitude)
+                            otherPoint = Point(longitude: lineStrings[indexOther].segments[$0].endPoint.longitude, latitude: lineStrings[indexOther].segments[$0].endPoint.latitude)
                             simpleViolationGeometries.append(point)
                             simpleViolationGeometries.append(otherPoint)
                             simpleViolationGeometries.append(LineString(coordinatesJson: [point.geoJsonCoordinates, otherPoint.geoJsonCoordinates])!)
@@ -142,9 +142,9 @@ extension GeoJson {
                     let otherLineSegmentFirstSegment = otherLineString.segments[0]
                     if hasIntersection(lineSegment, with: otherLineSegmentFirstSegment, tolerance: tolerance) {
                         //shares start point, not overlapping
-                        if otherLineSegmentFirstSegment.point == lineSegment.point && !Calculator.contains(otherLineSegmentFirstSegment.otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) {
+                        if otherLineSegmentFirstSegment.startPoint == lineSegment.startPoint && !Calculator.contains(otherLineSegmentFirstSegment.endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) {
                             //do nothing
-                        } else if otherLineSegmentFirstSegment.point == lineSegment.otherPoint && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentFirstSegment.point, in: lineSegment, tolerance: tolerance) {
+                        } else if otherLineSegmentFirstSegment.startPoint == lineSegment.endPoint && !Calculator.contains(lineSegment.endPoint, in: otherLineSegmentFirstSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentFirstSegment.startPoint, in: lineSegment, tolerance: tolerance) {
                             //do nothing
                         } else {
                             indices.append(0)
@@ -161,9 +161,9 @@ extension GeoJson {
                     let otherLineSegmentLastSegment = otherLineString.segments[lastIndex]
                     if hasIntersection(lineSegment, with: otherLineSegmentLastSegment, tolerance: tolerance) {
                         //shares start point, not overlapping
-                        if otherLineSegmentLastSegment.otherPoint == lineSegment.point && !Calculator.contains(otherLineSegmentLastSegment.point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegmentLastSegment, tolerance: tolerance) {
+                        if otherLineSegmentLastSegment.endPoint == lineSegment.startPoint && !Calculator.contains(otherLineSegmentLastSegment.startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: otherLineSegmentLastSegment, tolerance: tolerance) {
                             //do nothing
-                        } else if otherLineSegmentLastSegment.otherPoint == lineSegment.otherPoint && !Calculator.contains(lineSegment.point, in: otherLineSegmentLastSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentLastSegment.point, in: lineSegment, tolerance: tolerance) {
+                        } else if otherLineSegmentLastSegment.endPoint == lineSegment.endPoint && !Calculator.contains(lineSegment.startPoint, in: otherLineSegmentLastSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegmentLastSegment.startPoint, in: lineSegment, tolerance: tolerance) {
                             //do nothing
                         } else {
                             indices.append(lastIndex)
@@ -201,7 +201,7 @@ extension GeoJson {
                 //first segment of lineString
                 if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
                     //shares start point, not overlapping
-                    if lineString.segments[0].point == lineSegment.point && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[0], tolerance: tolerance) {
+                    if lineString.segments[0].startPoint == lineSegment.startPoint && !Calculator.contains(lineString.segments[0].endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(0)
@@ -218,7 +218,7 @@ extension GeoJson {
                 //last segment of lineString
                 if Calculator.distance(from: lineString.segments[lastIndex], to: lineSegment, tolerance: tolerance) == 0 {
                     //last segment end is lineSegment start, not overlapping
-                    if lineString.segments[lastIndex].otherPoint == lineSegment.point && !Calculator.contains(lineString.segments[lastIndex].point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[lastIndex], tolerance: tolerance) {
+                    if lineString.segments[lastIndex].endPoint == lineSegment.startPoint && !Calculator.contains(lineString.segments[lastIndex].startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: lineString.segments[lastIndex], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(lastIndex)
@@ -228,9 +228,9 @@ extension GeoJson {
                 //only 1 segment
                 if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
                     //shares start point, not overlapping
-                    if lineString.segments[0].point == lineSegment.point && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[0], tolerance: tolerance) {
+                    if lineString.segments[0].startPoint == lineSegment.startPoint && !Calculator.contains(lineString.segments[0].endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
-                    } else if lineString.segments[0].otherPoint == lineSegment.point && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: lineString.segments[0], tolerance: tolerance) {
+                    } else if lineString.segments[0].endPoint == lineSegment.startPoint && !Calculator.contains(lineString.segments[0].endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(0)
@@ -248,7 +248,7 @@ extension GeoJson {
                 //first segment of lineString
                 if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
                     //first segment start is lineSegment end, not overlapping
-                    if lineString.segments[0].point == lineSegment.otherPoint && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[0], tolerance: tolerance) {
+                    if lineString.segments[0].startPoint == lineSegment.endPoint && !Calculator.contains(lineString.segments[0].endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.startPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(0)
@@ -265,7 +265,7 @@ extension GeoJson {
                 //last segment of lineString
                 if Calculator.distance(from: lineString.segments[lastIndex], to: lineSegment, tolerance: tolerance) == 0 {
                     //last segment end is lineSegment end, not overlapping
-                    if lineString.segments[lastIndex].otherPoint == lineSegment.otherPoint && !Calculator.contains(lineString.segments[lastIndex].point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[lastIndex], tolerance: tolerance) {
+                    if lineString.segments[lastIndex].endPoint == lineSegment.endPoint && !Calculator.contains(lineString.segments[lastIndex].startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.startPoint, in: lineString.segments[lastIndex], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(lastIndex)
@@ -275,9 +275,9 @@ extension GeoJson {
                 //When only 1 segment
                 if Calculator.distance(from: lineString.segments[0], to: lineSegment, tolerance: tolerance) == 0 {
                     //segment start is lineSegment end, not overlapping
-                    if lineString.segments[0].point == lineSegment.otherPoint && !Calculator.contains(lineString.segments[0].otherPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[0], tolerance: tolerance) {
+                    if lineString.segments[0].startPoint == lineSegment.endPoint && !Calculator.contains(lineString.segments[0].endPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.startPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
-                    } else if lineString.segments[0].otherPoint == lineSegment.otherPoint && !Calculator.contains(lineString.segments[0].point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.point, in: lineString.segments[0], tolerance: tolerance) {
+                    } else if lineString.segments[0].endPoint == lineSegment.endPoint && !Calculator.contains(lineString.segments[0].startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.startPoint, in: lineString.segments[0], tolerance: tolerance) {
                         //do nothing
                     } else {
                         indices.append(0)
@@ -294,10 +294,10 @@ extension GeoJson {
         
         private func isSharingPoint(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
             if lineSegment != otherLineSegment {
-                if lineSegment.point == otherLineSegment.point { return true }
-                if lineSegment.point == otherLineSegment.otherPoint { return true }
-                if lineSegment.otherPoint == otherLineSegment.otherPoint { return true }
-                if lineSegment.otherPoint == otherLineSegment.point { return true }
+                if lineSegment.startPoint == otherLineSegment.startPoint { return true }
+                if lineSegment.startPoint == otherLineSegment.endPoint { return true }
+                if lineSegment.endPoint == otherLineSegment.endPoint { return true }
+                if lineSegment.endPoint == otherLineSegment.startPoint { return true }
             }
             return false
         }

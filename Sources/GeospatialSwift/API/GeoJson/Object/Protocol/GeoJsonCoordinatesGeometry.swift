@@ -42,6 +42,7 @@ public struct GeoJsonSimpleViolation {
 public enum GeoJsonSimpleViolationReason {
     case selfIntersection
     case duplicate
+    case holesOutside
     #warning("TODO")
 }
 

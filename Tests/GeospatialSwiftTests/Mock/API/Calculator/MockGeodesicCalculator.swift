@@ -20,7 +20,6 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
         return []
     }
     
-    
     private(set) var hasIntersectionLineCallCount = 0
     var hasIntersectionLineResult: Bool = false
     func hasIntersection(_ lineSegment1: GeodesicLineSegment, with lineSegment2: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -55,18 +54,18 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var intersectionLineCallCount = 0
     var intersectionLineResult: GeodesicPoint?
-    func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
+    func intersectionPoint(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
         intersectionLineCallCount += 1
         
         return intersectionLineResult
     }
     
-    private(set) var intersectionIndicesLineCallCount = 0
-    var intersectionIndicesLineResult: [Int: [Int]] = [:]
-    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int: [Int]] {
-        intersectionIndicesLineCallCount += 1
+    private(set) var simpleViolationSelfIntersectionIndicesCallCount = 0
+    var simpleViolationSelfIntersectionIndicesResult: [Int: [Int]] = [:]
+    func simpleViolationSelfIntersectionIndices(from line: GeodesicLine) -> [Int : [Int]] {
+        simpleViolationSelfIntersectionIndicesCallCount += 1
         
-        return intersectionIndicesLineResult
+        return simpleViolationSelfIntersectionIndicesResult
     }
     
     private(set) var intersectionIndicesPolygonCallCount = 0

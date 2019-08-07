@@ -114,7 +114,7 @@ extension GeoJson {
                 $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
             }
             
-            return polygonIntersects || (contains(lineSegment.point, tolerance: tolerance) && !isOnEdge(lineSegment.point, tolerance: tolerance) )  || (contains(lineSegment.otherPoint, tolerance: tolerance) && !isOnEdge(lineSegment.otherPoint, tolerance: tolerance))
+            return polygonIntersects || (contains(lineSegment.startPoint, tolerance: tolerance) && !isOnEdge(lineSegment.startPoint, tolerance: tolerance) )  || (contains(lineSegment.endPoint, tolerance: tolerance) && !isOnEdge(lineSegment.endPoint, tolerance: tolerance))
         }
         
         private func isOnEdge(_ point: GeodesicPoint, tolerance: Double) -> Bool {
@@ -140,10 +140,10 @@ extension GeoJson {
         }
         
         private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: tolerance) { return true }
-            if !Calculator.contains(lineSegment.point, in: otherLineSegment, tolerance: tolerance) && Calculator.contains(lineSegment.otherPoint, in: otherLineSegment, tolerance: tolerance) { return true }
-            if Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: tolerance) { return true }
-            if !Calculator.contains(otherLineSegment.point, in: lineSegment, tolerance: tolerance) && Calculator.contains(otherLineSegment.otherPoint, in: lineSegment, tolerance: tolerance) { return true }
+            if Calculator.contains(lineSegment.startPoint, in: otherLineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: otherLineSegment, tolerance: tolerance) { return true }
+            if !Calculator.contains(lineSegment.startPoint, in: otherLineSegment, tolerance: tolerance) && Calculator.contains(lineSegment.endPoint, in: otherLineSegment, tolerance: tolerance) { return true }
+            if Calculator.contains(otherLineSegment.startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegment.endPoint, in: lineSegment, tolerance: tolerance) { return true }
+            if !Calculator.contains(otherLineSegment.startPoint, in: lineSegment, tolerance: tolerance) && Calculator.contains(otherLineSegment.endPoint, in: lineSegment, tolerance: tolerance) { return true }
             
             return false
         }

@@ -9,8 +9,12 @@ class PolygonTests: XCTestCase {
     var polygonDistance: Polygon!
     var sharingCornerLinearRings: [LineString]!
     var sharingCornerPolygon: Polygon!
+    var sharingCornerAndOverlappingLinearRings: [LineString]!
+    var sharingCornerAndOverlappingPolygon: Polygon!
     var ringIntersectingLinearRings: [LineString]!
     var ringIntersectingPolygon: Polygon!
+    var holeOutsideLinearRings: [LineString]!
+    var holeOutsidePolygon: Polygon!
     
     var distancePoint: SimplePoint!
     
@@ -44,8 +48,14 @@ class PolygonTests: XCTestCase {
         sharingCornerLinearRings = MockData.sharingCornerLinearRings as? [LineString]
         sharingCornerPolygon = GeoTestHelper.polygon(sharingCornerLinearRings)
         
+        sharingCornerAndOverlappingLinearRings = MockData.sharingCornerAndOverlappingRings as? [LineString]
+        sharingCornerAndOverlappingPolygon = GeoTestHelper.polygon(sharingCornerAndOverlappingLinearRings)
+        
         ringIntersectingLinearRings = MockData.ringIntersectingLinearRings as? [LineString]
         ringIntersectingPolygon = GeoTestHelper.polygon(ringIntersectingLinearRings)
+        
+        holeOutsideLinearRings = MockData.holeOutsideLinearRings as? [LineString]
+        holeOutsidePolygon = GeoTestHelper.polygon(holeOutsideLinearRings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -83,8 +93,16 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(sharingCornerPolygon.simpleViolations(tolerance: 0).count, 0)
     }
     
+    func testPolygonSharingCornerAndOverlappingEdge_IsInvalid() {
+        XCTAssertEqual(sharingCornerAndOverlappingPolygon.simpleViolations(tolerance: 0).count, 1)
+    }
+    
     func testPolygonringIntersecting_IsInvalid() {
         XCTAssertEqual(ringIntersectingPolygon.simpleViolations(tolerance: 0).count, 1)
+    }
+    
+    func testPolygonWithHoleOutside_IsInvalid() {
+        XCTAssertEqual(holeOutsidePolygon.simpleViolations(tolerance: 0).count, 1)
     }
     
     func testObjectBoundingBox() {

@@ -21,12 +21,12 @@ public struct SimplePolygon: GeodesicPolygon {
         for linearRingSegments in ([mainRing.segments] + negativeRings.map { $0.segments }) {
             guard linearRingSegments.count >= 3 else { return nil }
             
-            guard linearRingSegments.first!.point == linearRingSegments.last!.otherPoint else { return nil }
+            guard linearRingSegments.first!.startPoint == linearRingSegments.last!.endPoint else { return nil }
         }
         
         self.mainRing = mainRing
         self.negativeRings = negativeRings
     }
     
-    public var description: String { return "SimplePolygon: MainRing: (\(mainRing.segments.map { $0.point })" }
+    public var description: String { return "SimplePolygon: MainRing: (\(mainRing.segments.map { $0.startPoint })" }
 }

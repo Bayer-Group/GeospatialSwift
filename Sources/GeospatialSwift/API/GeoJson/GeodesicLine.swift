@@ -21,7 +21,7 @@ public struct SimpleLine: GeodesicLine {
         segments = points.enumerated().compactMap { (offset, point) in
             if points.count == offset + 1 { return nil }
             
-            return LineSegment(point: point, otherPoint: points[offset + 1])
+            return LineSegment(startPoint: point, endPoint: points[offset + 1])
         }
     }
     
@@ -29,10 +29,10 @@ public struct SimpleLine: GeodesicLine {
         guard segments.count >= 1 else { return nil }
         
         for (index, segment) in segments.enumerated() {
-            guard index == 0 || segment.point == segments[index - 1].otherPoint else { return nil }
+            guard index == 0 || segment.startPoint == segments[index - 1].endPoint else { return nil }
         }
         
-        self.points = segments.map { $0.point } + [segments.last!.otherPoint]
+        self.points = segments.map { $0.startPoint } + [segments.last!.endPoint]
         self.segments = segments
     }
 }

@@ -12,7 +12,7 @@ class GeodesicCalculatorTests: XCTestCase {
     func testHasIntersection_SameLine() {
         let point = SimplePoint(longitude: 1, latitude: 2)
         let otherPoint = SimplePoint(longitude: 1.5, latitude: 2.5)
-        let lineSegment = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment = LineSegment(startPoint: point, endPoint: otherPoint)
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: lineSegment, tolerance: 0)
         
@@ -22,11 +22,11 @@ class GeodesicCalculatorTests: XCTestCase {
     func testHasIntersection_Overlaps_InsideLine_NotEnoughTolerence() {
         var point = SimplePoint(longitude: 1, latitude: 2)
         var otherPoint = SimplePoint(longitude: 1.5, latitude: 2.5)
-        let lineSegment1 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment1 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         point = SimplePoint(longitude: 1.2, latitude: 2.2)
         otherPoint = SimplePoint(longitude: 1.7, latitude: 2.7)
-        let lineSegment2 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment2 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment1, with: lineSegment2, tolerance: 4)
         
@@ -36,11 +36,11 @@ class GeodesicCalculatorTests: XCTestCase {
     func testHasIntersection_Overlaps_InsideLine_EnoughTolerence() {
         var point = SimplePoint(longitude: 1, latitude: 2)
         var otherPoint = SimplePoint(longitude: 1.5, latitude: 2.5)
-        let lineSegment1 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment1 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         point = SimplePoint(longitude: 1.2, latitude: 2.2)
         otherPoint = SimplePoint(longitude: 1.7, latitude: 2.7)
-        let lineSegment2 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment2 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment1, with: lineSegment2, tolerance: 5)
         
@@ -50,11 +50,11 @@ class GeodesicCalculatorTests: XCTestCase {
     func testHasIntersection_SameTrajectoryNoOverlap_Ahead() {
         var point = SimplePoint(longitude: 1, latitude: 2)
         var otherPoint = SimplePoint(longitude: 1.5, latitude: 2.5)
-        let lineSegment1 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment1 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         point = SimplePoint(longitude: 2, latitude: 3)
         otherPoint = SimplePoint(longitude: 2.5, latitude: 3.5)
-        let lineSegment2 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment2 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment1, with: lineSegment2, tolerance: 0)
         
@@ -64,11 +64,11 @@ class GeodesicCalculatorTests: XCTestCase {
     func testHasIntersection_SameTrajectoryNoOverlap_Behind() {
         var point = SimplePoint(longitude: 1, latitude: 2)
         var otherPoint = SimplePoint(longitude: 1.5, latitude: 2.5)
-        let lineSegment1 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment1 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         point = SimplePoint(longitude: 0, latitude: 1)
         otherPoint = SimplePoint(longitude: 0.5, latitude: 1.5)
-        let lineSegment2 = LineSegment(point: point, otherPoint: otherPoint)
+        let lineSegment2 = LineSegment(startPoint: point, endPoint: otherPoint)
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment1, with: lineSegment2, tolerance: 0)
         
@@ -76,7 +76,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineIntersectingPolygon_Inside() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 0.2, latitude: 0.5), otherPoint: SimplePoint(longitude: 0.8, latitude: 0.5))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: 0.2, latitude: 0.5), endPoint: SimplePoint(longitude: 0.8, latitude: 0.5))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
@@ -85,7 +85,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineIntersectingPolygon_OnLine() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 1.5, latitude: 0.5), otherPoint: SimplePoint(longitude: 0.8, latitude: 0.5))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: 1.5, latitude: 0.5), endPoint: SimplePoint(longitude: 0.8, latitude: 0.5))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
@@ -94,7 +94,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineIntersectingPolygon_CrossesTwice() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 0.9, latitude: 0.5), otherPoint: SimplePoint(longitude: 2.0, latitude: 1.5))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: 0.9, latitude: 0.5), endPoint: SimplePoint(longitude: 2.0, latitude: 1.5))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
@@ -103,7 +103,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineIntersectingPolygon_LineCrossesThrough() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: -1.0, latitude: 0.5), otherPoint: SimplePoint(longitude: 2.0, latitude: 0.5))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: -1.0, latitude: 0.5), endPoint: SimplePoint(longitude: 2.0, latitude: 0.5))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
@@ -112,7 +112,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineIntersectingPolygon_LineOutside() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 1.5, latitude: 0.5), otherPoint: SimplePoint(longitude: 2.0, latitude: 0.5))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: 1.5, latitude: 0.5), endPoint: SimplePoint(longitude: 2.0, latitude: 0.5))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)
@@ -121,7 +121,7 @@ class GeodesicCalculatorTests: XCTestCase {
     }
     
     func testHasIntersection_LineTouchingPolygon_LineOutside() {
-        let lineSegment = LineSegment(point: SimplePoint(longitude: 0.5, latitude: 1.5), otherPoint: SimplePoint(longitude: 2.0, latitude: 0))
+        let lineSegment = LineSegment(startPoint: SimplePoint(longitude: 0.5, latitude: 1.5), endPoint: SimplePoint(longitude: 2.0, latitude: 0))
         let polygon = MockData.box
         
         let intersects = geodesicCalculator.hasIntersection(lineSegment, with: polygon, tolerance: 0)

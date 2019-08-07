@@ -69,7 +69,7 @@ extension GeoJson {
             segments = points.enumerated().compactMap { (offset, point) in
                 if points.count == offset + 1 { return nil }
                 
-                return LineSegment(point: point, otherPoint: points[offset + 1])
+                return LineSegment(startPoint: point, endPoint: points[offset + 1])
             }
         }
         
@@ -106,20 +106,20 @@ extension GeoJson {
             
             guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .duplicate)] }
             
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+            let selfIntersectsIndices = Calculator.simpleViolationSelfIntersectionIndices(from: self)
             
             guard selfIntersectsIndices.isEmpty else {
                 var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
                 selfIntersectsIndices.forEach { firstIndex, secondIndices in
-                    var point = Point(longitude: segments[firstIndex].point.longitude, latitude: segments[firstIndex].point.latitude)
-                    var otherPoint = Point(longitude: segments[firstIndex].otherPoint.longitude, latitude: segments[firstIndex].otherPoint.latitude)
+                    var point = Point(longitude: segments[firstIndex].startPoint.longitude, latitude: segments[firstIndex].startPoint.latitude)
+                    var otherPoint = Point(longitude: segments[firstIndex].endPoint.longitude, latitude: segments[firstIndex].endPoint.latitude)
                     simpleViolationGeometries.append(point)
                     simpleViolationGeometries.append(otherPoint)
                     simpleViolationGeometries.append(LineString(points: [point, otherPoint])!)
                     
                     secondIndices.forEach {
-                        point = Point(longitude: segments[$0].point.longitude, latitude: segments[$0].point.latitude)
-                        otherPoint = Point(longitude: segments[$0].otherPoint.longitude, latitude: segments[$0].otherPoint.latitude)
+                        point = Point(longitude: segments[$0].startPoint.longitude, latitude: segments[$0].startPoint.latitude)
+                        otherPoint = Point(longitude: segments[$0].endPoint.longitude, latitude: segments[$0].endPoint.latitude)
                         simpleViolationGeometries.append(point)
                         simpleViolationGeometries.append(otherPoint)
                         simpleViolationGeometries.append(LineString(points: [point, otherPoint])!)

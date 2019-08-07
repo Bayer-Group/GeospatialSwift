@@ -177,8 +177,8 @@ extension GeoJson {
                     //let segmentIndexPathOther = intersection.indexPathOther
                     let segment = linearRings[segmentIndexPath.ringIndex].segments[segmentIndexPath.segmentIndex]
                     
-                    var point = Point(longitude: segment.point.longitude, latitude: segment.point.latitude)
-                    var pointOther = Point(longitude: segment.otherPoint.longitude, latitude: segment.otherPoint.latitude)
+                    var point = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+                    var pointOther = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
                     
                     simpleViolationGeometries.append(point)
                     simpleViolationGeometries.append(pointOther)
@@ -187,6 +187,18 @@ extension GeoJson {
                 }
                 
                 return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .selfIntersection)]
+            }
+            
+            var holesOutside = [GeoJsonCoordinatesGeometry]()
+            let polygonMain = Polygon(linearRings: [geoJsonMainRing])!
+            negativeRings.enumerated().forEach { ringIndex, ring in
+                let notContainedPoints = ring.points.filter { !Calculator.contains($0, in: polygonMain, tolerance: tolerance) }
+                if notContainedPoints.count > 0 {
+                    holesOutside.append(geoJsonNegativeRings[ringIndex])
+                }
+            }
+            guard holesOutside.isEmpty else {
+                return [GeoJsonSimpleViolation(problems: holesOutside, reason: .holesOutside)]
             }
             
             return []

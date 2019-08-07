@@ -57,7 +57,7 @@ public class BoundingBox: GeodesicBoundingBox {
     public let latitudeDelta: Double
     
     public var segments: [GeodesicLineSegment] {
-        return [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])]
+        return [LineSegment(startPoint: points[0], endPoint: points[1]), LineSegment(startPoint: points[1], endPoint: points[2]), LineSegment(startPoint: points[2], endPoint: points[3]), LineSegment(startPoint: points[3], endPoint: points[0])]
     }
     
     public var box: GeodesicPolygon { return SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }

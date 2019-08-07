@@ -1,6 +1,6 @@
 public protocol GeodesicLineSegment {
-    var point: GeodesicPoint { get }
-    var otherPoint: GeodesicPoint { get }
+    var startPoint: GeodesicPoint { get }
+    var endPoint: GeodesicPoint { get }
     
     var midpoint: GeodesicPoint { get }
     var initialBearing: (bearing: Double, back: Double) { get }
@@ -9,32 +9,32 @@ public protocol GeodesicLineSegment {
 }
 
 internal struct LineSegment: GeodesicLineSegment {
-    public let point: GeodesicPoint
-    public let otherPoint: GeodesicPoint
+    public let startPoint: GeodesicPoint
+    public let endPoint: GeodesicPoint
     
-    public var midpoint: GeodesicPoint { return Calculator.midpoint(from: point, to: otherPoint) }
+    public var midpoint: GeodesicPoint { return Calculator.midpoint(from: startPoint, to: endPoint) }
     
     public var initialBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.initialBearing(from: point, to: otherPoint)
+        let bearing = Calculator.initialBearing(from: startPoint, to: endPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
     
     public var averageBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.averageBearing(from: point, to: otherPoint)
+        let bearing = Calculator.averageBearing(from: startPoint, to: endPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
     
     public var finalBearing: (bearing: Double, back: Double) {
-        let bearing = Calculator.finalBearing(from: point, to: otherPoint)
+        let bearing = Calculator.finalBearing(from: startPoint, to: endPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
         return (bearing, back)
     }
 }
 
 public func == (lhs: GeodesicLineSegment, rhs: GeodesicLineSegment) -> Bool {
-    return lhs.point == rhs.point && lhs.otherPoint == rhs.otherPoint
+    return lhs.startPoint == rhs.startPoint && lhs.endPoint == rhs.endPoint
 }
 
 public func != (lhs: GeodesicLineSegment, rhs: GeodesicLineSegment) -> Bool {

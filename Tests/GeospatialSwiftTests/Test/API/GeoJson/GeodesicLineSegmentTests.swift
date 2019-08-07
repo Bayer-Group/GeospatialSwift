@@ -14,8 +14,8 @@ class GeodesicLineSegmentTests: XCTestCase {
         point = SimplePoint(longitude: 1, latitude: 2, altitude: 3)
         otherPoint = SimplePoint(longitude: 10, latitude: 10, altitude: 10)
         
-        lineSegment = LineSegment(point: point, otherPoint: otherPoint)
-        reversedLineSegment = LineSegment(point: otherPoint, otherPoint: point)
+        lineSegment = LineSegment(startPoint: point, endPoint: otherPoint)
+        reversedLineSegment = LineSegment(startPoint: otherPoint, endPoint: point)
     }
     
     func testInitialBearing() {
