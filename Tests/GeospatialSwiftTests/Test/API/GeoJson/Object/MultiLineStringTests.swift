@@ -56,17 +56,81 @@ class MultiLineStringTests: XCTestCase {
     
     func testSelfInterSectingMultiLineString_IsInvalid() {
         let simpleViolations = selfIntersectingMultiLineString.simpleViolations(tolerance: 0)
-        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations.count, 2)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiLineIntersection)
+        
+        let problem0 = simpleViolations[0].problems
+        XCTAssertEqual(problem0.count, 6)
+//        if let point0 = problem0[0] as? Point, let point1 = problem0[1] as? Point, let point2 = problem0[3] as? Point, let point3 = problem0[4] as? Point {
+//            XCTAssertEqual(point0.longitude, 21.0)
+//            XCTAssertEqual(point0.latitude, 20.0)
+//            XCTAssertEqual(point1.longitude, 20.0)
+//            XCTAssertEqual(point1.latitude, 21.0)
+//            XCTAssertEqual(point2.longitude, 19.0)
+//            XCTAssertEqual(point2.latitude, 20.0)
+//            XCTAssertEqual(point3.longitude, 23.0)
+//            XCTAssertEqual(point3.latitude, 20.0)
+//        } else {
+//            XCTFail("Geometry type is wrong")
+//        }
+        
+        let problem1 = simpleViolations[1].problems
+        XCTAssertEqual(problem1.count, 6)
+//        if let point0 = problem1[0] as? Point, let point1 = problem1[1] as? Point, let point2 = problem1[3] as? Point, let point3 = problem1[4] as? Point {
+//            XCTAssertEqual(point0.longitude, 20.0)
+//            XCTAssertEqual(point0.latitude, 21.0)
+//            XCTAssertEqual(point1.longitude, 20.0)
+//            XCTAssertEqual(point1.latitude, 19.0)
+//            XCTAssertEqual(point2.longitude, 19.0)
+//            XCTAssertEqual(point2.latitude, 20.0)
+//            XCTAssertEqual(point3.longitude, 23.0)
+//            XCTAssertEqual(point3.latitude, 20.0)
+//        } else {
+//            XCTFail("Geometry type is wrong")
+//        }
+        
     }
     
     func testSelfCrossingMultiLineString_IsInvalid() {
         let simpleViolations = selfCrossingMultiLineString.simpleViolations(tolerance: 0)
         XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiLineIntersection)
+        
+        let problem0 = simpleViolations[0].problems
+        XCTAssertEqual(problem0.count, 6)
+        if let point0 = problem0[0] as? Point, let point1 = problem0[1] as? Point, let point2 = problem0[3] as? Point, let point3 = problem0[4] as? Point {
+            XCTAssertEqual(point0.longitude, 1.0)
+            XCTAssertEqual(point0.latitude, -1.0)
+            XCTAssertEqual(point1.longitude, 0.0)
+            XCTAssertEqual(point1.latitude, 1.0)
+            XCTAssertEqual(point2.longitude, 0.0)
+            XCTAssertEqual(point2.latitude, 0.0)
+            XCTAssertEqual(point3.longitude, 3.0)
+            XCTAssertEqual(point3.latitude, 0.0)
+        } else {
+            XCTFail("Geometry type is wrong")
+        }
     }
     
     func testDoubleNMultiLineString_IsInvalid() {
         let simpleViolations = doubleNMultiLineString.simpleViolations(tolerance: 0)
-        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations.count, 9)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiLineIntersection)
+        
+//        let problem0 = simpleViolations[0].problems
+//        XCTAssertEqual(problem0.count, 12)
+//        if let point0 = problem0[0] as? Point, let point1 = problem0[1] as? Point, let point2 = problem0[3] as? Point, let point3 = problem0[4] as? Point {
+//            XCTAssertEqual(point0.longitude, 0.0)
+//            XCTAssertEqual(point0.latitude, 0.0)
+//            XCTAssertEqual(point1.longitude, 3.0)
+//            XCTAssertEqual(point1.latitude, 0.0)
+//            XCTAssertEqual(point2.longitude, 1.0)
+//            XCTAssertEqual(point2.latitude, -1.0)
+//            XCTAssertEqual(point3.longitude, 1.0)
+//            XCTAssertEqual(point3.latitude, 2.0)
+//        } else {
+//            XCTFail("Geometry type is wrong")
+//        }
     }
     
     func testGeometryTypes() {

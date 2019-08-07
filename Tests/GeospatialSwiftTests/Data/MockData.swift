@@ -87,7 +87,7 @@ extension MockData {
     
     private static let selfCrossingLinesPoints: [[GeoJsonPoint]] = [
         [GeoTestHelper.point(1, -1, 3), GeoTestHelper.point(0, 1, 4), GeoTestHelper.point(0, 0, 5)],
-        [GeoTestHelper.point(0, 0, 3), GeoTestHelper.point(3, 0, 4)]
+        [GeoTestHelper.point(0, 0, 5), GeoTestHelper.point(3, 0, 4)]
     ]
     
     private static let sharingStartAndEndLinesPoints: [[GeoJsonPoint]] = [
