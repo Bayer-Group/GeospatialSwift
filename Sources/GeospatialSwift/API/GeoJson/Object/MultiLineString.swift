@@ -76,11 +76,13 @@ extension GeoJson {
                 }
             }
             
-            #warning("Should return if we had violations")
+            guard violations.isEmpty else {
+                return violations
+            }
             
             let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: lineStrings)
             
-            simpleViolationIntersectionIndices.forEach { lineSegmentIndex1 in
+            simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
                 let segment1 = lineStrings[lineSegmentIndex1.key.lineIndex].segments[lineSegmentIndex1.key.segementIndex]
                 let point1 = Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
                 let point2 = Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
@@ -92,7 +94,6 @@ extension GeoJson {
                     let point4 = Point(longitude: segment2.endPoint.longitude, latitude: segment2.endPoint.latitude)
                     let line2 = LineString(points: [point3, point4])!
                     
-                    #warning("Make new reason = intersection")
                     violations += [GeoJsonSimpleViolation(problems: [point1, point2, line1, point3, point4, line2], reason: .multiLineIntersection)]
                 }
             }

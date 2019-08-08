@@ -77,11 +77,20 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     }
     
     private(set) var intersectionIndicesPolygonCallCount = 0
-    var intersectionIndicesPolygonResult: [IntersectionForPolygon] = []
-    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [IntersectionForPolygon] {
+    var intersectionIndicesPolygonResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
+    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex : [LineSegmentIndex]] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult
+    }
+    
+    private(set) var simpleViolationSegmentOutsideIndicesCallCount = 0
+    var simpleViolationSegmentOutsideIndices: [LineSegmentIndex] = []
+    
+    func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex] {
+        simpleViolationSegmentOutsideIndicesCallCount += 1
+        
+        return simpleViolationSegmentOutsideIndices
     }
     
     private(set) var lineLengthCallCount = 0

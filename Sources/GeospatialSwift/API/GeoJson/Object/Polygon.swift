@@ -141,34 +141,24 @@ extension GeoJson {
 //        }
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
-//            let ringSimpleViolations = geoJsonLinearRings.compactMap { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }
-//
-//            guard ringSimpleViolations.isEmpty else { return ringSimpleViolations.flatMap { $0 } }
-//            
-//            var dupPoints = [GeoJsonPoint]()
-//            (1..<linearRings.count).forEach { index in
-//                
-//                (0..<index).forEach { indexOther in
-//                    //drop last point, which equals the first point
-//                    let pointsDropLast = linearRings[index].points.dropLast()
-//                    let pointsOtherDropLast = linearRings[indexOther].points.dropLast()
-//                    //1 pair of duplicacy is allowed
-//                    let duplicatePoints = pointsDropLast.filter { point in
-//                        pointsOtherDropLast.contains(where: { point == $0 })
-//                    }
-//                    if duplicatePoints.count > 1 {
-//                        duplicatePoints.forEach { point in
-//                            if !dupPoints.contains(where: { point == $0 }) {
-//                                dupPoints.append(Point(longitude: point.longitude, latitude: point.latitude))
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            guard dupPoints.isEmpty else { return [GeoJsonSimpleViolation(problems: dupPoints, reason: .duplicate)] }
-//            
-//            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
-//            
+            let ringSimpleViolations = geoJsonLinearRings.compactMap { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }
+
+            guard ringSimpleViolations.isEmpty else { return ringSimpleViolations.flatMap { $0 } }
+            
+            let outsideSegmentIndices = Calculator.simpleViolationSegmentOutsideIndices(from: self, tolerance: tolerance)
+            
+            guard outsideSegmentIndices.isEmpty else {
+                return outsideSegmentIndices.map { outsideSegmentIndex in
+                    let segment = negativeRings[outsideSegmentIndex.lineIndex].segments[outsideSegmentIndex.segementIndex]
+                    let point1 = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+                    let point2 = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
+                    let line1 = LineString(points: [point1, point2])!
+                    return GeoJsonSimpleViolation(problems: [point1, point2, line1], reason: .polygonHoleOutside)
+                }
+            }
+            
+//            let selfIntersectsIndices = Calculator.simpleViolationIntersectionIndices(from: self, tolerance: tolerance)
+            
 //            guard selfIntersectsIndices.isEmpty else {
 //                var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
 //                
@@ -177,18 +167,18 @@ extension GeoJson {
 //                    //let segmentIndexPathOther = intersection.indexPathOther
 //                    let segment = linearRings[segmentIndexPath.ringIndex].segments[segmentIndexPath.segmentIndex]
 //                    
-//                    var point = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
-//                    var pointOther = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
+//                    let startPoint = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+//                    let endPoint = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
 //                    
-//                    simpleViolationGeometries.append(point)
-//                    simpleViolationGeometries.append(pointOther)
-//                    simpleViolationGeometries.append(LineString(points: [point, pointOther])!)
+//                    simpleViolationGeometries.append(startPoint)
+//                    simpleViolationGeometries.append(endPoint)
+//                    simpleViolationGeometries.append(LineString(points: [startPoint, endPoint])!)
 //                    
 //                }
 //                
-//                return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .selfIntersection)]
+//                return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .multiLineIntersection)]
 //            }
-//            
+            
 //            var holesOutside = [GeoJsonCoordinatesGeometry]()
 //            let polygonMain = Polygon(linearRings: [geoJsonMainRing])!
 //            negativeRings.enumerated().forEach { ringIndex, ring in

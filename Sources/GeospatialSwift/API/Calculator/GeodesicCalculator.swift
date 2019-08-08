@@ -55,7 +55,8 @@ public protocol GeodesicCalculatorProtocol {
     
     func simpleViolationSelfIntersectionIndices(from line: GeodesicLine) -> [Int: [Int]]
     func simpleViolationIntersectionIndices(from lines: [GeodesicLine]) -> [LineSegmentIndex: [LineSegmentIndex]]
-    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [IntersectionForPolygon]
+    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
+    func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex]
 }
 
 internal let Calculator = GeodesicCalculator.shared
@@ -489,6 +490,7 @@ extension GeodesicCalculator {
     public func simpleViolationIntersectionIndices(from lines: [GeodesicLine]) -> [LineSegmentIndex: [LineSegmentIndex]] {
         var allIntersectionIndices = [LineSegmentIndex: [LineSegmentIndex]]()
         lines.enumerated().forEach { currentLineIndex, currentLine in
+            //Compare current LineString to each of the Linestring from next to last
             let remainingLinesEnumerated = Array(lines.enumerated().drop { $0.offset <= currentLineIndex })
             
             remainingLinesEnumerated.forEach { remainingLineIndex, remainingLine in
@@ -498,6 +500,7 @@ extension GeodesicCalculator {
                     
                     remainingLine.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
                         let remainingLineSegmentIndex = LineSegmentIndex(lineIndex: remainingLineIndex, segementIndex: remainingSegmentIndex)
+                        
                         if hasIntersection(currentSegment, with: remainingSegment, tolerance: 0) {
                             if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: 0) {
                                 allIntersectionIndices[currentLineSegmentIndex] = allIntersectionIndices[currentLineSegmentIndex] ?? [] + [remainingLineSegmentIndex]
@@ -536,13 +539,27 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
     
+    public func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex] {
+        let mainRing = polygon.mainRing
+        var outsideSegmentIndices = [LineSegmentIndex]()
+        polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
+            negativeRing.segments.enumerated().forEach { negativeSegmentIndex, negativeSegment in
+                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) || !contains(point: negativeSegment.endPoint, vertices: mainRing.points) {
+                    outsideSegmentIndices.append(LineSegmentIndex(lineIndex: negativeRingIndex, segementIndex: negativeSegmentIndex))
+                }
+            }
+        }
+        
+        return outsideSegmentIndices
+    }
+    
     // SOMEDAY: Add this intersection rule
     // Polygon where hole intersects with same point as exterior edge point
     // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
-    public func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [IntersectionForPolygon] {
+    public func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
         //At this point, we have checked each individual polygon are simple linestring, and each two share 1 point at most
         //check for intersections that are not occuring at boundary of segments
-        var intersections = [IntersectionForPolygon]()
+        var allIntersectionIndices = [LineSegmentIndex: [LineSegmentIndex]]()
 //        (0..<polygon.linearRings.count).forEach { ringIndex in
 //            (0..<ringIndex).forEach { ringIndexOther in
 //                (0..<polygon.linearRings[ringIndex].segments.count).forEach { segmentIndex in
@@ -571,8 +588,27 @@ extension GeodesicCalculator {
 //                }
 //            }
 //        }
-
-        return intersections
+        polygon.linearRings.enumerated().forEach { currentRingIndex, currentRing in
+            //Compare current ring to each of the ring from next to last
+            let remainingRingsEnumerated = Array(polygon.linearRings.enumerated().drop { $0.offset <= currentRingIndex })
+            
+            remainingRingsEnumerated.forEach { remainingRingIndex, remaingingRing in
+                
+                currentRing.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentSegmentIndex = LineSegmentIndex(lineIndex: currentRingIndex, segementIndex: currentSegmentIndex)
+                    
+                    remaingingRing.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        let remainingSegmentIndex = LineSegmentIndex(lineIndex: remainingRingIndex, segementIndex: remainingSegmentIndex)
+                        if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: tolerance) {
+                           allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                        }
+                        
+                    }
+                }
+            }
+        }
+        
+        return allIntersectionIndices
     }
     
 //    private func sharePointAndNotOverlapping(segment: GeodesicLineSegment, segmentOther: GeodesicLineSegment, tolerance: Double) -> Bool {
@@ -742,7 +778,15 @@ extension GeodesicCalculator {
     }
 }
 
-public struct LineSegmentIndex: Hashable {
+public struct LineSegmentIndex: Hashable, Comparable {
     let lineIndex: Int
     let segementIndex: Int
+    
+    public static func < (lhs: LineSegmentIndex, rhs: LineSegmentIndex) -> Bool {
+        if lhs.lineIndex != rhs.lineIndex {
+            return lhs.lineIndex < rhs.lineIndex
+        } else {
+            return lhs.segementIndex < rhs.segementIndex
+        }
+    }
 }
