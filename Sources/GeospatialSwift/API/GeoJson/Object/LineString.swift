@@ -96,7 +96,7 @@ extension GeoJson {
             
             guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .pointDuplication)] }
             
-            let selfIntersectsIndices = Calculator.simpleViolationSelfIntersectionIndices(from: self)
+            let selfIntersectsIndices = Calculator.simpleViolationSelfIntersectionIndices(from: self, tolerance: tolerance)
             
             guard selfIntersectsIndices.isEmpty else {
                 #warning("Need to remove all duplicates")

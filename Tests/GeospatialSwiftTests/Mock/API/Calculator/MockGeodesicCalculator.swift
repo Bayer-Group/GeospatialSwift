@@ -62,7 +62,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var simpleViolationSelfIntersectionIndicesCallCount = 0
     var simpleViolationSelfIntersectionIndicesResult: [Int: [Int]] = [:]
-    func simpleViolationSelfIntersectionIndices(from line: GeodesicLine) -> [Int : [Int]] {
+    func simpleViolationSelfIntersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int : [Int]] {
         simpleViolationSelfIntersectionIndicesCallCount += 1
         
         return simpleViolationSelfIntersectionIndicesResult
@@ -70,7 +70,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var simpleViolationIntersectionIndicesCallCount = 0
     var simpleViolationIntersectionIndicesResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from lines: [GeodesicLine]) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    func simpleViolationIntersectionIndices(from lines: [GeodesicLine], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
         simpleViolationIntersectionIndicesCallCount += 1
         
         return simpleViolationIntersectionIndicesResult

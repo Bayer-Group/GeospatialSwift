@@ -44,6 +44,7 @@ public enum GeoJsonSimpleViolationReason {
     case multiLineIntersection
     case pointDuplication
     case polygonHoleOutside
+    case polygonNegativeRingContained
     #warning("TODO")
 }
 

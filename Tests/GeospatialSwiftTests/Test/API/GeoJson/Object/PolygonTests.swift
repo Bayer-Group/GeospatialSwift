@@ -94,15 +94,73 @@ class PolygonTests: XCTestCase {
     }
     
     func testPolygonSharingCornerAndOverlappingEdge_IsInvalid() {
-        XCTAssertEqual(sharingCornerAndOverlappingPolygon.simpleViolations(tolerance: 0).count, 1)
+        let simpleViolations = sharingCornerAndOverlappingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 2)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[1] as? Point, let point3 = simpleViolations[0].problems[3] as? Point, let point4 = simpleViolations[0].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 20.0)
+            XCTAssertEqual(point1.latitude, 0.0)
+            XCTAssertEqual(point2.longitude, 23.0)
+            XCTAssertEqual(point2.latitude, 0.0)
+            XCTAssertEqual(point3.longitude, 20.0)
+            XCTAssertEqual(point3.latitude, 0.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 0.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[1].problems[0] as? Point, let point2 = simpleViolations[1].problems[1] as? Point, let point3 = simpleViolations[1].problems[3] as? Point, let point4 = simpleViolations[1].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 20.0)
+            XCTAssertEqual(point1.latitude, 3.0)
+            XCTAssertEqual(point2.longitude, 20.0)
+            XCTAssertEqual(point2.latitude, 0.0)
+            XCTAssertEqual(point3.longitude, 20.0)
+            XCTAssertEqual(point3.latitude, 1.0)
+            XCTAssertEqual(point4.longitude, 20.0)
+            XCTAssertEqual(point4.latitude, 0.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
     }
 
     func testPolygonringIntersecting_IsInvalid() {
-        XCTAssertEqual(ringIntersectingPolygon.simpleViolations(tolerance: 0).count, 1)
+        let simpleViolations = ringIntersectingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 3)
+        
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[1] as? Point {
+            XCTAssertEqual(point1.longitude, 22.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+            XCTAssertEqual(point2.longitude, 24.0)
+            XCTAssertEqual(point2.latitude, 21.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[1].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[1].problems[0] as? Point, let point2 = simpleViolations[1].problems[1] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+            XCTAssertEqual(point2.longitude, 24.0)
+            XCTAssertEqual(point2.latitude, 22.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[2].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[2].problems[0] as? Point, let point2 = simpleViolations[2].problems[1] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 22.0)
+            XCTAssertEqual(point2.longitude, 22.0)
+            XCTAssertEqual(point2.latitude, 22.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
     }
 
     func testPolygonWithHoleOutside_IsInvalid() {
-        XCTAssertEqual(holeOutsidePolygon.simpleViolations(tolerance: 0).count, 1)
+        XCTAssertEqual(holeOutsidePolygon.simpleViolations(tolerance: 0).count, 4)
     }
     
     func testObjectBoundingBox() {

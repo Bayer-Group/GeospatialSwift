@@ -129,8 +129,8 @@ extension MockData {
     
     private static let sharingCornerAndOverlappingPolygonPointsList: [[[GeoJsonPoint]]] = [
         [
-            [GeoTestHelper.point(20, 20), GeoTestHelper.point(23, 20), GeoTestHelper.point(23, 23), GeoTestHelper.point(20, 23), GeoTestHelper.point(20, 20)],
-            [GeoTestHelper.point(20, 20), GeoTestHelper.point(21, 20), GeoTestHelper.point(21, 21), GeoTestHelper.point(20, 21), GeoTestHelper.point(20, 20)]
+            [GeoTestHelper.point(20, 0), GeoTestHelper.point(23, 0), GeoTestHelper.point(23, 3), GeoTestHelper.point(20, 3), GeoTestHelper.point(20, 0)],
+            [GeoTestHelper.point(20, 0), GeoTestHelper.point(21, 0), GeoTestHelper.point(21, 1), GeoTestHelper.point(20, 1), GeoTestHelper.point(20, 0)]
         ]
     ]
     
