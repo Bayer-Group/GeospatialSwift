@@ -129,6 +129,23 @@ extension GeoJson {
                 }
             }
             
+            let negativeRingsContainedIndices = Calculator.simpleViolationNegativeRingContainedIndices(from: self, tolerance: tolerance)
+            
+            guard negativeRingsContainedIndices.isEmpty else {
+                var violations = [GeoJsonSimpleViolation]()
+                negativeRingsContainedIndices.forEach { index in
+                    var geometries = [GeoJsonCoordinatesGeometry]()
+                    negativeRings[index].segments.forEach { segment in
+                        let point1 = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+                        let point2 = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
+                        geometries.append(point1)
+                        geometries.append(LineString(points: [point1, point2])!)
+                    }
+                    violations += [GeoJsonSimpleViolation(problems: geometries, reason: .polygonNegativeRingContained)]
+                }
+                return violations
+            }
+            
             let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: self, tolerance: tolerance)
             
             guard simpleViolationIntersectionIndices.isEmpty else {

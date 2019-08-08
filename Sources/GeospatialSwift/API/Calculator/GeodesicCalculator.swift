@@ -594,9 +594,22 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
 
-    func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+    public func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+        let negativeRing = polygon.negativeRings
         
-        return []
+        var containedRingIndices = [Int]()
+        negativeRing.enumerated().forEach { ringIndex, ring in
+            let remainingNegativeRingsEnumerated = Array(negativeRing.enumerated().drop { $0.offset <= ringIndex })
+            remainingNegativeRingsEnumerated.forEach { remainingRingIndex, remainingRing in
+                //all point in remainingRing is contained in ring
+                let remainingRingPointsAreContained =  remainingRing.points.map { contains(point: $0, vertices: ring.points) }
+                if !remainingRingPointsAreContained.contains(false) {
+                    containedRingIndices.append(remainingRingIndex)
+                }
+            }
+        }
+        
+        return containedRingIndices
     }
     
     // Overlapping returns true only if the lines are overlapping more than a single point.

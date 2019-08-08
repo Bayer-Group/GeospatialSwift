@@ -86,11 +86,18 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var simpleViolationSegmentOutsideIndicesCallCount = 0
     var simpleViolationSegmentOutsideIndices: [LineSegmentIndex] = []
-    
     func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex] {
         simpleViolationSegmentOutsideIndicesCallCount += 1
         
         return simpleViolationSegmentOutsideIndices
+    }
+    
+    private(set) var simpleViolationNegativeRingContainedIndicesCallCount = 0
+    var simpleViolationNegativeRingContainedIndices: [Int] = []
+    func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+        simpleViolationNegativeRingContainedIndicesCallCount += 1
+        
+        return simpleViolationNegativeRingContainedIndices
     }
     
     private(set) var lineLengthCallCount = 0
