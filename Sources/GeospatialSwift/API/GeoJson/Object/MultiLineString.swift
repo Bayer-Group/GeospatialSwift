@@ -67,22 +67,16 @@ extension GeoJson {
         public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
-            var violations = [GeoJsonSimpleViolation]()
+            let lineSimpleViolations = lineStrings.map { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }.flatMap { $0 }
             
-            lineStrings.enumerated().forEach { index, lineString in
-                let violation = lineString.simpleViolations(tolerance: tolerance)
-                if violation.count > 0 {
-                    violations += violation
-                }
-            }
-            
-            guard violations.isEmpty else {
-                return violations
+            guard lineSimpleViolations.isEmpty else {
+                return lineSimpleViolations
             }
             
             let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: lineStrings, tolerance: tolerance)
             
             guard simpleViolationIntersectionIndices.isEmpty else {
+                var violations = [GeoJsonSimpleViolation]()
                 simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
                     let segment1 = lineStrings[lineSegmentIndex1.key.lineIndex].segments[lineSegmentIndex1.key.segementIndex]
                     let point1 = Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)

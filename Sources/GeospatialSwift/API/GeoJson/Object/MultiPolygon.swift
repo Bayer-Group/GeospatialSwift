@@ -80,72 +80,53 @@ extension GeoJson {
         }
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
-            var reasons = [MultiPolygonSimpleViolation]()
+            let polygonSimpleViolation = polygons.map { $0.simpleViolations(tolerance: tolerance) }.filter { !$0.isEmpty }.flatMap { $0 }
             
-//            //reasons.append(.polygonInvalid(reasons: polygons.map { $0.simpleViolations(tolerance: tolerance) }))
-//            polygons.enumerated().forEach { index, polygon in
-//                let reason = polygon.simpleViolations(tolerance: tolerance)
-//                if reason.count>0 {
-//                    reasons.append(.polygonInvalid(reasons: [index: polygon.simpleViolations(tolerance: tolerance)]))
-//                }
-//            }
-//        
-//            for index in 1..<polygons.count {
-//                for indexOther in 0..<index {
-//                    if hasIntersection(polygons[index], with: polygons[indexOther], tolerance: tolerance) {
-//                        reasons.append(.polygonsIntersect(indices: [index, indexOther]))
-//                    }
-//                }
-//            }
-            
-            return []
-        }
-        
-        public func hasIntersection(_ polygon: GeoJsonPolygon, with otherPolygon: GeoJsonPolygon, tolerance: Double) -> Bool {
-            for segment in polygon.mainRing.segments {
-                if hasIntersection(segment, with: otherPolygon, tolerance: tolerance) { return true }
+            guard polygonSimpleViolation.isEmpty else {
+                return polygonSimpleViolation
             }
             
-            return false
-        }
-        
-        private func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeoJsonPolygon, tolerance: Double) -> Bool {
-            let polygonIntersects = polygon.linearRings.map { $0.segments }.contains {
-                $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
+            let polygonContainedIndices = Calculator.simpleViolationPolygonContainedIndices(from: self, tolerance: tolerance)
+            
+            guard polygonContainedIndices.isEmpty else {
+                var violations = [GeoJsonSimpleViolation]()
+                polygonContainedIndices.forEach { index in
+                    var geometries = [GeoJsonCoordinatesGeometry]()
+                    polygons[index].mainRing.segments.forEach { segment in
+                        let point1 = Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+                        let point2 = Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
+                        geometries.append(point1)
+                        geometries.append(LineString(points: [point1, point2])!)
+                    }
+                    violations += [GeoJsonSimpleViolation(problems: geometries, reason: .multiPolygonContained)]
+                }
+                return violations
             }
             
-            return polygonIntersects || (contains(lineSegment.startPoint, tolerance: tolerance) && !isOnEdge(lineSegment.startPoint, tolerance: tolerance) )  || (contains(lineSegment.endPoint, tolerance: tolerance) && !isOnEdge(lineSegment.endPoint, tolerance: tolerance))
-        }
-        
-        private func isOnEdge(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            // Exception: If it's on a line, we're done.
-            for polygon in polygons {
-                for segment in polygon.geoJsonLinearRings {
-                    if segment.contains(point, tolerance: tolerance) {
-                        return true
+            let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: self, tolerance: tolerance)
+            
+            guard simpleViolationIntersectionIndices.isEmpty else {
+                var violations = [GeoJsonSimpleViolation]()
+                simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
+                    let segment1 = polygons[lineSegmentIndex1.key.lineIndex].mainRing.segments[lineSegmentIndex1.key.segementIndex]
+                    let point1 = Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
+                    let point2 = Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
+                    let line1 = LineString(points: [point1, point2])!
+                    
+                    lineSegmentIndex1.value.forEach { lineSegmentIndex2 in
+                        let segment2 = polygons[lineSegmentIndex2.lineIndex].mainRing.segments[lineSegmentIndex2.segementIndex]
+                        let point3 = Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
+                        let point4 = Point(longitude: segment2.endPoint.longitude, latitude: segment2.endPoint.latitude)
+                        let line2 = LineString(points: [point3, point4])!
+                        
+                        violations += [GeoJsonSimpleViolation(problems: [point1, point2, line1, point3, point4, line2], reason: .multiPolygonIntersection)]
                     }
                 }
+                
+                return violations
             }
             
-            return false
-        }
-        
-        private func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if Calculator.distance(from: lineSegment, to: otherLineSegment, tolerance: tolerance) == 0 {
-                //segments touching is valid for MultiPolygon
-                return !isTouching(lineSegment, with: otherLineSegment, tolerance: tolerance)
-            }
-            
-            return false
-        }
-        
-        private func isTouching(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool {
-            if Calculator.contains(lineSegment.startPoint, in: otherLineSegment, tolerance: tolerance) && !Calculator.contains(lineSegment.endPoint, in: otherLineSegment, tolerance: tolerance) { return true }
-            if !Calculator.contains(lineSegment.startPoint, in: otherLineSegment, tolerance: tolerance) && Calculator.contains(lineSegment.endPoint, in: otherLineSegment, tolerance: tolerance) { return true }
-            if Calculator.contains(otherLineSegment.startPoint, in: lineSegment, tolerance: tolerance) && !Calculator.contains(otherLineSegment.endPoint, in: lineSegment, tolerance: tolerance) { return true }
-            if !Calculator.contains(otherLineSegment.startPoint, in: lineSegment, tolerance: tolerance) && Calculator.contains(otherLineSegment.endPoint, in: lineSegment, tolerance: tolerance) { return true }
-            
-            return false
+            return []
         }
     }
 }

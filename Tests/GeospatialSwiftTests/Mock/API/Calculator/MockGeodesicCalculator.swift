@@ -62,7 +62,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var simpleViolationSelfIntersectionIndicesCallCount = 0
     var simpleViolationSelfIntersectionIndicesResult: [Int: [Int]] = [:]
-    func simpleViolationSelfIntersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int : [Int]] {
+    func simpleViolationSelfIntersectionIndices(from line: GeoJsonLineString, tolerance: Double) -> [Int : [Int]] {
         simpleViolationSelfIntersectionIndicesCallCount += 1
         
         return simpleViolationSelfIntersectionIndicesResult
@@ -70,7 +70,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var simpleViolationIntersectionIndicesCallCount = 0
     var simpleViolationIntersectionIndicesResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from lines: [GeodesicLine], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    func simpleViolationIntersectionIndices(from lines: [GeoJsonLineString], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
         simpleViolationIntersectionIndicesCallCount += 1
         
         return simpleViolationIntersectionIndicesResult
@@ -78,26 +78,42 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var intersectionIndicesPolygonCallCount = 0
     var intersectionIndicesPolygonResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex : [LineSegmentIndex]] {
+    func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex : [LineSegmentIndex]] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult
     }
     
     private(set) var simpleViolationSegmentOutsideIndicesCallCount = 0
-    var simpleViolationSegmentOutsideIndices: [LineSegmentIndex] = []
-    func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex] {
+    var simpleViolationSegmentOutsideIndicesResult: [LineSegmentIndex] = []
+    func simpleViolationSegmentOutsideIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex] {
         simpleViolationSegmentOutsideIndicesCallCount += 1
         
-        return simpleViolationSegmentOutsideIndices
+        return simpleViolationSegmentOutsideIndicesResult
     }
     
     private(set) var simpleViolationNegativeRingContainedIndicesCallCount = 0
-    var simpleViolationNegativeRingContainedIndices: [Int] = []
-    func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+    var simpleViolationNegativeRingContainedIndicesResult: [Int] = []
+    func simpleViolationNegativeRingContainedIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int] {
         simpleViolationNegativeRingContainedIndicesCallCount += 1
         
-        return simpleViolationNegativeRingContainedIndices
+        return simpleViolationNegativeRingContainedIndicesResult
+    }
+    
+    private(set) var multiPolygonSimpleViolationIntersectionIndicesCallCount = 0
+    var multiPolygonSimpleViolationIntersectionIndicesResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
+    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+        multiPolygonSimpleViolationIntersectionIndicesCallCount += 1
+        
+        return multiPolygonSimpleViolationIntersectionIndicesResult
+    }
+    
+    private(set) var  multiPolygonNegativeRingContainedCallCount = 0
+    var multiPolygonNegativeRingContainedResult: [Int] = []
+    func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
+        multiPolygonNegativeRingContainedCallCount += 1
+        
+        return multiPolygonNegativeRingContainedResult
     }
     
     private(set) var lineLengthCallCount = 0

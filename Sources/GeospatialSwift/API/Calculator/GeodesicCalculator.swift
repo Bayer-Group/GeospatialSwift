@@ -53,11 +53,13 @@ public protocol GeodesicCalculatorProtocol {
     func normalizePositive(latitude: Double) -> Double
     func normalizePositive(_ point: GeodesicPoint) -> GeodesicPoint
     
-    func simpleViolationSelfIntersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int: [Int]]
-    func simpleViolationIntersectionIndices(from lines: [GeodesicLine], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
-    func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
-    func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex]
-    func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int]
+    func simpleViolationSelfIntersectionIndices(from line: GeoJsonLineString, tolerance: Double) -> [Int: [Int]]
+    func simpleViolationIntersectionIndices(from lines: [GeoJsonLineString], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
+    func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
+    func simpleViolationSegmentOutsideIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex]
+    func simpleViolationNegativeRingContainedIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int]
+    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]]
+    func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int]
 }
 
 internal let Calculator = GeodesicCalculator.shared
@@ -454,7 +456,7 @@ extension GeodesicCalculator {
         return duplicateIndices.filter { $0.count > 1 }
     }
     
-    public func simpleViolationSelfIntersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int: [Int]] {
+    public func simpleViolationSelfIntersectionIndices(from line: GeoJsonLineString, tolerance: Double) -> [Int: [Int]] {
         func adjacentSegmentsOverlap(currentSegment: GeodesicLineSegment, nextSegment: GeodesicLineSegment) -> Bool {
             return contains(currentSegment.startPoint, in: nextSegment, tolerance: tolerance) || contains(nextSegment.endPoint, in: currentSegment, tolerance: tolerance)
         }
@@ -488,7 +490,7 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
     
-    public func simpleViolationIntersectionIndices(from lines: [GeodesicLine], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    public func simpleViolationIntersectionIndices(from lines: [GeoJsonLineString], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
         var allIntersectionIndices = [LineSegmentIndex: [LineSegmentIndex]]()
         lines.enumerated().forEach { currentLineIndex, currentLine in
             //Compare current LineString to each of the Linestring from next to last
@@ -540,7 +542,7 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
     
-    public func simpleViolationSegmentOutsideIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex] {
+    public func simpleViolationSegmentOutsideIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex] {
         let mainRing = polygon.mainRing
         var outsideSegmentIndices = [LineSegmentIndex]()
         polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
@@ -554,7 +556,7 @@ extension GeodesicCalculator {
         return outsideSegmentIndices
     }
     
-    public func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    public func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
         var allIntersectionIndices = [LineSegmentIndex: [LineSegmentIndex]]()
         polygon.linearRings.enumerated().forEach { currentRingIndex, currentRing in
             //Compare current ring to each of the ring from next to last
@@ -594,7 +596,7 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
 
-    public func simpleViolationNegativeRingContainedIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+    public func simpleViolationNegativeRingContainedIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int] {
         let negativeRing = polygon.negativeRings
         
         var containedRingIndices = [Int]()
@@ -602,7 +604,7 @@ extension GeodesicCalculator {
             let remainingNegativeRingsEnumerated = Array(negativeRing.enumerated().drop { $0.offset <= ringIndex })
             remainingNegativeRingsEnumerated.forEach { remainingRingIndex, remainingRing in
                 //all point in remainingRing is contained in ring
-                let remainingRingPointsAreContained =  remainingRing.points.map { contains(point: $0, vertices: ring.points) }
+                let remainingRingPointsAreContained = remainingRing.points.map { contains(point: $0, vertices: ring.points) }
                 if !remainingRingPointsAreContained.contains(false) {
                     containedRingIndices.append(remainingRingIndex)
                 }
@@ -610,6 +612,62 @@ extension GeodesicCalculator {
         }
         
         return containedRingIndices
+    }
+    
+    public func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
+        var containedRingIndices = [Int]()
+        multiPolygon.polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in
+            let currentMainRing = currentPolygon.mainRing
+            
+            let remainingPolygonEnumerated = Array(multiPolygon.polygons.enumerated().drop(while: { $0.offset <= currentPolygonIndex }))
+            remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
+                let remainingMainRing = remainingPolygon.mainRing
+                let remainingMainRingPointsAreContained = remainingMainRing.points.map { contains(point: $0, vertices: currentMainRing.points) }
+                if !remainingMainRingPointsAreContained.contains(false) {
+                    containedRingIndices.append(remainingPolygonIndex)
+                }
+            }
+        }
+        
+        return containedRingIndices
+    }
+    
+    public func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+        var allIntersectionIndices = [LineSegmentIndex: [LineSegmentIndex]]()
+        multiPolygon.polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in
+            let currentMainRing = currentPolygon.mainRing
+            
+            let remainingPolygonEnumerated = Array(multiPolygon.polygons.enumerated().drop(while: { $0.offset <= currentPolygonIndex }))
+            remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
+                let remainingMainRing = remainingPolygon.mainRing
+                
+                currentMainRing.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentSegmentIndex = LineSegmentIndex(lineIndex: currentPolygonIndex, segementIndex: currentSegmentIndex)
+                    
+                    remainingMainRing.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        let remainingSegmentIndex = LineSegmentIndex(lineIndex: remainingPolygonIndex, segementIndex: remainingSegmentIndex)
+                        //2 rings can intersect at a tangent point but never cross.
+                        //A second intersection is not allowed.
+                        if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: tolerance) {
+                            allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            return
+                        }
+                        
+                        if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) {
+                            //If the segments are not crossing each other, there is no violation
+                            if !(contains(currentSegment.startPoint, in: remainingSegment, tolerance: tolerance) ||
+                                contains(currentSegment.endPoint, in: remainingSegment, tolerance: tolerance) ||
+                                contains(remainingSegment.startPoint, in: currentSegment, tolerance: tolerance) ||
+                                contains(remainingSegment.endPoint, in: currentSegment, tolerance: tolerance)) {
+                                allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return allIntersectionIndices
     }
     
     // Overlapping returns true only if the lines are overlapping more than a single point.

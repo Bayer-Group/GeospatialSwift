@@ -113,9 +113,9 @@ extension GeoJson {
         // Polygon with hole where hole has invalid winding order
         
         public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
-            let ringSimpleViolations = geoJsonLinearRings.compactMap { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }
+            let ringSimpleViolations = geoJsonLinearRings.map { $0.simpleViolations(tolerance: tolerance) }.filter { $0.count>0 }.flatMap { $0 }
 
-            guard ringSimpleViolations.isEmpty else { return ringSimpleViolations.flatMap { $0 } }
+            guard ringSimpleViolations.isEmpty else { return ringSimpleViolations }
             
             let outsideSegmentIndices = Calculator.simpleViolationSegmentOutsideIndices(from: self, tolerance: tolerance)
             
