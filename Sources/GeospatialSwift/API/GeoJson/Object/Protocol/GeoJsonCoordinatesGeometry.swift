@@ -1,6 +1,7 @@
 /**
  A Geometry Object which has Geo Json coordinates. Includes all of type GeoJsonGeometry except GeoJsonGeometryCollection.
  */
+#warning("public var isSimpleGeometry: Bool")
 public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
     var geoJsonCoordinates: [Any] { get }
     
@@ -45,6 +46,8 @@ public enum GeoJsonSimpleViolationReason {
     case pointDuplication
     case polygonHoleOutside
     case polygonNegativeRingContained
+    case polygonSelfIntersection
+    case polygonMultipleVertexIntersection
     case multiPolygonContained
     case multiPolygonIntersection
     #warning("TODO")

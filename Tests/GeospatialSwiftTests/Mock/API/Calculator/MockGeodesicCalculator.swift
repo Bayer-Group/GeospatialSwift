@@ -69,40 +69,49 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     }
     
     private(set) var simpleViolationIntersectionIndicesCallCount = 0
-    var simpleViolationIntersectionIndicesResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from lines: [GeoJsonLineString], tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    var simpleViolationIntersectionIndicesResult: [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] = [:]
+    func simpleViolationIntersectionIndices(from lines: [GeoJsonLineString], tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
         simpleViolationIntersectionIndicesCallCount += 1
         
         return simpleViolationIntersectionIndicesResult
     }
     
     private(set) var intersectionIndicesPolygonCallCount = 0
-    var intersectionIndicesPolygonResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex : [LineSegmentIndex]] {
+    var intersectionIndicesPolygonResult: [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] = [:]
+    func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex : [LineIndexBySegmentIndex]] {
         intersectionIndicesPolygonCallCount += 1
         
         return intersectionIndicesPolygonResult
     }
     
-    private(set) var simpleViolationSegmentOutsideIndicesCallCount = 0
-    var simpleViolationSegmentOutsideIndicesResult: [LineSegmentIndex] = []
-    func simpleViolationSegmentOutsideIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineSegmentIndex] {
-        simpleViolationSegmentOutsideIndicesCallCount += 1
+    private(set) var simpleViolationNegativeRingPointsOutsideMainRingCallCount = 0
+    var simpleViolationNegativeRingPointsOutsideMainRingResult: [LineIndexBySegmentIndexByPointIndex] = []
+    func simpleViolationNegativeRingPointsOutsideMainRingIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndexByPointIndex] {
+        simpleViolationNegativeRingPointsOutsideMainRingCallCount += 1
         
-        return simpleViolationSegmentOutsideIndicesResult
+        return simpleViolationNegativeRingPointsOutsideMainRingResult
     }
     
-    private(set) var simpleViolationNegativeRingContainedIndicesCallCount = 0
-    var simpleViolationNegativeRingContainedIndicesResult: [Int] = []
-    func simpleViolationNegativeRingContainedIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int] {
-        simpleViolationNegativeRingContainedIndicesCallCount += 1
+    private(set) var simpleViolationNegativeRingInsideAnotherCallCount = 0
+    var simpleViolationNegativeRingInsideAnotherResult: [Int] = []
+    func simpleViolationNegativeRingInsideAnotherNegativeRingIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int] {
+        simpleViolationNegativeRingInsideAnotherCallCount += 1
         
-        return simpleViolationNegativeRingContainedIndicesResult
+        return simpleViolationNegativeRingInsideAnotherResult
+    }
+    
+    
+    private(set) var simpleViolationMultipleVertexIntersectionCallCount = 0
+    var simpleViolationMultipleVertexIntersectionResult: [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]] = [:]
+    func simpleViolationMultipleVertexIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]] {
+        simpleViolationMultipleVertexIntersectionCallCount += 1
+        
+        return simpleViolationMultipleVertexIntersectionResult
     }
     
     private(set) var multiPolygonSimpleViolationIntersectionIndicesCallCount = 0
-    var multiPolygonSimpleViolationIntersectionIndicesResult: [LineSegmentIndex: [LineSegmentIndex]] = [:]
-    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineSegmentIndex: [LineSegmentIndex]] {
+    var multiPolygonSimpleViolationIntersectionIndicesResult: [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] = [:]
+    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
         multiPolygonSimpleViolationIntersectionIndicesCallCount += 1
         
         return multiPolygonSimpleViolationIntersectionIndicesResult

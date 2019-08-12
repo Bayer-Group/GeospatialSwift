@@ -78,13 +78,13 @@ extension GeoJson {
             guard simpleViolationIntersectionIndices.isEmpty else {
                 var violations = [GeoJsonSimpleViolation]()
                 simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
-                    let segment1 = lineStrings[lineSegmentIndex1.key.lineIndex].segments[lineSegmentIndex1.key.segementIndex]
+                    let segment1 = lineStrings[lineSegmentIndex1.key.lineIndex].segments[lineSegmentIndex1.key.segmentIndex]
                     let point1 = Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
                     let point2 = Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
                     let line1 = LineString(points: [point1, point2])!
                     
                     lineSegmentIndex1.value.forEach { lineSegmentIndex2 in
-                        let segment2 = lineStrings[lineSegmentIndex2.lineIndex].segments[lineSegmentIndex2.segementIndex]
+                        let segment2 = lineStrings[lineSegmentIndex2.lineIndex].segments[lineSegmentIndex2.segmentIndex]
                         let point3 = Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
                         let point4 = Point(longitude: segment2.endPoint.longitude, latitude: segment2.endPoint.latitude)
                         let line2 = LineString(points: [point3, point4])!
