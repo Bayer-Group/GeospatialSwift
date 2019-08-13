@@ -21,6 +21,8 @@ class PolygonTests: XCTestCase {
     var mShapeMainRingPolygon: Polygon!
     var diamondNegativeRingLinearRings: [LineString]!
     var diamondNegativeRingPolygon: Polygon!
+    var bigNegativeRingLinearRings: [LineString]!
+    var bigNegativeRingPolygon: Polygon!
     
     var distancePoint: SimplePoint!
     
@@ -71,6 +73,9 @@ class PolygonTests: XCTestCase {
         
         diamondNegativeRingLinearRings = MockData.diamondNegativeRingLinearRings as? [LineString]
         diamondNegativeRingPolygon = GeoTestHelper.polygon(diamondNegativeRingLinearRings)
+        
+        bigNegativeRingLinearRings = MockData.bigNegativeRingLinearRings as? [LineString]
+        bigNegativeRingPolygon = GeoTestHelper.polygon(bigNegativeRingLinearRings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -167,12 +172,12 @@ class PolygonTests: XCTestCase {
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         XCTAssertEqual(simpleViolations[3].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
         if let point1 = simpleViolations[3].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 24.0)
             XCTAssertEqual(point1.latitude, 22.0)
-            
+
         } else {
             XCTFail("Geometry not valid")
         }
@@ -192,49 +197,49 @@ class PolygonTests: XCTestCase {
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[1].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 26.0)
             XCTAssertEqual(point1.latitude, 25.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[2].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 26.0)
             XCTAssertEqual(point1.latitude, 25.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[3].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 26.0)
             XCTAssertEqual(point1.latitude, 26.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[4].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 26.0)
             XCTAssertEqual(point1.latitude, 26.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[5].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 25.0)
             XCTAssertEqual(point1.latitude, 26.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[6].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 25.0)
             XCTAssertEqual(point1.latitude, 26.0)
         } else {
             XCTFail("Geometry not valid")
         }
-        
+
         if let point1 = simpleViolations[7].problems[0] as? Point {
             XCTAssertEqual(point1.longitude, 25.0)
             XCTAssertEqual(point1.latitude, 25.0)
@@ -313,6 +318,26 @@ class PolygonTests: XCTestCase {
         } else {
             XCTFail("Geometry not valid")
         }
+    }
+    
+    func testPolygon_WithBigNegativeRing_IsInvalid() {
+        let simpleViolations = bigNegativeRingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 16)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
+        
+//        if let point = simpleViolations[0].problems[3] as? Point {
+//            XCTAssertEqual(point.longitude, 20)
+//            XCTAssertEqual(point.latitude, 20)
+//        } else {
+//            XCTFail("Geometry not valid")
+//        }
+//        
+//        if let point = simpleViolations[4].problems[3] as? Point {
+//            XCTAssertEqual(point.longitude, 24)
+//            XCTAssertEqual(point.latitude, 24)
+//        } else {
+//            XCTFail("Geometry not valid")
+//        }
     }
     
     func testObjectBoundingBox() {

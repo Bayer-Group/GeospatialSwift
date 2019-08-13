@@ -38,6 +38,7 @@ final class MockData {
     static let holeContainedLinearRings: [GeoJsonLineString] = holeContainedRingsList.first!
     static let mShapeMainRingLinearRings: [GeoJsonLineString] = mShapeMainRingRingsList.first!
     static let diamondNegativeRingLinearRings: [GeoJsonLineString] = diamondNegativeRingRingsList.first!
+    static let bigNegativeRingLinearRings: [GeoJsonLineString] = bigNegativeRingRingsList.first!
     
     static let touchingPolygons: [GeoJsonPolygon] = touchingLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
     static let sharingEdgePolygons: [GeoJsonPolygon] = sharingEdgeLinearRingsList.map { geoJson.polygon(linearRings: $0)! }
@@ -185,6 +186,15 @@ extension MockData {
     ]
     
     private static let diamondNegativeRingRingsList: [[GeoJsonLineString]] = diamondNegativeRingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
+    
+    private static let bigNegativeRingPolygonPointsList: [[[GeoJsonPoint]]] = [
+        [
+            [GeoTestHelper.point(20, 20), GeoTestHelper.point(24, 20), GeoTestHelper.point(24, 24), GeoTestHelper.point(20, 24), GeoTestHelper.point(20, 20)],
+            [GeoTestHelper.point(20, 20), GeoTestHelper.point(23, 21), GeoTestHelper.point(24, 24), GeoTestHelper.point(21, 23), GeoTestHelper.point(20, 20)]
+        ]
+    ]
+    
+    private static let bigNegativeRingRingsList: [[GeoJsonLineString]] = bigNegativeRingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0)! } }
     
     private static let touchingPolygonPointsList: [[[GeoJsonPoint]]] = [
         [

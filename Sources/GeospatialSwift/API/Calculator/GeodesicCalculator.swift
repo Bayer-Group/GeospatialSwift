@@ -548,16 +548,23 @@ extension GeodesicCalculator {
         var outsideSegmentIndices = [LineIndexBySegmentIndexByPointIndex]()
         polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
             negativeRing.segments.enumerated().forEach { negativeSegmentIndex, negativeSegment in
-                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) {
+                #warning("Vernon wrote a contains func that doesn't work")
+                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) && !isOnEdge(point: negativeSegment.startPoint, polygon: polygon, tolerance: tolerance) {
                     outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .startPoint))
                 }
-                if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) {
+                if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) && !isOnEdge(point: negativeSegment.endPoint, polygon: polygon, tolerance: tolerance) {
                     outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .endPoint))
                 }
             }
         }
         
         return outsideSegmentIndices
+    }
+    
+    private func isOnEdge(point: GeodesicPoint, polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+        let distanceToEdge = polygon.mainRing.segments.map { distance(from: point, to: $0, tolerance: tolerance) }
+        
+        return distanceToEdge.contains(0)
     }
     
     #warning("have a better name")
@@ -680,8 +687,8 @@ extension GeodesicCalculator {
             let remainingPolygonEnumerated = Array(multiPolygon.polygons.enumerated().drop(while: { $0.offset == currentPolygonIndex }))
             remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
                 let remainingMainRing = remainingPolygon.mainRing
-                let remainingMainRingPointsAreContained = remainingMainRing.points.map { contains(point: $0, vertices: currentMainRing.points) }
-                if !remainingMainRingPointsAreContained.contains(false) {
+                let remainingMainRingPointsAreContained = remainingMainRing.points.map { contains(point: $0, vertices: currentMainRing.points) && !isOnEdge(point: $0, polygon: currentPolygon, tolerance: tolerance) }
+                if remainingMainRingPointsAreContained.contains(true) {
                     containedRingIndices.append(remainingPolygonIndex)
                 }
             }
