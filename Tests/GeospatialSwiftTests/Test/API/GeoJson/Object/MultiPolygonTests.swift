@@ -7,7 +7,7 @@ class MultiPolygonTests: XCTestCase {
     var multiPolygon: MultiPolygon!
     var touchingMultiPolygon: MultiPolygon!
     var sharingEdgeMultiPolygons: MultiPolygon!
-    var containedMultiPolygons: MultiPolygon!
+    var containingMultiPolygons: MultiPolygon!
     
     var distancePoint: SimplePoint!
     
@@ -28,7 +28,7 @@ class MultiPolygonTests: XCTestCase {
         
         sharingEdgeMultiPolygons = GeoTestHelper.multiPolygon(MockData.sharingEdgePolygons)
         
-        containedMultiPolygons = GeoTestHelper.multiPolygon(MockData.containedPolygons)
+        containingMultiPolygons = GeoTestHelper.multiPolygon(MockData.containingPolygons)
     }
     
     // GeoJsonObject Tests
@@ -72,7 +72,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testContainedMultiPolygonsIsInvalid() {
-        let simpleViolations = containedMultiPolygons.simpleViolations(tolerance: 0)
+        let simpleViolations = containingMultiPolygons.simpleViolations(tolerance: 0)
         XCTAssertEqual(simpleViolations.count, 1)
         XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiPolygonContained)
         

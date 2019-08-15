@@ -119,7 +119,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var  multiPolygonNegativeRingContainedCallCount = 0
     var multiPolygonNegativeRingContainedResult: [Int] = []
-    func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
+    func simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
         multiPolygonNegativeRingContainedCallCount += 1
         
         return multiPolygonNegativeRingContainedResult
@@ -231,6 +231,14 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
         containsPolygonCallCount += 1
         
         return containsPolygonResult
+    }
+    
+    private(set) var containsInVerticesCallCount = 0
+    var containsInVerticesResult: Bool = false
+    func containsByRick(point: GeodesicPoint, vertices: [GeodesicPoint], tolerance: Double) -> Bool {
+        containsInVerticesCallCount += 1
+        
+        return containsInVerticesResult
     }
     
     private(set) var midpointCallCount = 0

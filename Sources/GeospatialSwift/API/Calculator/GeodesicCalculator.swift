@@ -58,22 +58,12 @@ public protocol GeodesicCalculatorProtocol {
     func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]
     func simpleViolationNegativeRingPointsOutsideMainRingIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndexByPointIndex]
     func simpleViolationNegativeRingInsideAnotherNegativeRingIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [Int]
-    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]
-    func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int]
     func simpleViolationMultipleVertexIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]]
+    func simpleViolationIntersectionIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]
+    func simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int]
 }
 
 internal let Calculator = GeodesicCalculator.shared
-
-public struct SegmentIndexPath {
-    let ringIndex: Int
-    let segmentIndex: Int
-}
-
-public struct IntersectionForPolygon {
-    let indexPath: SegmentIndexPath
-    let indexPathOther: [SegmentIndexPath]
-}
 
 /**
  All calculation input and output is based in meters. Geospatial input and output is expected in longitude/latitude and degrees.
@@ -377,11 +367,27 @@ extension GeodesicCalculator {
         var contains = false
         var previousVertex = vertices.last!
         
-        vertices.forEach { vertex in
+        //shot a ray from point to right, parallel to latitude line
+        //After hitting a segment, the ray goes inside out or outside in
+        //If ray starts outside: out=>in=>...=>out
+        //If inside: in=>out=>in...=>out
+        //Thus, even number of hits: outside
+        //Odd number of hits: inside
+        for vertex in vertices {
+            guard vertex != point else {
+                return true
+            }
+            
+            //point.latitude is in [vertex.latitude, previousVertex.latitude], so ray will intersect segment
             let partial1 = (vertex.latitude > point.latitude) != (previousVertex.latitude > point.latitude)
+            //intersection with segment
+            //If segment is to the left of the point, the ray will go around the earth and hit the segment. Bad hit
+            //If segment is to the right, it will be a good hit
             let partial2 = (previousVertex.longitude - vertex.longitude) * (point.latitude - vertex.latitude) / (previousVertex.latitude - vertex.latitude) + vertex.longitude
+            //The intersection is to the right of point
             let partial3 = point.longitude < partial2
             
+            //Hit once
             if partial1 && partial3 { contains = !contains }
             
             previousVertex = vertex
@@ -549,10 +555,10 @@ extension GeodesicCalculator {
         polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
             negativeRing.segments.enumerated().forEach { negativeSegmentIndex, negativeSegment in
                 #warning("Vernon wrote a contains func that doesn't work")
-                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) && !isOnEdge(point: negativeSegment.startPoint, polygon: polygon, tolerance: tolerance) {
+                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points)  {
                     outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .startPoint))
                 }
-                if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) && !isOnEdge(point: negativeSegment.endPoint, polygon: polygon, tolerance: tolerance) {
+                if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) {
                     outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .endPoint))
                 }
             }
@@ -679,12 +685,12 @@ extension GeodesicCalculator {
         return containedRingIndices
     }
     
-    public func simpleViolationPolygonContainedIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
+    public func simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from multiPolygon: GeoJsonMultiPolygon, tolerance: Double) -> [Int] {
         var containedRingIndices = [Int]()
         multiPolygon.polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in
             let currentMainRing = currentPolygon.mainRing
             
-            let remainingPolygonEnumerated = Array(multiPolygon.polygons.enumerated().drop(while: { $0.offset == currentPolygonIndex }))
+            let remainingPolygonEnumerated = multiPolygon.polygons.enumerated().filter { $0.offset != currentPolygonIndex }
             remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
                 let remainingMainRing = remainingPolygon.mainRing
                 let remainingMainRingPointsAreContained = remainingMainRing.points.map { contains(point: $0, vertices: currentMainRing.points) && !isOnEdge(point: $0, polygon: currentPolygon, tolerance: tolerance) }

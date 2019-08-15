@@ -86,7 +86,7 @@ extension GeoJson {
                 return polygonSimpleViolation
             }
             
-            let polygonContainedIndices = Calculator.simpleViolationPolygonContainedIndices(from: self, tolerance: tolerance)
+            let polygonContainedIndices = Calculator.simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from: self, tolerance: tolerance)
             
             guard polygonContainedIndices.isEmpty else {
                 var violations = [GeoJsonSimpleViolation]()

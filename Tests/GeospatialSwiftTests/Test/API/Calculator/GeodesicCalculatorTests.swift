@@ -179,3 +179,4 @@ class GeodesicCalculatorTests: XCTestCase {
         XCTAssertEqual(intersects, true)
     }
 }
+

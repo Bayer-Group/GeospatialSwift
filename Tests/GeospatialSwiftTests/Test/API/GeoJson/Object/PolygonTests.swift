@@ -19,10 +19,10 @@ class PolygonTests: XCTestCase {
     var holeContainedPolygon: Polygon!
     var mShapeMainRingLinearRings: [LineString]!
     var mShapeMainRingPolygon: Polygon!
+    var doubleMNegativeRingsLinearRings: [LineString]!
+    var doubleMNegativeRingsPolygon: Polygon!
     var diamondNegativeRingLinearRings: [LineString]!
     var diamondNegativeRingPolygon: Polygon!
-    var bigNegativeRingLinearRings: [LineString]!
-    var bigNegativeRingPolygon: Polygon!
     
     var distancePoint: SimplePoint!
     
@@ -71,11 +71,11 @@ class PolygonTests: XCTestCase {
         mShapeMainRingLinearRings = MockData.mShapeMainRingLinearRings as? [LineString]
         mShapeMainRingPolygon = GeoTestHelper.polygon(mShapeMainRingLinearRings)
         
+        doubleMNegativeRingsLinearRings = MockData.doubleMNegativeRingsLinearRings as? [LineString]
+        doubleMNegativeRingsPolygon = GeoTestHelper.polygon(doubleMNegativeRingsLinearRings)
+        
         diamondNegativeRingLinearRings = MockData.diamondNegativeRingLinearRings as? [LineString]
         diamondNegativeRingPolygon = GeoTestHelper.polygon(diamondNegativeRingLinearRings)
-        
-        bigNegativeRingLinearRings = MockData.bigNegativeRingLinearRings as? [LineString]
-        bigNegativeRingPolygon = GeoTestHelper.polygon(bigNegativeRingLinearRings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -300,8 +300,8 @@ class PolygonTests: XCTestCase {
         }
     }
     
-    func testPolygon_WithDiamondNegativeRing_IsInvalid() {
-        let simpleViolations = diamondNegativeRingPolygon.simpleViolations(tolerance: 0)
+    func testPolygon_WithDoubleMNegativeRing_IsInvalid() {
+        let simpleViolations = doubleMNegativeRingsPolygon.simpleViolations(tolerance: 0)
         XCTAssertEqual(simpleViolations.count, 16)
         XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
         
@@ -320,8 +320,8 @@ class PolygonTests: XCTestCase {
         }
     }
     
-    func testPolygon_WithBigNegativeRing_IsInvalid() {
-        let simpleViolations = bigNegativeRingPolygon.simpleViolations(tolerance: 0)
+    func testPolygon_WithDiamondNegativeRing_IsInvalid() {
+        let simpleViolations = diamondNegativeRingPolygon.simpleViolations(tolerance: 0)
         XCTAssertEqual(simpleViolations.count, 16)
         XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
         
