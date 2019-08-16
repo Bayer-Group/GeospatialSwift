@@ -235,7 +235,7 @@ final class MockGeodesicCalculator: GeodesicCalculatorProtocol {
     
     private(set) var containsInVerticesCallCount = 0
     var containsInVerticesResult: Bool = false
-    func containsByRick(point: GeodesicPoint, vertices: [GeodesicPoint], tolerance: Double) -> Bool {
+    func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
         containsInVerticesCallCount += 1
         
         return containsInVerticesResult

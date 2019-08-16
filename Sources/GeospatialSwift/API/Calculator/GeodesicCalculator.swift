@@ -33,6 +33,7 @@ public protocol GeodesicCalculatorProtocol {
     func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
     func contains(_ point: GeodesicPoint, in line: GeodesicLine, tolerance: Double) -> Bool
     func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
+    func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool
     
     // SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
     //    func contains(_ lineSegment: GeodesicLineSegment, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
@@ -361,7 +362,7 @@ extension GeodesicCalculator {
     }
     
     // SOMEDAY: Not geodesic.
-    private func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
+    public func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
         guard !vertices.isEmpty else { return false }
         
         var contains = false
@@ -374,21 +375,20 @@ extension GeodesicCalculator {
         //Thus, even number of hits: outside
         //Odd number of hits: inside
         for vertex in vertices {
-            guard vertex != point else {
-                return true
-            }
+            let segment = LineSegment(startPoint: previousVertex, endPoint: vertex)
+            guard !self.contains(point, in: segment, tolerance: 0) else { return true }
             
             //point.latitude is in [vertex.latitude, previousVertex.latitude], so ray will intersect segment
-            let partial1 = (vertex.latitude > point.latitude) != (previousVertex.latitude > point.latitude)
+            let latitudeIsInRange = (vertex.latitude > point.latitude) != (previousVertex.latitude > point.latitude)
             //intersection with segment
             //If segment is to the left of the point, the ray will go around the earth and hit the segment. Bad hit
             //If segment is to the right, it will be a good hit
-            let partial2 = (previousVertex.longitude - vertex.longitude) * (point.latitude - vertex.latitude) / (previousVertex.latitude - vertex.latitude) + vertex.longitude
+            let intersectionOnSegment = (previousVertex.longitude - vertex.longitude) * (point.latitude - vertex.latitude) / (previousVertex.latitude - vertex.latitude) + vertex.longitude
             //The intersection is to the right of point
-            let partial3 = point.longitude < partial2
+            let intersectionIsToTheRight = point.longitude < intersectionOnSegment
             
             //Hit once
-            if partial1 && partial3 { contains = !contains }
+            if latitudeIsInRange && intersectionIsToTheRight { contains = !contains }
             
             previousVertex = vertex
         }
