@@ -302,7 +302,7 @@ class PolygonTests: XCTestCase {
     
     func testPolygon_WithDoubleMNegativeRing_IsInvalid() {
         let simpleViolations = doubleMNegativeRingsPolygon.simpleViolations(tolerance: 0)
-        XCTAssertEqual(simpleViolations.count, 16)
+        XCTAssertEqual(simpleViolations.count, 8)
         XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
         
         if let point = simpleViolations[0].problems[3] as? Point {
@@ -322,22 +322,22 @@ class PolygonTests: XCTestCase {
     
     func testPolygon_WithDiamondNegativeRing_IsInvalid() {
         let simpleViolations = diamondNegativeRingPolygon.simpleViolations(tolerance: 0)
-        XCTAssertEqual(simpleViolations.count, 16)
+        XCTAssertEqual(simpleViolations.count, 8)
         XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
         
-//        if let point = simpleViolations[0].problems[3] as? Point {
-//            XCTAssertEqual(point.longitude, 20)
-//            XCTAssertEqual(point.latitude, 20)
-//        } else {
-//            XCTFail("Geometry not valid")
-//        }
-//        
-//        if let point = simpleViolations[4].problems[3] as? Point {
-//            XCTAssertEqual(point.longitude, 24)
-//            XCTAssertEqual(point.latitude, 24)
-//        } else {
-//            XCTFail("Geometry not valid")
-//        }
+        if let point = simpleViolations[0].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 20)
+            XCTAssertEqual(point.latitude, 20)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point = simpleViolations[4].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 24)
+            XCTAssertEqual(point.latitude, 24)
+        } else {
+            XCTFail("Geometry not valid")
+        }
     }
     
     func testObjectBoundingBox() {

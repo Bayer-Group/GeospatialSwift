@@ -185,9 +185,17 @@ extension GeoJson {
                     let point2 = Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
                     let line1 = LineString(points: [point1, point2])!
                     
-                    lineSegmentIndex1.value.forEach { lineSegmentIndex2 in
-                        let segment2 = linearRings[lineSegmentIndex2.lineIndex].segments[lineSegmentIndex2.segmentIndex]
-                        if lineSegmentIndex2.pointIndex == .startPoint {
+                    for lineSegmentIndex2ByPointIndex in lineSegmentIndex1.value {
+                        //remove duplicacy
+                        let lineSegmentIndex2 = LineIndexBySegmentIndex(lineIndex: lineSegmentIndex2ByPointIndex.lineIndex, segmentIndex: lineSegmentIndex2ByPointIndex.segmentIndex)
+                        let lineSegmentIndex1StartPoint = LineIndexBySegmentIndexByPointIndex(lineIndex: lineSegmentIndex1.key.lineIndex, segmentIndex: lineSegmentIndex1.key.segmentIndex, pointIndex: .startPoint)
+                        let lineSegmentIndex1EndPoint = LineIndexBySegmentIndexByPointIndex(lineIndex: lineSegmentIndex1.key.lineIndex, segmentIndex: lineSegmentIndex1.key.segmentIndex, pointIndex: .endPoint)
+                        if let lineSegment2Indices = simpleViolationMultipleVertexIntersectionIndices[lineSegmentIndex2], lineSegmentIndex2 < lineSegmentIndex1.key {
+                            guard !lineSegment2Indices.contains(lineSegmentIndex1StartPoint) && !lineSegment2Indices.contains(lineSegmentIndex1EndPoint) else { continue }
+                        }
+                        
+                        let segment2 = linearRings[lineSegmentIndex2ByPointIndex.lineIndex].segments[lineSegmentIndex2ByPointIndex.segmentIndex]
+                        if lineSegmentIndex2ByPointIndex.pointIndex == .startPoint {
                             let point3 = Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
                             violations += [GeoJsonSimpleViolation(problems: [point1, point2, line1, point3], reason: .polygonMultipleVertexIntersection)]
                         } else {

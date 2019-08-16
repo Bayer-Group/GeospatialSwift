@@ -554,8 +554,7 @@ extension GeodesicCalculator {
         var outsideSegmentIndices = [LineIndexBySegmentIndexByPointIndex]()
         polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
             negativeRing.segments.enumerated().forEach { negativeSegmentIndex, negativeSegment in
-                #warning("Vernon wrote a contains func that doesn't work")
-                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points)  {
+                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) {
                     outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .startPoint))
                 }
                 if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) {
@@ -573,7 +572,6 @@ extension GeodesicCalculator {
         return distanceToEdge.contains(0)
     }
     
-    #warning("have a better name")
     //Ring intersecting and crossing another Ring
     public func simpleViolationIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
         var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]()
@@ -611,7 +609,6 @@ extension GeodesicCalculator {
         return allIntersectionIndices
     }
 
-    #warning("This func by itself is not right")
     public func simpleViolationMultipleVertexIntersectionIndices(from polygon: GeoJsonPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]] {
         var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]]()
         polygon.linearRings.enumerated().forEach { currentRingIndex, currentRing in
@@ -905,7 +902,7 @@ extension GeodesicCalculator {
 }
 
 #warning("better name")
-public struct LineIndexBySegmentIndex: Hashable, Comparable {
+public struct LineIndexBySegmentIndex: Hashable, Comparable, Equatable {
     let lineIndex: Int
     let segmentIndex: Int
     
@@ -918,7 +915,7 @@ public struct LineIndexBySegmentIndex: Hashable, Comparable {
     }
 }
 
-public struct LineIndexBySegmentIndexByPointIndex: Hashable, Comparable {
+public struct LineIndexBySegmentIndexByPointIndex: Hashable, Comparable, Equatable {
     enum PointIndex {
         case startPoint
         case endPoint
