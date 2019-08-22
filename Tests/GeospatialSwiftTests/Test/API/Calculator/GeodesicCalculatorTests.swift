@@ -288,4 +288,3 @@ class GeodesicCalculatorTests: XCTestCase {
         XCTAssertEqual(geodesicCalculator.contains(point: pointToTest57, vertices: points), false)
     }
 }
-

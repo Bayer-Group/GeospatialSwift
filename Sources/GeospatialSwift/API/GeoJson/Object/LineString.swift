@@ -99,7 +99,6 @@ extension GeoJson {
             let selfIntersectsIndices = Calculator.simpleViolationSelfIntersectionIndices(from: self, tolerance: tolerance)
             
             guard selfIntersectsIndices.isEmpty else {
-                #warning("Need to remove all duplicates")
                 var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
                 selfIntersectsIndices.forEach { firstIndex, secondIndices in
                     var point = Point(longitude: segments[firstIndex].startPoint.longitude, latitude: segments[firstIndex].startPoint.latitude)
