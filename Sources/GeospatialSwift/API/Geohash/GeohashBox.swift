@@ -1,36 +1,23 @@
-public protocol GeoJsonGeohashBox: GeodesicBoundingBox {
+public protocol GeoJsonGeohashBox {
     var geohash: String { get }
-    
-    func geohashNeighbor(direction: GeohashCompassPoint, precision: Int) -> GeoJsonGeohashBox
+    var boundingBox: BoundingBox { get }
 }
 
 public enum GeohashCompassPoint {
     case north, south, east, west
 }
 
-internal final class GeohashBox: BoundingBox, GeoJsonGeohashBox {
-    private let geohashCoder: GeohashCoderProtocol
-    
+internal struct GeohashBox: GeoJsonGeohashBox {
     public let geohash: String
+    public let boundingBox: BoundingBox
     
-    init(boundingCoordinates: BoundingCoordinates, geohashCoder: GeohashCoderProtocol, geohash: String) {
-        self.geohashCoder = geohashCoder
-        
+    init(boundingCoordinates: BoundingCoordinates, geohash: String) {
         self.geohash = geohash
         
-        super.init(boundingCoordinates: boundingCoordinates)
+        boundingBox = BoundingBox(boundingCoordinates: boundingCoordinates)
     }
     
-    public func geohashNeighbor(direction: GeohashCompassPoint, precision: Int) -> GeoJsonGeohashBox {
-        let point: GeodesicPoint = {
-            switch direction {
-            case .north: return SimplePoint(longitude: centroid.longitude, latitude: centroid.latitude + latitudeDelta)
-            case .south: return SimplePoint(longitude: centroid.longitude, latitude: centroid.latitude - latitudeDelta)
-            case .east: return SimplePoint(longitude: centroid.longitude + longitudeDelta, latitude: centroid.latitude)
-            case .west: return SimplePoint(longitude: centroid.longitude - longitudeDelta, latitude: centroid.latitude)
-            }
-        }()
-        
-        return geohashCoder.geohashBox(for: point, precision: precision)
+    public var description: String {
+        return "Geohash: \(geohash), \(boundingBox)"
     }
 }

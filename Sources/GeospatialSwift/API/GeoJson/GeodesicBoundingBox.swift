@@ -20,7 +20,9 @@ public protocol GeodesicBoundingBox: CustomStringConvertible {
     func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox
     func validBoundingBox(minimumAdjustment: Double) -> GeodesicBoundingBox
     func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox
+    func contains(point: GeodesicPoint) -> Bool
     func contains(point: GeodesicPoint, tolerance: Double) -> Bool
+    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool
     func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool
 }
 
@@ -37,24 +39,24 @@ extension GeodesicBoundingBox {
 /**
  A bounding box intended to exactly fit a GeoJsonObject. Also known as a "Minimum Bounding Box", "Bounding Envelope".
  */
-public class BoundingBox: GeodesicBoundingBox {
+public struct BoundingBox: GeodesicBoundingBox {
+    public let boundingCoordinates: BoundingCoordinates
+    
     public var description: String {
-        return "BoundingBox: (\n\tminLongitude: \(minLongitude),\n\tminLatitude: \(minLatitude),\n\tmaxLongitude: \(maxLongitude),\n\tmaxLatitude: \(maxLatitude),\n\tcentroid: \(centroid)\n)"
+        "BoundingBox: (\n\tminLongitude: \(minLongitude),\n\tminLatitude: \(minLatitude),\n\tmaxLongitude: \(maxLongitude),\n\tmaxLatitude: \(maxLatitude),\n\tcentroid: \(centroid)\n)"
     }
     
-    public let points: [GeodesicPoint]
+    public var points: [GeodesicPoint] { [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)] }
     
-    public let centroid: GeodesicPoint
+    public var centroid: GeodesicPoint { SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2)) }
     
-    public var boundingCoordinates: BoundingCoordinates { return (minLongitude: minLongitude, minLatitude: minLatitude, maxLongitude: maxLongitude, maxLatitude: maxLatitude) }
+    public var minLongitude: Double { boundingCoordinates.minLongitude }
+    public var minLatitude: Double { boundingCoordinates.minLatitude }
+    public var maxLongitude: Double { boundingCoordinates.maxLongitude }
+    public var maxLatitude: Double { boundingCoordinates.maxLatitude }
     
-    public let minLongitude: Double
-    public let minLatitude: Double
-    public let maxLongitude: Double
-    public let maxLatitude: Double
-    
-    public let longitudeDelta: Double
-    public let latitudeDelta: Double
+    public var longitudeDelta: Double { maxLongitude - minLongitude }
+    public var latitudeDelta: Double { maxLatitude - minLatitude }
     
     public var segments: [GeodesicLineSegment] {
         return [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])]
@@ -63,38 +65,27 @@ public class BoundingBox: GeodesicBoundingBox {
     public var box: GeodesicPolygon { return SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     
     public init(boundingCoordinates: BoundingCoordinates) {
-        minLongitude = boundingCoordinates.minLongitude
-        minLatitude = boundingCoordinates.minLatitude
-        maxLongitude = boundingCoordinates.maxLongitude
-        maxLatitude = boundingCoordinates.maxLatitude
-        
-        points = [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)]
-        
-        longitudeDelta = maxLongitude - minLongitude
-        latitudeDelta = maxLatitude - minLatitude
-        
-        centroid = SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2))
+        self.boundingCoordinates = boundingCoordinates
     }
     
+    public func contains(point: GeodesicPoint) -> Bool { contains(point: point, tolerance: 0) }
     public func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
-        // SOMEDAY: Lose this logic?
-//        let minPoint = points[0]
-//        let maxPoint = points[2]
-//        let maxLatitude = tolerance != 0 ? Calculator.destinationPoint(origin: maxPoint, bearing: 0, distance: tolerance).latitude : maxPoint.latitude
-//        let maxLongitude = tolerance != 0 ? Calculator.destinationPoint(origin: maxPoint, bearing: 90, distance: tolerance).longitude : maxPoint.longitude
-//        let minLatitude = tolerance != 0 ? Calculator.destinationPoint(origin: minPoint, bearing: 180, distance: tolerance).latitude : minPoint.latitude
-//        let minLongitude = tolerance != 0 ? Calculator.destinationPoint(origin: minPoint, bearing: 270, distance: tolerance).longitude : minPoint.longitude
-//
-//        guard maxLatitude >= minLatitude && maxLongitude >= minLongitude else { return false }
-//
-//        return point.latitude >= minLatitude &&
-//            point.latitude <= maxLatitude  &&
-//            point.longitude >= minLongitude &&
-//            point.longitude <= maxLongitude
+        guard tolerance != 0 else {
+            return point.latitude >= minLatitude &&
+                point.latitude <= maxLatitude &&
+                point.longitude >= minLongitude &&
+                point.longitude <= maxLongitude
+        }
+        
         return Calculator.contains(point, in: box, tolerance: tolerance)
     }
     
+    public func overlaps(boundingBox: GeodesicBoundingBox) -> Bool { overlaps(boundingBox: boundingBox, tolerance: 0) }
     public func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
+        guard tolerance != 0 else {
+            return boundingBox.points.contains { contains(point: $0, tolerance: 0) }
+        }
+        
         return points.contains { boundingBox.contains(point: $0, tolerance: tolerance) } || boundingBox.points.contains { contains(point: $0, tolerance: tolerance) }
     }
     
