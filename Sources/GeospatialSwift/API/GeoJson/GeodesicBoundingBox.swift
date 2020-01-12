@@ -83,10 +83,13 @@ public struct BoundingBox: GeodesicBoundingBox {
     public func overlaps(boundingBox: GeodesicBoundingBox) -> Bool { overlaps(boundingBox: boundingBox, tolerance: 0) }
     public func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
         guard tolerance != 0 else {
-            return boundingBox.points.contains { contains(point: $0, tolerance: 0) }
+            return minLongitude <= boundingBox.maxLongitude && boundingBox.minLongitude <= maxLongitude && minLatitude <= boundingBox.maxLatitude && boundingBox.minLatitude <= maxLatitude
         }
         
-        return points.contains { boundingBox.contains(point: $0, tolerance: tolerance) } || boundingBox.points.contains { contains(point: $0, tolerance: tolerance) }
+        return minLongitude + tolerance <= boundingBox.maxLongitude &&
+            boundingBox.minLongitude + tolerance <= maxLongitude &&
+            minLatitude + tolerance <= boundingBox.maxLatitude &&
+            boundingBox.minLatitude + tolerance <= maxLatitude
     }
     
     // SOMEDAY: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.
