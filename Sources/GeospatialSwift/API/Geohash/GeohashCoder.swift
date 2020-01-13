@@ -5,10 +5,11 @@ public protocol GeohashCoderProtocol {
     func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String]
     func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
     
+    func geohashNeighbors(forGeohash geohash: String) -> [String]
     func geohashNeighbors(for point: GeodesicPoint, precision: Int) -> [String]
     func geohashBoxNeighbors(for point: GeodesicPoint, precision: Int) -> [GeoJsonGeohashBox]
     
-    func geohashBox(for geohash: String) -> GeoJsonGeohashBox?
+    func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox?
 }
 
 public struct GeohashCoder: GeohashCoderProtocol {
@@ -35,6 +36,15 @@ public struct GeohashCoder: GeohashCoderProtocol {
     public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] { geohashBoxes(boundingBox: boundingBox, precision: precision) }
     
     /**
+     Returns a geohash with neighbors associated to the geohash
+     
+     - geohash: The geohash used to create neighbors
+     
+     - returns: A geohash
+     */
+    public func geohashNeighbors(forGeohash geohash: String) -> [String] { neighbors(geohash: geohash) }
+    
+    /**
      Returns a geohash with neighbors associated to the coordinate
      
      - point: The point used to create geohash
@@ -52,16 +62,7 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: A geohashBox
      */
-    public func geohashBox(for geohash: String) -> GeoJsonGeohashBox? { geohashBox(geohash: geohash) }
-    
-    /**
-     Returns a geohash with neighbors associated to the geohash
-     
-     - geohash: The geohash used to create neighbors
-     
-     - returns: A geohash
-     */
-    public func neighbors(for geohash: String) -> [String] { neighbors(geohash: geohash) }
+    public func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox? { geohashBox(geohash: geohash) }
 }
 
 // MARK: Private
