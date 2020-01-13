@@ -1,7 +1,7 @@
 # GeospatialSwift
 
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![Swift 5](https://img.shields.io/badge/Swift-5-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![Swift 5.1](https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat)](https://developer.apple.com/swift/)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS-green.svg?style=flat)](https://swift.org/package-manager/)
 
 What is GeospatialSwift?
@@ -19,11 +19,11 @@ A GeoJsonObject can be transformed to a bounding box.
 
 ### Carthage
 
-```github "MonsantoCo/GeospatialSwift" ~> 0.1.0```
+```github "MonsantoCo/GeospatialSwift" ~> 0.5.0```
 
 ### Package Manager
 
-```.package(url: "git@github.com:MonsantoCo/GeospatialSwift.git", from: "0.1.0")```
+```.package(url: "git@github.com:MonsantoCo/GeospatialSwift.git", from: "0.5.0")```
 
 ## Geospatial
 

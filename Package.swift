@@ -11,7 +11,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/MonsantoCo/TimberSwift.git", .upToNextMajor(from: "0.2.0"))
+        .package(url: "https://github.com/MonsantoCo/TimberSwift.git", .branch("swift-5.1"))
     ],
     targets: [
         .target(

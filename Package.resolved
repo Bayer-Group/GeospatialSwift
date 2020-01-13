@@ -5,9 +5,9 @@
         "package": "TimberSwift",
         "repositoryURL": "https://github.com/MonsantoCo/TimberSwift.git",
         "state": {
-          "branch": null,
-          "revision": "176d4f03fe60149f676c7560a4d554274fdccefc",
-          "version": "0.2.0"
+          "branch": "swift-5.1",
+          "revision": "3cb30e221a226a2510778c176f865dfa4d03d210",
+          "version": null
         }
       }
     ]
