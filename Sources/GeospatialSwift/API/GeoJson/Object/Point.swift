@@ -28,8 +28,6 @@ extension GeoJson {
         public var normalize: GeodesicPoint { return Calculator.normalize(self) }
         public var normalizePostitive: GeodesicPoint { return Calculator.normalizePositive(self) }
         
-        public var description: String { return "Point: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
-        
         public var points: [GeodesicPoint] { return [self] }
         
         public let longitude: Double

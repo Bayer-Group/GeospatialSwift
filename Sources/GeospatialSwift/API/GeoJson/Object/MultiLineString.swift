@@ -16,17 +16,6 @@ extension GeoJson {
         public let type: GeoJsonObjectType = .multiLineString
         public var geoJsonCoordinates: [Any] { return lineStrings.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            MultiLineString: \(
-            """
-            (\n\(lineStrings.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public let lineStrings: [GeoJsonLineString]
         
         public var points: [GeodesicPoint] {

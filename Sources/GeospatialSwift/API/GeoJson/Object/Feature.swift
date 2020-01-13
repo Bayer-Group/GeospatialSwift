@@ -26,22 +26,11 @@ extension GeoJson {
         public var id: Any? { return idString ?? idDouble ?? idInt }
         public var idAsString: String? { return idString ?? idDouble?.description ?? idInt?.description }
         
-        public var description: String {
-            return """
-            Feature: \(
-            """
-            (\n\(geometry != nil ? "Geometry - \(geometry!)" : "null")
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public let geometry: GeoJsonGeometry?
         public let properties: GeoJsonDictionary?
         
-        public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeodesicBoundingBox?
+        public var objectGeometries: [GeoJsonGeometry]? { return geometry.flatMap { [$0] } }
+        public var objectBoundingBox: GeodesicBoundingBox? { geometry?.objectBoundingBox }
         
         internal let idString: String?
         internal let idDouble: Double?
@@ -69,10 +58,6 @@ extension GeoJson {
             self.idDouble = id as? Double
             self.idInt = id as? Int
             self.properties = properties
-            
-            objectGeometries = geometry != nil ? [geometry!] : nil
-            
-            objectBoundingBox = geometry?.objectBoundingBox
         }
         
         public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return geometry?.objectDistance(to: point, tolerance: tolerance) }

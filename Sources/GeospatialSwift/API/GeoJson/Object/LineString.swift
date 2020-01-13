@@ -21,18 +21,7 @@ extension GeoJson {
         public let type: GeoJsonObjectType = .lineString
         public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            LineString: \(
-            """
-            (\n\(points.enumerated().map { "\($0 + 1) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
-        public let points: [GeodesicPoint]
+        public var points: [GeodesicPoint] { return geoJsonPoints }
         public let geoJsonPoints: [GeoJsonPoint]
         
         public var boundingBox: GeodesicBoundingBox {
@@ -63,7 +52,6 @@ extension GeoJson {
         fileprivate init?(points: [GeoJsonPoint]) {
             guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
-            self.points = points
             self.geoJsonPoints = points
             
             segments = points.enumerated().compactMap { (offset, point) in

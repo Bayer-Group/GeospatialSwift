@@ -20,17 +20,6 @@ extension GeoJson {
         public var type: GeoJsonObjectType { return .multiPoint }
         public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            MultiPoint: \(
-            """
-            (\n\(points.enumerated().map { "\($0 + 1) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public var points: [GeodesicPoint] { return geoJsonPoints }
         public let geoJsonPoints: [GeoJsonPoint]
         

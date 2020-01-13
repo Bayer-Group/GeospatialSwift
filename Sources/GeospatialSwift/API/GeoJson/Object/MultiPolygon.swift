@@ -16,17 +16,6 @@ extension GeoJson {
         public let type: GeoJsonObjectType = .multiPolygon
         public var geoJsonCoordinates: [Any] { return polygons.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            MultiPolygon: \(
-            """
-            (\n\(polygons.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public let polygons: [GeoJsonPolygon]
         
         public var points: [GeodesicPoint] { return polygons.flatMap { $0.points } }

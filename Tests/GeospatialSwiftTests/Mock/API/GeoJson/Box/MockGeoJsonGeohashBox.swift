@@ -1,6 +1,8 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonGeohashBox: MockGeoJsonBoundingBox, GeoJsonGeohashBox {
+    var boundingBox: BoundingBox
+    
     private(set) var geohashCallCount = 0
     var geohashResult: String = ""
     var geohash: String {

@@ -1,4 +1,4 @@
-public protocol GeodesicPolygon: CustomStringConvertible {
+public protocol GeodesicPolygon {
     var points: [GeodesicPoint] { get }
     var mainRing: GeodesicLine { get }
     var negativeRings: [GeodesicLine] { get }
@@ -27,6 +27,4 @@ public struct SimplePolygon: GeodesicPolygon {
         self.mainRing = mainRing
         self.negativeRings = negativeRings
     }
-    
-    public var description: String { return "SimplePolygon: MainRing: (\(mainRing.segments.map { $0.point })" }
 }

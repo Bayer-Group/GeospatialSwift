@@ -5,7 +5,7 @@ import Foundation
  
  Does not support projected coordinates, only geographic
  */
-public protocol GeoJsonObject: CustomStringConvertible {
+public protocol GeoJsonObject {
     var type: GeoJsonObjectType { get }
     
     var objectGeometries: [GeoJsonGeometry]? { get }

@@ -1,4 +1,4 @@
-public protocol GeodesicPoint: CustomStringConvertible {
+public protocol GeodesicPoint {
     var longitude: Double { get }
     var latitude: Double { get }
     var altitude: Double? { get }
@@ -14,8 +14,6 @@ public struct SimplePoint: GeodesicPoint {
         self.latitude = latitude
         self.altitude = altitude
     }
-    
-    public var description: String { return "SimplePoint: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
 }
 
 public extension GeodesicPoint {

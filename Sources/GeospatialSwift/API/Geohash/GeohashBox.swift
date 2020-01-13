@@ -16,8 +16,4 @@ internal struct GeohashBox: GeoJsonGeohashBox {
         
         boundingBox = BoundingBox(boundingCoordinates: boundingCoordinates)
     }
-    
-    public var description: String {
-        return "Geohash: \(geohash), \(boundingBox)"
-    }
 }

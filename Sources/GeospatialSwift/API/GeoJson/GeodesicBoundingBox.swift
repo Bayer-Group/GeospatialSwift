@@ -1,8 +1,8 @@
-// SOMEDAY: The concept of minimums and maximums is not right. Crossing the Antimeridian will do odd things. Fix all things BoundingCoordinates and BoundingBox.
+#warning("The concept of minimums and maximums is not right. Crossing the Antimeridian will do odd things. Fix all things BoundingCoordinates and BoundingBox.")
 
 public typealias BoundingCoordinates = (minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double)
 
-public protocol GeodesicBoundingBox: CustomStringConvertible {
+public protocol GeodesicBoundingBox {
     var minLongitude: Double { get }
     var minLatitude: Double { get }
     var maxLongitude: Double { get }
@@ -41,10 +41,6 @@ extension GeodesicBoundingBox {
  */
 public struct BoundingBox: GeodesicBoundingBox {
     public let boundingCoordinates: BoundingCoordinates
-    
-    public var description: String {
-        "BoundingBox: (\n\tminLongitude: \(minLongitude),\n\tminLatitude: \(minLatitude),\n\tmaxLongitude: \(maxLongitude),\n\tmaxLatitude: \(maxLatitude),\n\tcentroid: \(centroid)\n)"
-    }
     
     public var points: [GeodesicPoint] { [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)] }
     

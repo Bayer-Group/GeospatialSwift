@@ -12,19 +12,8 @@ extension GeoJson {
         public let type: GeoJsonObjectType = .geometryCollection
         public var geoJson: GeoJsonDictionary { return ["type": type.name, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
         
-        public var description: String {
-            return """
-            GeometryCollection: \(
-            """
-            (\n\(objectGeometries != nil ? objectGeometries!.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n") : "null")
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeodesicBoundingBox?
+        public var objectBoundingBox: GeodesicBoundingBox? { BoundingBox.best(objectGeometries?.compactMap { $0.objectBoundingBox } ?? []) }
         
         internal init?(geoJsonDictionary: GeoJsonDictionary) {
             guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
@@ -41,8 +30,6 @@ extension GeoJson {
         
         fileprivate init(geometries: [GeoJsonGeometry]?) {
             self.objectGeometries = geometries
-            
-            objectBoundingBox = BoundingBox.best(geometries?.compactMap { $0.objectBoundingBox } ?? [])
         }
         
         public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {

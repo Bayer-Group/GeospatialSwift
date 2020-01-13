@@ -27,25 +27,13 @@ extension GeoJson {
         public let type: GeoJsonObjectType = .polygon
         public var geoJsonCoordinates: [Any] { return geoJsonLinearRings.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            Polygon: \(
-            """
-            //\nMain Ring: \(mainRing)
-            (\n\(negativeRings.enumerated().map { "\("Negative Ring \($0 + 1)") - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
-        
         public let geoJsonLinearRings: [GeoJsonLineString]
-        public let geoJsonMainRing: GeoJsonLineString
-        public let geoJsonNegativeRings: [GeoJsonLineString]
+        public var geoJsonMainRing: GeoJsonLineString { geoJsonLinearRings.first! }
+        public var geoJsonNegativeRings: [GeoJsonLineString] { geoJsonLinearRings.tail ?? [] }
         
         public var linearRings: [GeodesicLine] { return geoJsonLinearRings }
         public var mainRing: GeodesicLine { return geoJsonMainRing }
-        public var negativeRings: [GeodesicLine]  { return geoJsonNegativeRings }
+        public var negativeRings: [GeodesicLine] { return geoJsonNegativeRings }
         
         public var points: [GeodesicPoint] { return linearRings.flatMap { $0.points } }
         
@@ -82,8 +70,6 @@ extension GeoJson {
             }
             
             geoJsonLinearRings = linearRings
-            geoJsonMainRing = linearRings.first!
-            geoJsonNegativeRings = linearRings.tail ?? []
         }
         
         public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
