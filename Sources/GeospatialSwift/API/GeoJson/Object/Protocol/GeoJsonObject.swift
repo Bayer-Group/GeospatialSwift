@@ -27,29 +27,23 @@ public protocol GeoJsonObject {
 }
 
 extension GeoJsonObject {
-    public func contains(_ point: GeodesicPoint) -> Bool { return contains(point, tolerance: 0) }
+    public func contains(_ point: GeodesicPoint) -> Bool { contains(point, tolerance: 0) }
     
-    public func objectDistance(to point: GeodesicPoint) -> Double? { return objectDistance(to: point, tolerance: 0) }
+    public func objectDistance(to point: GeodesicPoint) -> Double? { objectDistance(to: point, tolerance: 0) }
 }
 
 extension GeoJsonObject {
-    public var isSimpleGeometry: Bool {
-        return [.point, .lineString, .polygon].contains(type)
-    }
+    public var isSimpleGeometry: Bool { [.point, .lineString, .polygon].contains(type) }
     
     // Trust geoJson serialization
-    public var geoJsonData: Data {
-        // swiftlint:disable:next force_try
-        return try! JSONSerialization.data(withJSONObject: geoJson, options: [])
-    }
+    // swiftlint:disable:next force_try
+    public var geoJsonData: Data { try! JSONSerialization.data(withJSONObject: geoJson, options: []) }
     
     // Trust geoJson encoding
-    public var geoJsonString: String {
-        return String(data: geoJsonData, encoding: .utf8)!
-    }
+    public var geoJsonString: String { String(data: geoJsonData, encoding: .utf8)! }
     
     public var coordinatesGeometries: [GeoJsonCoordinatesGeometry] {
-        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
+        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
             if let geometry = objectGeometry as? GeoJsonCoordinatesGeometry { return [geometry] }
             
             return objectGeometry.coordinatesGeometries
@@ -57,7 +51,7 @@ extension GeoJsonObject {
     }
     
     public var linearGeometries: [GeoJsonLinearGeometry] {
-        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
+        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
             if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }
             
             if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
@@ -67,7 +61,7 @@ extension GeoJsonObject {
     }
     
     public var closedGeometries: [GeoJsonClosedGeometry] {
-        return (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
+        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
             if let geometry = objectGeometry as? GeoJsonClosedGeometry { return [geometry] }
             
             if objectGeometry is GeoJsonCoordinatesGeometry { return [] }

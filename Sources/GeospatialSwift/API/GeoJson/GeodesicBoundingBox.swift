@@ -27,13 +27,9 @@ public protocol GeodesicBoundingBox {
 }
 
 extension GeodesicBoundingBox {
-    public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox {
-        return insetBoundingBox(widthPercent: percent, heightPercent: percent)
-    }
+    public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox { insetBoundingBox(widthPercent: percent, heightPercent: percent) }
     
-    public func insetBoundingBox(widthPercent: Double, heightPercent: Double) -> GeodesicBoundingBox {
-        return insetBoundingBox(topPercent: heightPercent, leftPercent: widthPercent, bottomPercent: heightPercent, rightPercent: widthPercent)
-    }
+    public func insetBoundingBox(widthPercent: Double, heightPercent: Double) -> GeodesicBoundingBox { insetBoundingBox(topPercent: heightPercent, leftPercent: widthPercent, bottomPercent: heightPercent, rightPercent: widthPercent) }
 }
 
 /**
@@ -54,11 +50,9 @@ public struct BoundingBox: GeodesicBoundingBox {
     public var longitudeDelta: Double { maxLongitude - minLongitude }
     public var latitudeDelta: Double { maxLatitude - minLatitude }
     
-    public var segments: [GeodesicLineSegment] {
-        return [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])]
-    }
+    public var segments: [GeodesicLineSegment] { [LineSegment(point: points[0], otherPoint: points[1]), LineSegment(point: points[1], otherPoint: points[2]), LineSegment(point: points[2], otherPoint: points[3]), LineSegment(point: points[3], otherPoint: points[0])] }
     
-    public var box: GeodesicPolygon { return SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
+    public var box: GeodesicPolygon { SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     
     public init(boundingCoordinates: BoundingCoordinates) {
         self.boundingCoordinates = boundingCoordinates

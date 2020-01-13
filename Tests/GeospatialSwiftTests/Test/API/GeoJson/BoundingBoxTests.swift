@@ -17,13 +17,13 @@ class BoundingBoxTests: XCTestCase {
     
     let boundingBoxMinimumAdjustment = 0.00005
     
-    private var boundingCoordinatesHorizontalOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: simpleBoundingBox.maxLatitude) }
+    private var boundingCoordinatesHorizontalOverlap: BoundingCoordinates { (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: simpleBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesVerticalOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: simpleBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesVerticalOverlap: BoundingCoordinates { (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: simpleBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesCornerOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesCornerOverlap: BoundingCoordinates { (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesNoOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: noOverlapBoundingBox.maxLongitude, maxLatitude: noOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesNoOverlap: BoundingCoordinates { (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: noOverlapBoundingBox.maxLongitude, maxLatitude: noOverlapBoundingBox.maxLatitude) }
     
     override func setUp() {
         super.setUp()

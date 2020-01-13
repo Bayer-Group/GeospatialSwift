@@ -13,26 +13,12 @@ extension GeoJson {
     /**
      Creates a GeoJsonLineString
      */
-    public func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString? {
-        return LineString(points: points)
-    }
+    public func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString? { LineString(points: points) }
     
     public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
-        public var geoJsonCoordinates: [Any] { return geoJsonPoints.map { $0.geoJsonCoordinates } }
         
-        public var points: [GeodesicPoint] { return geoJsonPoints }
         public let geoJsonPoints: [GeoJsonPoint]
-        
-        public var boundingBox: GeodesicBoundingBox {
-            return BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })!
-        }
-        
-        public var length: Double {
-            return Calculator.length(of: self)
-        }
-        
-        public let segments: [GeodesicLineSegment]
         
         internal init?(coordinatesJson: [Any]) {
             guard let pointsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid LineString must have valid coordinates"); return nil }
@@ -53,32 +39,42 @@ extension GeoJson {
             guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
             
             self.geoJsonPoints = points
-            
-            segments = points.enumerated().compactMap { (offset, point) in
-                if points.count == offset + 1 { return nil }
-                
-                return LineSegment(point: point, otherPoint: points[offset + 1])
-            }
         }
+    }
+}
+
+extension GeoJson.LineString {
+    public var segments: [GeodesicLineSegment] {
+        geoJsonPoints.enumerated().compactMap { (offset, point) in
+            if geoJsonPoints.count == offset + 1 { return nil }
+            
+            return LineSegment(point: point, otherPoint: geoJsonPoints[offset + 1])
+        }
+    }
+    
+    public var geoJsonCoordinates: [Any] { geoJsonPoints.map { $0.geoJsonCoordinates } }
+    
+    public var points: [GeodesicPoint] { geoJsonPoints }
+    
+    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })! }
+    
+    public var lineStrings: [GeoJsonLineString] { [self] }
+    
+    public var length: Double { Calculator.length(of: self) }
+    
+    public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: point, to: self, tolerance: tolerance) }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { Calculator.contains(point, in: self, tolerance: tolerance) }
+    
+    public func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
+        let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
         
-        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return Calculator.distance(from: point, to: self, tolerance: tolerance)
-        }
+        guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            return Calculator.contains(point, in: self, tolerance: tolerance)
-        }
+        let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
         
-        public func invalidReasons(tolerance: Double) -> [LineStringInvalidReason] {
-            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
-            
-            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
-            
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
-            
-            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
-            
-            return []
-        }
+        guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(segmentIndices: selfIntersectsIndices)] }
+        
+        return []
     }
 }

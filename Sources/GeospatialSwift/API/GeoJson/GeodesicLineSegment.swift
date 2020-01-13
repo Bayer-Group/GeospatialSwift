@@ -12,7 +12,7 @@ internal struct LineSegment: GeodesicLineSegment {
     public let point: GeodesicPoint
     public let otherPoint: GeodesicPoint
     
-    public var midpoint: GeodesicPoint { return Calculator.midpoint(from: point, to: otherPoint) }
+    public var midpoint: GeodesicPoint { Calculator.midpoint(from: point, to: otherPoint) }
     
     public var initialBearing: (bearing: Double, back: Double) {
         let bearing = Calculator.initialBearing(from: point, to: otherPoint)

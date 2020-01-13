@@ -6,20 +6,14 @@ import Foundation
 final class MockData {
     static let geoJson = GeoJson()
     
-    static let geoJsonTestData: [GeoJsonDictionary] = { return json(jsonString: geoJsonTestJson)["geoJsonObjects"] as! [GeoJsonDictionary] }()
-    static let wktTestData: [GeoJsonDictionary] = { return json(jsonString: wktTestJson)["wktObjects"] as! [GeoJsonDictionary] }()
+    static let geoJsonTestData: [GeoJsonDictionary] = { json(jsonString: geoJsonTestJson)["geoJsonObjects"] as! [GeoJsonDictionary] }()
+    static let wktTestData: [GeoJsonDictionary] = { json(jsonString: wktTestJson)["wktObjects"] as! [GeoJsonDictionary] }()
     
-    static func testGeoJson(_ name: String) -> GeoJsonDictionary {
-        return geoJsonTestData.first { ($0["name"] as! String) == name }!["geoJson"] as! GeoJsonDictionary
-    }
+    static func testGeoJson(_ name: String) -> GeoJsonDictionary { geoJsonTestData.first { ($0["name"] as! String) == name }!["geoJson"] as! GeoJsonDictionary }
     
-    static func testGeoJsonObject(geoJsonDataName: String) -> GeoJsonObject {
-        return geoJson.parse(geoJson: testGeoJson(geoJsonDataName))!
-    }
+    static func testGeoJsonObject(geoJsonDataName: String) -> GeoJsonObject { geoJson.parse(geoJson: testGeoJson(geoJsonDataName))! }
     
-    static func testWkt(_ name: String) -> String {
-        return wktTestData.first { ($0["name"] as! String) == name }!["wkt"] as! String
-    }
+    static func testWkt(_ name: String) -> String { wktTestData.first { ($0["name"] as! String) == name }!["wkt"] as! String }
     
     static let point: GeoJsonPoint = geoJson.point(longitude: 1, latitude: 2, altitude: 3)
     static let points: [GeoJsonPoint] = linesPoints.first!

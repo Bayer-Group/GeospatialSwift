@@ -8,23 +8,12 @@ extension GeoJson {
     /**
      Creates a GeoJsonMultiPolygon
      */
-    public func multiPolygon(polygons: [GeoJsonPolygon]) -> GeoJsonMultiPolygon? {
-        return MultiPolygon(polygons: polygons)
-    }
+    public func multiPolygon(polygons: [GeoJsonPolygon]) -> GeoJsonMultiPolygon? { MultiPolygon(polygons: polygons) }
     
     public struct MultiPolygon: GeoJsonMultiPolygon {
         public let type: GeoJsonObjectType = .multiPolygon
-        public var geoJsonCoordinates: [Any] { return polygons.map { $0.geoJsonCoordinates } }
         
         public let polygons: [GeoJsonPolygon]
-        
-        public var points: [GeodesicPoint] { return polygons.flatMap { $0.points } }
-        
-        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
-        
-        public var hasHole: Bool { return polygons.contains { $0.hasHole } }
-        
-        public var area: Double { return polygons.reduce(0) { $0 + $1.area } }
         
         internal init?(coordinatesJson: [Any]) {
             guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
@@ -48,17 +37,25 @@ extension GeoJson {
             
             self.polygons = polygons
         }
-        
-        public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return polygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()!
-        }
-        
-        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
-        
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
-        
-        public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] {
-            return polygons.map { $0.invalidReasons(tolerance: tolerance) }
-        }
     }
+}
+
+extension GeoJson.MultiPolygon {
+    public var geoJsonCoordinates: [Any] { polygons.map { $0.geoJsonCoordinates } }
+    
+    public var points: [GeodesicPoint] { polygons.flatMap { $0.points } }
+    
+    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(polygons.map { $0.boundingBox })! }
+    
+    public var hasHole: Bool { polygons.contains { $0.hasHole } }
+    
+    public var area: Double { polygons.reduce(0) { $0 + $1.area } }
+    
+    public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double { polygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()! }
+    
+    public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+    
+    public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] { polygons.map { $0.invalidReasons(tolerance: tolerance) } }
 }

@@ -20,12 +20,8 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: A geohash
      */
-    public func geohash(for point: GeodesicPoint, precision: Int) -> String {
-        return geohashBox(point: point, precision: precision).geohash
-    }
-    public func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
-        return geohashBox(point: point, precision: precision)
-    }
+    public func geohash(for point: GeodesicPoint, precision: Int) -> String { geohashBox(point: point, precision: precision).geohash }
+    public func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox { geohashBox(point: point, precision: precision) }
     
     /**
      Returns an array of geohashes associated to the boundingbox
@@ -35,12 +31,8 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: An array of geohashes
      */
-    public func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] {
-        return geohashBoxes(boundingBox: boundingBox, precision: precision).map { $0.geohash }
-    }
-    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
-        return geohashBoxes(boundingBox: boundingBox, precision: precision)
-    }
+    public func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] { geohashBoxes(boundingBox: boundingBox, precision: precision).map { $0.geohash } }
+    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] { geohashBoxes(boundingBox: boundingBox, precision: precision) }
     
     /**
      Returns a geohash with neighbors associated to the coordinate
@@ -50,16 +42,8 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: A geohash
      */
-    public func geohashNeighbors(for point: GeodesicPoint, precision: Int) -> [String] {
-        let geohash = geohashBox(point: point, precision: precision).geohash
-        
-        return neighbors(geohash: geohash)
-    }
-    public func geohashBoxNeighbors(for point: GeodesicPoint, precision: Int) -> [GeoJsonGeohashBox] {
-        let geohashBox = self.geohashBox(point: point, precision: precision)
-        
-        return neighbors(geohash: geohashBox.geohash).map { self.geohashBox(geohash: $0)! }
-    }
+    public func geohashNeighbors(for point: GeodesicPoint, precision: Int) -> [String] { neighbors(geohash: geohashBox(point: point, precision: precision).geohash) }
+    public func geohashBoxNeighbors(for point: GeodesicPoint, precision: Int) -> [GeoJsonGeohashBox] { neighbors(geohash: geohashBox(point: point, precision: precision).geohash).map { geohashBox(geohash: $0)! } }
     
     /**
      Returns a geohashBox associated to the geohash
@@ -68,9 +52,7 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: A geohashBox
      */
-    public func geohashBox(for geohash: String) -> GeoJsonGeohashBox? {
-        return geohashBox(geohash: geohash)
-    }
+    public func geohashBox(for geohash: String) -> GeoJsonGeohashBox? { geohashBox(geohash: geohash) }
     
     /**
      Returns a geohash with neighbors associated to the geohash
@@ -79,9 +61,7 @@ public struct GeohashCoder: GeohashCoderProtocol {
      
      - returns: A geohash
      */
-    public func neighbors(for geohash: String) -> [String] {
-        return neighbors(geohash: geohash)
-    }
+    public func neighbors(for geohash: String) -> [String] { neighbors(geohash: geohash) }
 }
 
 // MARK: Private

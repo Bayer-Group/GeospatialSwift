@@ -24,7 +24,5 @@ public struct GeoJson: GeoJsonProtocol {
      
      - returns: A successfully parsed GeoJsonObject or nil if the specification was not correct
      */
-    public func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject? {
-        return GeoJson.parser.geoJsonObject(from: geoJson)
-    }
+    public func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject? { GeoJson.parser.geoJsonObject(from: geoJson) }
 }

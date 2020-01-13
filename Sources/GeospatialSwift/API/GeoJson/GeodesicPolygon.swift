@@ -8,14 +8,12 @@ public protocol GeodesicPolygon {
 }
 
 public struct SimplePolygon: GeodesicPolygon {
-    public var points: [GeodesicPoint] { return linearRings.flatMap { $0.points } }
-    public var linearRings: [GeodesicLine] { return [mainRing] + negativeRings }
+    public var points: [GeodesicPoint] { linearRings.flatMap { $0.points } }
+    public var linearRings: [GeodesicLine] { [mainRing] + negativeRings }
     public let mainRing: GeodesicLine
     public let negativeRings: [GeodesicLine]
     
-    public var boundingBox: GeodesicBoundingBox {
-        return BoundingBox.best(linearRings.map { $0.boundingBox })!
-    }
+    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(linearRings.map { $0.boundingBox })! }
     
     public init?(mainRing: GeodesicLine, negativeRings: [GeodesicLine] = []) {
         for linearRingSegments in ([mainRing.segments] + negativeRings.map { $0.segments }) {

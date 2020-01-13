@@ -9,7 +9,7 @@ public enum GeoJsonObjectType: String, Codable {
     case feature = "Feature"
     case featureCollection = "FeatureCollection"
     
-    public var name: String { return rawValue }
+    public var name: String { rawValue }
     
     public init?(name: String) {
         self.init(rawValue: name)

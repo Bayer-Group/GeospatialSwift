@@ -14,15 +14,15 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
 }
 
 public extension GeoJsonCoordinatesGeometry {
-    var objectGeometries: [GeoJsonGeometry]? { return geometries }
+    var objectGeometries: [GeoJsonGeometry]? { geometries }
     
-    var objectBoundingBox: GeodesicBoundingBox? { return boundingBox }
+    var objectBoundingBox: GeodesicBoundingBox? { boundingBox }
     
-    var geoJson: GeoJsonDictionary { return ["type": type.name, "coordinates": geoJsonCoordinates] }
+    var geoJson: GeoJsonDictionary { ["type": type.name, "coordinates": geoJsonCoordinates] }
     
-    var geometries: [GeoJsonGeometry] { return [self] }
+    var geometries: [GeoJsonGeometry] { [self] }
     
-    func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return distance(to: point, tolerance: tolerance) }
+    func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { distance(to: point, tolerance: tolerance) }
     
-    func distance(to point: GeodesicPoint) -> Double { return distance(to: point, tolerance: 0) }
+    func distance(to point: GeodesicPoint) -> Double { distance(to: point, tolerance: 0) }
 }

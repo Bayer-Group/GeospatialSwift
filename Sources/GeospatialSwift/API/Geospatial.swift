@@ -55,7 +55,5 @@ open class Geospatial: GeospatialProtocol {
      
      Experimental, untested, not fully written, and no plans to fully support in the future.
      */
-    public func parse(wkt: String) -> GeoJsonObject? {
-        return wktParser.geoJsonObject(from: wkt)
-    }
+    public func parse(wkt: String) -> GeoJsonObject? { wktParser.geoJsonObject(from: wkt) }
 }

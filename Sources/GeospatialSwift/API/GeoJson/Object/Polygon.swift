@@ -19,31 +19,12 @@ extension GeoJson {
     /**
      Creates a GeoJsonPolygon
      */
-    public func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? {
-        return Polygon(linearRings: linearRings)
-    }
+    public func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? { Polygon(linearRings: linearRings) }
     
     public struct Polygon: GeoJsonPolygon {
         public let type: GeoJsonObjectType = .polygon
-        public var geoJsonCoordinates: [Any] { return geoJsonLinearRings.map { $0.geoJsonCoordinates } }
         
         public let geoJsonLinearRings: [GeoJsonLineString]
-        public var geoJsonMainRing: GeoJsonLineString { geoJsonLinearRings.first! }
-        public var geoJsonNegativeRings: [GeoJsonLineString] { geoJsonLinearRings.tail ?? [] }
-        
-        public var linearRings: [GeodesicLine] { return geoJsonLinearRings }
-        public var mainRing: GeodesicLine { return geoJsonMainRing }
-        public var negativeRings: [GeodesicLine] { return geoJsonNegativeRings }
-        
-        public var points: [GeodesicPoint] { return linearRings.flatMap { $0.points } }
-        
-        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(geoJsonLinearRings.map { $0.boundingBox })! }
-        
-        public var centroid: GeodesicPoint { return Calculator.centroid(polygon: self) }
-        
-        public var hasHole: Bool { return negativeRings.count > 0 }
-        
-        public var area: Double { return Calculator.area(of: self) }
         
         internal init?(coordinatesJson: [Any]) {
             guard let linearRingsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid Polygon must have valid coordinates"); return nil }
@@ -71,50 +52,69 @@ extension GeoJson {
             
             geoJsonLinearRings = linearRings
         }
+    }
+}
+
+extension GeoJson.Polygon {
+    public var geoJsonCoordinates: [Any] { geoJsonLinearRings.map { $0.geoJsonCoordinates } }
+    
+    public var geoJsonMainRing: GeoJsonLineString { geoJsonLinearRings.first! }
+    public var geoJsonNegativeRings: [GeoJsonLineString] { geoJsonLinearRings.tail ?? [] }
+    
+    public var linearRings: [GeodesicLine] { geoJsonLinearRings }
+    public var mainRing: GeodesicLine { geoJsonMainRing }
+    public var negativeRings: [GeodesicLine] { geoJsonNegativeRings }
+    
+    public var points: [GeodesicPoint] { linearRings.flatMap { $0.points } }
+    
+    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(geoJsonLinearRings.map { $0.boundingBox })! }
+    
+    public var centroid: GeodesicPoint { Calculator.centroid(polygon: self) }
+    
+    public var polygons: [GeoJsonPolygon] { [self] }
+    
+    public var hasHole: Bool { negativeRings.count > 0 }
+    
+    public var area: Double { Calculator.area(of: self) }
+    
+    public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.edgeDistance(from: point, to: self, tolerance: tolerance) }
+    
+    public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: point, to: self, tolerance: tolerance) }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
+        // Must at least be within the bounding box.
+        guard geoJsonMainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return false }
         
-        public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return Calculator.edgeDistance(from: point, to: self, tolerance: tolerance)
-        }
+        return Calculator.contains(point, in: self, tolerance: tolerance)
+    }
+    
+    // SOMEDAY: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
+    
+    // Checking winding order is valid
+    // Triangle that reprojection to tile coordinates will cause winding order reversed
+    // Polygon that will be reprojected into tile coordinates as a line
+    // Polygon with "spike"
+    // Polygon with hole that has a "spike"
+    // Polygon where area threshold removes geometry AFTER clipping
+    // Polygon with reversed winding order
+    // Polygon with hole where hole has invalid winding order
+    public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
+        let ringInvalidReasons = geoJsonLinearRings.compactMap { $0.invalidReasons(tolerance: tolerance) }
         
-        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return Calculator.distance(from: point, to: self, tolerance: tolerance)
-        }
+        guard ringInvalidReasons.isEmpty else { return [.ringInvalidReasons(ringInvalidReasons)] }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
-            // Must at least be within the bounding box.
-            guard geoJsonMainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return false }
-            
-            return Calculator.contains(point, in: self, tolerance: tolerance)
-        }
+        let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
         
-        // SOMEDAY: See this helpful link for validations: https://github.com/mapbox/mapnik-vector-tile/issues/153
+        guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
         
-        // Checking winding order is valid
-        // Triangle that reprojection to tile coordinates will cause winding order reversed
-        // Polygon that will be reprojected into tile coordinates as a line
-        // Polygon with "spike"
-        // Polygon with hole that has a "spike"
-        // Polygon where area threshold removes geometry AFTER clipping
-        // Polygon with reversed winding order
-        // Polygon with hole where hole has invalid winding order
-        public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
-            let ringInvalidReasons = geoJsonLinearRings.compactMap { $0.invalidReasons(tolerance: tolerance) }
-            
-            guard ringInvalidReasons.isEmpty else { return [.ringInvalidReasons(ringInvalidReasons)] }
-            
-            let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
-            
-            guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
-            
-            let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
-            
-            guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
-            
-            let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: mainRing, tolerance: tolerance) } }.map { $0.offset }
-            
-            guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
-            
-            return []
-        }
+        let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
+        
+        guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
+        
+        let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: mainRing, tolerance: tolerance) } }.map { $0.offset }
+        
+        guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
+        
+        return []
     }
 }

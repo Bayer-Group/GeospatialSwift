@@ -11,26 +11,13 @@ extension GeoJson {
     /**
      Creates a GeoJsonFeature
      */
-    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature? {
-        return Feature(geometry: geometry, id: id, properties: properties)
-    }
+    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature? { Feature(geometry: geometry, id: id, properties: properties) }
     
     public struct Feature: GeoJsonFeature {
         public let type: GeoJsonObjectType = .feature
-        public var geoJson: GeoJsonDictionary {
-            var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
-            if let id = id { geoJson["id"] = id }
-            return geoJson
-        }
-        
-        public var id: Any? { return idString ?? idDouble ?? idInt }
-        public var idAsString: String? { return idString ?? idDouble?.description ?? idInt?.description }
         
         public let geometry: GeoJsonGeometry?
         public let properties: GeoJsonDictionary?
-        
-        public var objectGeometries: [GeoJsonGeometry]? { return geometry.flatMap { [$0] } }
-        public var objectBoundingBox: GeodesicBoundingBox? { geometry?.objectBoundingBox }
         
         internal let idString: String?
         internal let idDouble: Double?
@@ -59,9 +46,23 @@ extension GeoJson {
             self.idInt = id as? Int
             self.properties = properties
         }
-        
-        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return geometry?.objectDistance(to: point, tolerance: tolerance) }
-        
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geometry?.contains(point, tolerance: tolerance) ?? false }
     }
+}
+
+extension GeoJson.Feature {
+    public var geoJson: GeoJsonDictionary {
+        var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
+        if let id = id { geoJson["id"] = id }
+        return geoJson
+    }
+    
+    public var id: Any? { idString ?? idDouble ?? idInt }
+    public var idAsString: String? { idString ?? idDouble?.description ?? idInt?.description }
+    
+    public var objectGeometries: [GeoJsonGeometry]? { geometry.flatMap { [$0] } }
+    public var objectBoundingBox: GeodesicBoundingBox? { geometry?.objectBoundingBox }
+    
+    public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { geometry?.objectDistance(to: point, tolerance: tolerance) }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geometry?.contains(point, tolerance: tolerance) ?? false }
 }
