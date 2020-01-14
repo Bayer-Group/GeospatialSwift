@@ -374,7 +374,7 @@ extension GeodesicCalculator {
                 guard currentLineIndex < nextLineIndex else { return false }
                 
                 // If next line continues from previous ensure no overlapping
-                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
+                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
                 
                 return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
             }
@@ -400,7 +400,7 @@ extension GeodesicCalculator {
                 guard currentLineIndex < nextLineIndex else { return false }
                 
                 // If next line continues from previous ensure no overlapping
-                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
+                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
                 
                 return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
             }
