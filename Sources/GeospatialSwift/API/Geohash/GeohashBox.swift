@@ -1,6 +1,6 @@
 public protocol GeoJsonGeohashBox {
     var geohash: String { get }
-    var boundingBox: BoundingBox { get }
+    var boundingBox: GeodesicBoundingBox { get }
 }
 
 public enum GeohashCompassPoint {
@@ -9,7 +9,7 @@ public enum GeohashCompassPoint {
 
 internal struct GeohashBox: GeoJsonGeohashBox {
     public let geohash: String
-    public let boundingBox: BoundingBox
+    public let boundingBox: GeodesicBoundingBox
     
     init(boundingCoordinates: BoundingCoordinates, geohash: String) {
         self.geohash = geohash
