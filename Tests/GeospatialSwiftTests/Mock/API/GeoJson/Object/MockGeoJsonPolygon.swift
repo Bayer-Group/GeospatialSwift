@@ -14,10 +14,6 @@ final class MockGeoJsonPolygon: MockGeoJsonClosedGeometry, GeoJsonPolygon {
         geoJsonObjectTypeResult = .polygon
     }
     
-    func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
-        return []
-    }
-    
     private(set) var linearRingsCallCount: Int = 0
     var linearRingsResult: [GeodesicLine] { geoJsonLinearRings }
     var linearRings: [GeodesicLine] {

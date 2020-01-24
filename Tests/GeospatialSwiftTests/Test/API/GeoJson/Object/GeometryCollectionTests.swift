@@ -109,7 +109,7 @@ class GeometryCollectionTests: XCTestCase {
     
     // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals_DifferentGeometries() {
-        let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
+        let polygon = GeoTestHelper.polygon(GeoTestHelper.lineString([point, point, point, point]))
         
         XCTAssertNotEqual(geometryCollection, GeoTestHelper.geometryCollection([GeoTestHelper.multiPolygon([polygon, polygon])]))
     }

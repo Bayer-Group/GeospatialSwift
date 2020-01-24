@@ -1,4 +1,4 @@
-import Foundation
+import class Foundation.NSNumber
 
 public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
     var normalize: GeodesicPoint { get }
@@ -25,8 +25,15 @@ extension GeoJson {
         // SOMEDAY: Maybe a new type for altitude, Point3D?
         public var altitude: Double?
         
-        internal init?(coordinatesJson: [Any]) {
-            guard let pointJson = (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }), pointJson.count >= 2 else { Log.warning("A valid Point must have at least a longitude and latitude"); return nil }
+        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
+            guard (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }).count ?? 0 >= 2 else { return ["A valid Point must have at least a longitude and latitude"] }
+            
+            return nil
+        }
+        
+        internal init(coordinatesJson: [Any]) {
+            // swiftlint:disable:next force_cast
+            let pointJson = (coordinatesJson as! [NSNumber]).map { $0.doubleValue }
             
             self.init(longitude: pointJson[0], latitude: pointJson[1], altitude: pointJson.count >= 3 ? pointJson[2] : nil)
         }

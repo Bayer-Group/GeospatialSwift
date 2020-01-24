@@ -1,7 +1,5 @@
 public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
     var polygons: [GeoJsonPolygon] { get }
-    
-    func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]]
 }
 
 extension GeoJson {
@@ -15,19 +13,19 @@ extension GeoJson {
         
         public let polygons: [GeoJsonPolygon]
         
-        internal init?(coordinatesJson: [Any]) {
-            guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
+        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
+            guard let multiPolygonCoordinatesJson = coordinatesJson as? [[Any]] else { return ["A valid MultiPolygon must have valid coordinates"] }
             
-            var polygons = [GeoJsonPolygon]()
-            for polygonJson in multiPolygonJson {
-                if let polygon = Polygon(coordinatesJson: polygonJson) {
-                    polygons.append(polygon)
-                } else {
-                    Log.warning("Invalid Polygon in MultiPolygon"); return nil
-                }
-            }
+            guard multiPolygonCoordinatesJson.count >= 1 else { return ["A valid FeatureCollection must have at least one feature"] }
             
-            self.init(polygons: polygons)
+            return multiPolygonCoordinatesJson.compactMap { Polygon.invalidReasons(coordinatesJson: $0) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Polygon in MultiPolygon"] + $0 }
+        }
+        
+        internal init(coordinatesJson: [Any]) {
+            // swiftlint:disable:next force_cast
+            let multiPolygonJson = coordinatesJson as! [[Any]]
+            
+            polygons = multiPolygonJson.map { Polygon(coordinatesJson: $0) }
         }
         
         // SOMEDAY: More strict additions:
@@ -56,6 +54,4 @@ extension GeoJson.MultiPolygon {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
-    
-    public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] { polygons.map { $0.invalidReasons(tolerance: tolerance) } }
 }

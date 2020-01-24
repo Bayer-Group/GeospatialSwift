@@ -13,24 +13,23 @@ extension GeoJson {
         
         public let features: [GeoJsonFeature]
         
-        internal init?(geoJsonDictionary: GeoJsonDictionary) {
-            guard let featuresJson = geoJsonDictionary["features"] as? [GeoJsonDictionary] else { Log.warning("A valid FeatureCollection must have a \"features\" key: String : \(geoJsonDictionary)"); return nil }
+        internal static func invalidReasons(geoJson: GeoJsonDictionary) -> [String]? {
+            guard let featuresJson = geoJson["features"] as? [GeoJsonDictionary] else { return ["A valid FeatureCollection must have a \"features\" key"] }
             
-            var features = [GeoJsonFeature]()
-            for featureJson in featuresJson {
-                if let feature = Feature(geoJsonDictionary: featureJson) {
-                    features.append(feature)
-                } else {
-                    Log.warning("Invalid Feature in FeatureCollection")
-                    return nil
-                }
-            }
+            guard featuresJson.count >= 1 else { return ["A valid FeatureCollection must have at least one feature"] }
             
-            self.init(features: features)
+            return featuresJson.compactMap { parser.invalidReasons(fromGeoJson: $0, type: .feature) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Feature in FeatureCollection"] + $0 }
+        }
+        
+        internal init(geoJson: GeoJsonDictionary) {
+            // swiftlint:disable:next force_cast
+            let featuresJson = geoJson["features"] as! [GeoJsonDictionary]
+            
+            features = featuresJson.map { Feature(geoJson: $0) }
         }
         
         fileprivate init?(features: [GeoJsonFeature]) {
-            guard features.count >= 1 else { Log.warning("A valid FeatureCollection must have at least one feature."); return nil }
+            guard features.count >= 1 else { Log.warning("A valid FeatureCollection must have at least one feature"); return nil }
             
             self.features = features
         }

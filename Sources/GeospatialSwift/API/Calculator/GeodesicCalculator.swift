@@ -262,6 +262,14 @@ extension GeodesicCalculator {
         return angularDistance * earthRadius
     }
     
+    // SOMEDAY: It was suggested this could be almost twice as fast - Run tests! Protect asin from NaN
+//    func haversineOptimized(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+//        let p = 0.017453292519943295    // Math.PI / 180
+//        let a = 0.5 - (cos((otherPoint.latitude - point.latitude) * p) / 2) + (cos(point.latitude * p) * cos(otherPoint.latitude * p) * (1 - cos((otherPoint.longitude - point.longitude) * p)) / 2)
+//
+//        return 12742 * asin(sqrt(a)) // 2 * R; R = 6371 km
+//    }
+    
     // SOMEDAY: It would be nice to understand this better as there seems to be too much to calling this twice but twice produces the correct result.
     private func distancePartialResult(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: midpoint(from: lineSegment.point, to: lineSegment.otherPoint).latitude)

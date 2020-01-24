@@ -128,7 +128,7 @@ class MultiPolygonTests: XCTestCase {
     
     // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
-        let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
+        let polygon = GeoTestHelper.polygon(GeoTestHelper.lineString([point, point, point, point]))
         
         XCTAssertNotEqual(multiPolygon, GeoTestHelper.multiPolygon([polygon, polygon]))
     }

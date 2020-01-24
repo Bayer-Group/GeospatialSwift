@@ -1,12 +1,20 @@
 @testable import GeospatialSwift
 
 final class MockGeoJson: GeoJsonProtocol {
-    private(set) var parseCallCount = 0
-    var parseResult: GeoJsonObject = MockGeoJsonPoint()
+    private(set) var parseGeoJsonCallCount = 0
+    var parseGeoJsonResult: GeoJsonObject = MockGeoJsonPoint()
     func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject? {
-        parseCallCount += 1
+        parseGeoJsonCallCount += 1
         
-        return parseResult
+        return parseGeoJsonResult
+    }
+    
+    private(set) var parseValidatedGeoJsonCallCount = 0
+    var parseValidatedGeoJsonResult: GeoJsonObject = MockGeoJsonPoint()
+    func parse(validatedGeoJson: GeoJsonDictionary) -> GeoJsonObject {
+        parseValidatedGeoJsonCallCount += 1
+        
+        return parseValidatedGeoJsonResult
     }
     
     private(set) var featureCollectionCallCount = 0
@@ -43,7 +51,7 @@ final class MockGeoJson: GeoJsonProtocol {
     
     private(set) var polygonCallCount = 0
     var polygonResult: GeoJsonPolygon = MockGeoJsonPolygon()
-    func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? {
+    func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> GeoJsonPolygon? {
         polygonCallCount += 1
         
         return polygonResult

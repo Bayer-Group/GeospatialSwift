@@ -1,8 +1,6 @@
 @testable import GeospatialSwift
 
 final class MockGeoJsonGeohashBox: MockGeoJsonBoundingBox, GeoJsonGeohashBox {
-    var boundingBox: BoundingBox
-    
     private(set) var geohashCallCount = 0
     var geohashResult: String = ""
     var geohash: String {
@@ -11,11 +9,11 @@ final class MockGeoJsonGeohashBox: MockGeoJsonBoundingBox, GeoJsonGeohashBox {
         return geohashResult
     }
     
-    private(set) var geohashNeighborCallCount = 0
-    lazy var geohashNeighborResult: GeoJsonGeohashBox = MockGeoJsonGeohashBox()
-    func geohashNeighbor(direction: GeohashCompassPoint, precision: Int) -> GeoJsonGeohashBox {
-        geohashNeighborCallCount += 1
+    private(set) var boundingBoxCallCount = 0
+    var boundingBoxResult: GeodesicBoundingBox = MockGeoJsonBoundingBox()
+    var boundingBox: GeodesicBoundingBox {
+        boundingBoxCallCount += 1
         
-        return geohashNeighborResult
+        return boundingBoxResult
     }
 }

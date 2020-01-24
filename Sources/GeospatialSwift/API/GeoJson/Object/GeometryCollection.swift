@@ -1,3 +1,5 @@
+import class Foundation.NSNull
+
 public protocol GeoJsonGeometryCollection: GeoJsonGeometry { }
 
 extension GeoJson {
@@ -11,17 +13,26 @@ extension GeoJson {
         
         public let objectGeometries: [GeoJsonGeometry]?
         
-        internal init?(geoJsonDictionary: GeoJsonDictionary) {
-            guard let geometriesJson = geoJsonDictionary["geometries"] as? [GeoJsonDictionary] else { Log.warning("A valid GeometryCollection must have a \"geometries\" key: String : \(geoJsonDictionary)"); return nil }
+        internal static func invalidReasons(geoJson: GeoJsonDictionary) -> [String]? {
+            guard let geometriesJson = geoJson["geometries"] as? [GeoJsonDictionary] else { return ["A valid GeometryCollection must have a \"geometries\" key"] }
             
-            var geometries = [GeoJsonGeometry]()
-            for geometryJson in geometriesJson {
-                guard let geometry = parser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Invalid Geometry for GeometryCollection"); return nil }
+            let geometriesInvalidReasons: [[String]] = geometriesJson.compactMap { geometryJson in
+                guard let type = parser.geoJsonObjectType(geoJson: geometryJson) else { return ["Not a valid feature geometry"] }
                 
-                geometries.append(geometry)
+                guard type.isGeometry else { return ["Not a valid feature geometry: \(type.name)"] }
+                
+                return parser.invalidReasons(fromGeoJson: geometryJson, type: type)
             }
             
-            self.init(geometries: geometries)
+            return geometriesInvalidReasons.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Geometry in GeometryCollection"] + $0 }
+        }
+        
+        internal init(geoJson: GeoJsonDictionary) {
+            // swiftlint:disable:next force_cast
+            let geometriesJson = geoJson["geometries"] as! [GeoJsonDictionary]
+            
+            // swiftlint:disable:next force_cast
+            self.objectGeometries = geometriesJson.map { parser.geoJsonObject(fromValidatedGeoJson: $0) as! GeoJsonGeometry }
         }
         
         fileprivate init(geometries: [GeoJsonGeometry]?) {

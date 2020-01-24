@@ -76,7 +76,7 @@ internal struct WktParser: WktParserProtocol {
             return geoJson.lineString(points: try wktPoints.map { try parsePointString($0) })!
         }
         
-        return geoJson.polygon(linearRings: linearRings)!
+        return geoJson.polygon(mainRing: linearRings.first!, negativeRings: Array(linearRings.dropFirst()))!
     }
 }
 

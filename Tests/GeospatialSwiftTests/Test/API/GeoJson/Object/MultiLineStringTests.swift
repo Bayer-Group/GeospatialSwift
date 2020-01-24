@@ -50,34 +50,34 @@ class MultiLineStringTests: XCTestCase {
     func testContains() {
         let point = multiLineString.points.first!
         
-        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.contains { $0 })
     }
     
     func testContains_DoesNot() {
         let point = distancePoint!
         
-        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.contains { $0 })
     }
     
     func testContains_WithTolerance() {
         let point = multiLineString.points.first!
         let tolerance = 0.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     func testContains_WithTolerance_Does_WithError() {
         let point = distancePoint!
         let tolerance = 200000000.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     func testContains_WithTolerance_DoesNot() {
         let point = distancePoint!
         let tolerance = 0.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     // GeoJsonCoordinatesGeometry Tests

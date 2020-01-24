@@ -1,6 +1,14 @@
 @testable import GeospatialSwift
 
 class MockGeoJsonClosedGeometry: MockGeoJsonCoordinatesGeometry, GeoJsonClosedGeometry {
+    private(set) var polygonsCallCount = 0
+    var polygonsResult: [GeoJsonPolygon] = []
+    var polygons: [GeoJsonPolygon] {
+        polygonsCallCount += 1
+        
+        return polygonsResult
+    }
+    
     private(set) var edgeDistanceCallCount = 0
     var edgeDistanceResult: Double = 0
     func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {

@@ -101,6 +101,7 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     
     private(set) var containsCallCount = 0
     var containsResult: Bool = false
+    func contains(point: GeodesicPoint) -> Bool { contains(point: point, tolerance: 0) }
     func contains(point: GeodesicPoint, tolerance: Double) -> Bool {
         containsCallCount += 1
         
@@ -109,6 +110,7 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     
     private(set) var overlapsCallCount = 0
     var overlapsResult: Bool = false
+    func overlaps(boundingBox: GeodesicBoundingBox) -> Bool { overlaps(boundingBox: boundingBox, tolerance: 0) }
     func overlaps(boundingBox: GeodesicBoundingBox, tolerance: Double) -> Bool {
         overlapsCallCount += 1
         

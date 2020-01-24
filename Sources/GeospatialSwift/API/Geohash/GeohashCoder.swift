@@ -1,18 +1,28 @@
 public protocol GeohashCoderProtocol {
-    func geohash(for point: GeodesicPoint, precision: Int) -> String
-    func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox
+    func validate(geohash: String) -> Bool
     
+    func geohash(for point: GeodesicPoint, precision: Int) -> String
     func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String]
+    
+    func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox
+    func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox
     func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox]
     
+    func geohashNeighbor(forGeohash geohash: String, direction: GeohashCompassPoint) -> String
     func geohashNeighbors(forGeohash geohash: String) -> [String]
-    func geohashNeighbors(for point: GeodesicPoint, precision: Int) -> [String]
-    func geohashBoxNeighbors(for point: GeodesicPoint, precision: Int) -> [GeoJsonGeohashBox]
-    
-    func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox?
+    func geohashWithNeighbors(forGeohash geohash: String) -> [String]
 }
 
 public struct GeohashCoder: GeohashCoderProtocol {
+    /**
+     Validate a geohash created outside the framework before passing to another GeohashCoder function to avoid crashing
+     
+     - geohash: The string to validate
+     
+     - returns: true if valid
+     */
+    public func validate(geohash: String) -> Bool { geohash.count > 0 && geohash.count <= 22 && !geohash.contains { !decimalToBase32Characters.contains($0) } }
+    
     /**
      Returns a geohash associated to the coordinate
      
@@ -22,7 +32,6 @@ public struct GeohashCoder: GeohashCoderProtocol {
      - returns: A geohash
      */
     public func geohash(for point: GeodesicPoint, precision: Int) -> String { geohashBox(point: point, precision: precision).geohash }
-    public func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox { geohashBox(point: point, precision: precision) }
     
     /**
      Returns an array of geohashes associated to the boundingbox
@@ -33,36 +42,67 @@ public struct GeohashCoder: GeohashCoderProtocol {
      - returns: An array of geohashes
      */
     public func geohashes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [String] { geohashBoxes(boundingBox: boundingBox, precision: precision).map { $0.geohash } }
-    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] { geohashBoxes(boundingBox: boundingBox, precision: precision) }
-    
-    /**
-     Returns a geohash with neighbors associated to the geohash
-     
-     - geohash: The geohash used to create neighbors
-     
-     - returns: A geohash
-     */
-    public func geohashNeighbors(forGeohash geohash: String) -> [String] { neighbors(geohash: geohash) }
-    
-    /**
-     Returns a geohash with neighbors associated to the coordinate
-     
-     - point: The point used to create geohash
-     - precision: How precise of a geohash to use
-     
-     - returns: A geohash
-     */
-    public func geohashNeighbors(for point: GeodesicPoint, precision: Int) -> [String] { neighbors(geohash: geohashBox(point: point, precision: precision).geohash) }
-    public func geohashBoxNeighbors(for point: GeodesicPoint, precision: Int) -> [GeoJsonGeohashBox] { neighbors(geohash: geohashBox(point: point, precision: precision).geohash).map { geohashBox(geohash: $0)! } }
     
     /**
      Returns a geohashBox associated to the geohash
+     Assumes valid geohash for performance!
      
      - geohash: The geohash used to create geohashBox
      
      - returns: A geohashBox
      */
-    public func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox? { geohashBox(geohash: geohash) }
+    public func geohashBox(forGeohash geohash: String) -> GeoJsonGeohashBox { geohashBox(geohash: geohash) }
+    
+    /**
+     Returns a geohash box associated to the coordinate
+     
+     - point: The point used to create geohash
+     - precision: How precise of a geohash to use
+     
+     - returns: A geohash box
+     */
+    public func geohashBox(for point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox { geohashBox(point: point, precision: precision) }
+    
+    /**
+     Returns an array of geohash boxes associated to the boundingbox
+     
+     - boundingBox: The boundingBox used to create geohashes
+     - precision: How precise of a geohash to use
+     
+     - returns: An array of geohash boxes
+     */
+    public func geohashBoxes(for boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] { geohashBoxes(boundingBox: boundingBox, precision: precision) }
+    
+    /**
+     Returns a geohash with neighbors associated to the geohash
+     Assumes valid geohash for performance!
+     
+     - geohash: The geohash used to create the neighbor
+     - direction: The compass direction of the neighbor
+     
+     - returns: A geohash
+     */
+    public func geohashNeighbor(forGeohash geohash: String, direction: GeohashCompassPoint) -> String { adjacent(geohash: geohash, direction: direction) }
+    
+    /**
+     Returns the geohash neighbors associated to the geohash excluding the geohash
+     Assumes valid geohash for performance!
+     
+     - geohash: The geohash used to compute neighbors
+     
+     - returns: Neighbor geohashes
+     */
+    public func geohashNeighbors(forGeohash geohash: String) -> [String] { neighbors(geohash: geohash) }
+    
+    /**
+     Returns the geohash neighbors associated to the geohash including the geohash
+     Assumes valid geohash for performance!
+     
+     - geohash: The geohash used to compute neighbors
+     
+     - returns: The geohash with neighbor geohashes
+     */
+    public func geohashWithNeighbors(forGeohash geohash: String) -> [String] { [geohash] + neighbors(geohash: geohash) }
 }
 
 // MARK: Private
@@ -82,6 +122,8 @@ private let borderCodeSet4 = "0145hjnp".reduce(into: Set<Character>()) { $0.inse
 
 extension GeohashCoder {
     private func geohashBox(point: GeodesicPoint, precision: Int) -> GeoJsonGeohashBox {
+        let point = Calculator.normalize(point)
+        
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var even = true
@@ -89,8 +131,6 @@ extension GeohashCoder {
         var bit = base32BitflowInit
         
         var geohash = ""
-        
-        let point = Calculator.normalize(point)
         
         repeat {
             if even {
@@ -135,27 +175,27 @@ extension GeohashCoder {
         repeat {
             geohashBoxes.append(longitudeGeohashBox)
             
-            var latitudeGeohashBox = geohashBox(geohash: adjacent(geohash: longitudeGeohashBox.geohash, direction: .north))!
+            var latitudeGeohashBox = geohashBox(geohash: adjacent(geohash: longitudeGeohashBox.geohash, direction: .north))
             
             while latitudeGeohashBox.boundingBox.overlaps(boundingBox: boundingBox) {
                 geohashBoxes.append(latitudeGeohashBox)
                 
-                latitudeGeohashBox = geohashBox(geohash: adjacent(geohash: latitudeGeohashBox.geohash, direction: .north))!
+                latitudeGeohashBox = geohashBox(geohash: adjacent(geohash: latitudeGeohashBox.geohash, direction: .north))
             }
             
-            longitudeGeohashBox = geohashBox(geohash: adjacent(geohash: longitudeGeohashBox.geohash, direction: .east))!
+            longitudeGeohashBox = geohashBox(geohash: adjacent(geohash: longitudeGeohashBox.geohash, direction: .east))
         } while longitudeGeohashBox.boundingBox.overlaps(boundingBox: boundingBox)
         
         return geohashBoxes
     }
     
-    private func geohashBox(geohash: String) -> GeoJsonGeohashBox? {
+    private func geohashBox(geohash: String) -> GeoJsonGeohashBox {
         var range = (longitude: (min: -180.0, max: 180.0), latitude: (min: -90.0, max: 90.0))
         
         var even = true
         
         for character in geohash {
-            guard let bitmap = decimalToBase32Characters.firstIndex(of: character) else { Log.warning("Invalid geohash: \(geohash)"); return nil }
+            let bitmap = decimalToBase32Characters.firstIndex(of: character)!
             
             var mask = Int(base32BitflowInit)
             

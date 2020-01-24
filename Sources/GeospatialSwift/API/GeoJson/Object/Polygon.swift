@@ -1,48 +1,38 @@
-public enum PolygonInvalidReason {
-    case duplicates(indices: [Int])
-    case selfIntersects(ringIndices: [[[Int]]])
-    case holeOutside(ringIndices: [Int])
-    case ringInvalidReasons(_: [[LineStringInvalidReason]])
-}
-
 public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon {
     var geoJsonLinearRings: [GeoJsonLineString] { get }
     var geoJsonMainRing: GeoJsonLineString { get }
     var geoJsonNegativeRings: [GeoJsonLineString] { get }
     var centroid: GeodesicPoint { get }
-    
-    func invalidReasons(tolerance: Double) -> [PolygonInvalidReason]
 }
 
-// SOMEDAY: Create Polygon by mainRing and negativeRings instead of [LinearRings] which does not imply a main ring needs to exist to be valid.
 extension GeoJson {
     /**
      Creates a GeoJsonPolygon
      */
-    public func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon? { Polygon(linearRings: linearRings) }
+    public func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> GeoJsonPolygon? { Polygon(mainRing: mainRing, negativeRings: negativeRings) }
     
     public struct Polygon: GeoJsonPolygon {
         public let type: GeoJsonObjectType = .polygon
         
         public let geoJsonLinearRings: [GeoJsonLineString]
         
-        internal init?(coordinatesJson: [Any]) {
-            guard let linearRingsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid Polygon must have valid coordinates"); return nil }
+        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
+            guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return ["A valid Polygon must have valid coordinates"] }
             
-            var linearRings = [GeoJsonLineString]()
-            for linearRingJson in linearRingsJson {
-                if let linearRing = LineString(coordinatesJson: linearRingJson) {
-                    linearRings.append(linearRing)
-                } else {
-                    Log.warning("Invalid linear ring (LineString) in Polygon"); return nil
-                }
-            }
+            guard linearRingsCoordinatesJson.count >= 1 else { return ["A valid Polygon must have at least one LinearRing"] }
             
-            self.init(linearRings: linearRings)
+            return linearRingsCoordinatesJson.compactMap { LinearRing.invalidReasons(coordinatesJson: $0) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid LinearRing in Polygon"] + $0 }
         }
         
-        fileprivate init?(linearRings: [GeoJsonLineString]) {
-            guard linearRings.count >= 1 else { Log.warning("A valid Polygon must have at least one LinearRing"); return nil }
+        internal init(coordinatesJson: [Any]) {
+            // swiftlint:disable:next force_cast
+            let linearRingsJson = coordinatesJson as! [[Any]]
+            
+            geoJsonLinearRings = linearRingsJson.map { LineString(coordinatesJson: $0) }
+        }
+        
+        fileprivate init?(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) {
+            let linearRings = [mainRing] + negativeRings
             
             for linearRing in linearRings {
                 guard linearRing.points.first! == linearRing.points.last! else { Log.warning("A valid Polygon LinearRing must have the first and last points equal"); return nil }
@@ -98,23 +88,4 @@ extension GeoJson.Polygon {
     // Polygon where area threshold removes geometry AFTER clipping
     // Polygon with reversed winding order
     // Polygon with hole where hole has invalid winding order
-    public func invalidReasons(tolerance: Double) -> [PolygonInvalidReason] {
-        let ringInvalidReasons = geoJsonLinearRings.compactMap { $0.invalidReasons(tolerance: tolerance) }
-        
-        guard ringInvalidReasons.isEmpty else { return [.ringInvalidReasons(ringInvalidReasons)] }
-        
-        let duplicateIndices = Calculator.equalsIndices(points, tolerance: tolerance)
-        
-        guard duplicateIndices.isEmpty else { return [.duplicates(indices: duplicateIndices)] }
-        
-        let selfIntersectsIndices = Calculator.intersectionIndices(from: self, tolerance: tolerance)
-        
-        guard selfIntersectsIndices.isEmpty else { return [.selfIntersects(ringIndices: selfIntersectsIndices)] }
-        
-        let holeOutsideIndices = negativeRings.enumerated().filter { _, negativeRing in negativeRing.points.contains { !Calculator.contains($0, in: mainRing, tolerance: tolerance) } }.map { $0.offset }
-        
-        guard holeOutsideIndices.isEmpty else { return [.holeOutside(ringIndices: holeOutsideIndices)] }
-        
-        return []
-    }
 }
