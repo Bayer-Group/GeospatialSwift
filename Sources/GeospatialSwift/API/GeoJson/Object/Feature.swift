@@ -53,7 +53,7 @@ extension GeoJson.Feature {
     public var id: Any? { idString ?? idDouble ?? idInt }
     public var idAsString: String? { idString ?? idDouble?.description ?? idInt?.description }
     
-    public var objectGeometries: [GeoJsonGeometry]? { geometry.flatMap { [$0] } }
+    public var objectGeometries: [GeoJsonGeometry] { geometry.flatMap { [$0] } ?? [] }
     public var objectBoundingBox: GeodesicBoundingBox? { geometry?.objectBoundingBox }
     
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { geometry?.objectDistance(to: point, tolerance: tolerance) }

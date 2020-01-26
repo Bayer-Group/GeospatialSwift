@@ -19,7 +19,7 @@ class GeoTestHelper {
     
     static func multiPolygon(_ polygons: [GeoJson.Polygon]) -> MultiPolygon { geoJsonHandler.multiPolygon(polygons: polygons).success! }
     
-    static func geometryCollection(_ geometries: [GeoJsonGeometry]? = nil) -> GeometryCollection { geoJsonHandler.geometryCollection(geometries: geometries) }
+    static func geometryCollection(_ geometries: [GeoJsonGeometry]) -> GeometryCollection { geoJsonHandler.geometryCollection(geometries: geometries) }
     
     static func feature(_ geometry: GeoJsonGeometry?, _ id: Any? = nil, _ properties: GeoJsonDictionary? = nil) -> Feature { geoJsonHandler.feature(geometry: geometry, id: id, properties: properties).success! }
     

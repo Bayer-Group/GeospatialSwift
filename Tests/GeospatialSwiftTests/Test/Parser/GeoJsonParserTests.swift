@@ -195,7 +195,7 @@ class GeoJsonParserTests: XCTestCase {
         guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is MultiLineString)
-        XCTAssertEqual((geoJsonObject as? MultiLineString)?.lineStrings.count, 2)
+        XCTAssertEqual((geoJsonObject as? MultiLineString)?.lines.count, 2)
     }
     
     func testMultiLineString_ValidatedJson() {
@@ -208,7 +208,7 @@ class GeoJsonParserTests: XCTestCase {
         let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is MultiLineString)
-        XCTAssertEqual((geoJsonObject as? MultiLineString)?.lineStrings.count, 2)
+        XCTAssertEqual((geoJsonObject as? MultiLineString)?.lines.count, 2)
     }
     
     func testMultiLineStringNoCoordinates() {
@@ -351,7 +351,7 @@ class GeoJsonParserTests: XCTestCase {
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
         XCTAssertNotNil((geoJsonObject as? GeometryCollection)?.objectGeometries)
-        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries?.count, 2)
+        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries.count, 2)
     }
     
     func testGeometryCollection_ValidatedJson() {
@@ -365,7 +365,7 @@ class GeoJsonParserTests: XCTestCase {
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
         XCTAssertNotNil((geoJsonObject as? GeometryCollection)?.objectGeometries)
-        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries?.count, 2)
+        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries.count, 2)
     }
     
     func testGeometryCollectionEmptyGeometries() {
@@ -374,7 +374,7 @@ class GeoJsonParserTests: XCTestCase {
         guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
-        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries?.count ?? -1, 0)
+        XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries.count ?? -1, 0)
     }
     
     func testGeometryCollectionNoGeometriesKey() {

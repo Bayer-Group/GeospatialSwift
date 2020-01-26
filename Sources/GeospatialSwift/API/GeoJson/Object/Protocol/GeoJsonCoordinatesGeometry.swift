@@ -14,7 +14,7 @@ public protocol GeoJsonCoordinatesGeometry: GeoJsonGeometry {
 }
 
 public extension GeoJsonCoordinatesGeometry {
-    var objectGeometries: [GeoJsonGeometry]? { geometries }
+    var objectGeometries: [GeoJsonGeometry] { geometries }
     
     var objectBoundingBox: GeodesicBoundingBox? { boundingBox }
     

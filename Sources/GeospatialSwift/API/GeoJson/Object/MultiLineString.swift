@@ -27,13 +27,13 @@ extension GeoJson {
 }
 
 extension GeoJson.MultiLineString {
-    public var lineStrings: [GeodesicLine] { geoJsonLineStrings }
+    public var lines: [GeodesicLine] { geoJsonLineStrings }
     
     public var geoJsonCoordinates: [Any] { geoJsonLineStrings.map { $0.geoJsonCoordinates } }
     
-    public var points: [GeodesicPoint] { lineStrings.flatMap { $0.points } }
+    public var points: [GeodesicPoint] { lines.flatMap { $0.points } }
     
-    public var boundingBox: GeodesicBoundingBox { .best(lineStrings.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(lines.map { $0.boundingBox })! }
     
     public var length: Double { geoJsonLineStrings.reduce(0) { $0 + $1.length } }
     

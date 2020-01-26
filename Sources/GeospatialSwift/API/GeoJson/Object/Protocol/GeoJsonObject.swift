@@ -10,7 +10,7 @@ public protocol GeoJsonObject {
     
     var type: GeoJsonObjectType { get }
     
-    var objectGeometries: [GeoJsonGeometry]? { get }
+    var objectGeometries: [GeoJsonGeometry] { get }
     
     var objectBoundingBox: GeodesicBoundingBox? { get }
     
@@ -41,7 +41,7 @@ extension GeoJsonObject {
     public var geoJsonString: String { String(data: geoJsonData, encoding: .utf8)! }
     
     public var coordinatesGeometries: [GeoJsonCoordinatesGeometry] {
-        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
+        objectGeometries.flatMap { objectGeometry -> [GeoJsonCoordinatesGeometry] in
             if let geometry = objectGeometry as? GeoJsonCoordinatesGeometry { return [geometry] }
             
             return objectGeometry.coordinatesGeometries
@@ -49,7 +49,7 @@ extension GeoJsonObject {
     }
     
     public var linearGeometries: [GeoJsonLinearGeometry] {
-        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
+        objectGeometries.flatMap { objectGeometry -> [GeoJsonLinearGeometry] in
             if let geometry = objectGeometry as? GeoJsonLinearGeometry { return [geometry] }
             
             if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
@@ -59,7 +59,7 @@ extension GeoJsonObject {
     }
     
     public var closedGeometries: [GeoJsonClosedGeometry] {
-        (objectGeometries ?? []).flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
+        objectGeometries.flatMap { objectGeometry -> [GeoJsonClosedGeometry] in
             if let geometry = objectGeometry as? GeoJsonClosedGeometry { return [geometry] }
             
             if objectGeometry is GeoJsonCoordinatesGeometry { return [] }
@@ -89,11 +89,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .geometryCollection:
         guard let lhs = lhs as? GeoJson.GeometryCollection, let rhs = rhs as? GeoJson.GeometryCollection else { return false }
         
-        if lhs.objectGeometries == nil && rhs.objectGeometries == nil { return true }
+        guard lhs.objectGeometries.count == rhs.objectGeometries.count else { return false }
         
-        guard let lhsGeometries = lhs.objectGeometries, let rhsGeometries = rhs.objectGeometries, lhsGeometries.count == rhsGeometries.count else { return false }
-        
-        for geometry in lhsGeometries where !rhsGeometries.contains { $0 == geometry } { return false }
+        for geometry in lhs.objectGeometries where !rhs.objectGeometries.contains { $0 == geometry } { return false }
         
         return true
     case .multiPolygon:
@@ -107,9 +105,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         return lhs == rhs
     case .multiLineString:
-        guard let lhs = lhs as? GeoJson.MultiLineString, let rhs = rhs as? GeoJson.MultiLineString, lhs.lineStrings.count == rhs.lineStrings.count else { return false }
+        guard let lhs = lhs as? GeoJson.MultiLineString, let rhs = rhs as? GeoJson.MultiLineString, lhs.lines.count == rhs.lines.count else { return false }
         
-        for lineString in lhs.lineStrings where !rhs.lineStrings.contains { $0 == lineString } { return false }
+        for line in lhs.lines where !rhs.lines.contains { $0 == line } { return false }
         
         return true
     case .lineString:

@@ -29,9 +29,9 @@ extension GeoJson {
 extension GeoJson.FeatureCollection {
     public var geoJson: GeoJsonDictionary { ["type": type.name, "features": features.map { $0.geoJson } ] }
     
-    public var objectGeometries: [GeoJsonGeometry]? { features.compactMap { $0.objectGeometries }.flatMap { $0 }.nilIfEmpty }
+    public var objectGeometries: [GeoJsonGeometry] { features.compactMap { $0.objectGeometries }.flatMap { $0 } }
     
-    public var objectBoundingBox: GeodesicBoundingBox? { objectGeometries.flatMap { .best($0.compactMap { $0.objectBoundingBox }) } }
+    public var objectBoundingBox: GeodesicBoundingBox? { .best(objectGeometries.compactMap { $0.objectBoundingBox }) }
     
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min() }
     

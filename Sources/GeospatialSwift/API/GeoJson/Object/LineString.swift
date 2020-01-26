@@ -29,7 +29,7 @@ extension GeoJson {
 extension GeoJson.LineString {
     public var points: [GeodesicPoint] { geoJsonPoints }
     
-    public var lineStrings: [GeodesicLine] { [self] }
+    public var lines: [GeodesicLine] { [self] }
     
     public var segments: [GeodesicLineSegment] {
         points.enumerated().compactMap { (offset, point) in

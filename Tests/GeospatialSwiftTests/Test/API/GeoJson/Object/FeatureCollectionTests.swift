@@ -27,7 +27,7 @@ class FeatureCollectionTests: XCTestCase {
     }
     
     func testObjectGeometries() {
-        XCTAssertEqual(featureCollection.objectGeometries?.count, 3)
+        XCTAssertEqual(featureCollection.objectGeometries.count, 3)
     }
     
     func testGeometryTypes() {

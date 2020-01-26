@@ -159,7 +159,7 @@ class MultiLineStringTests: XCTestCase {
     // MultiLineString Tests
     
     func testLineStrings() {
-        XCTAssertEqual((multiLineString.lineStrings as? [LineString])!, lineStrings)
+        XCTAssertEqual((multiLineString.lines as? [LineString])!, lineStrings)
     }
     
     func testEquals() {
