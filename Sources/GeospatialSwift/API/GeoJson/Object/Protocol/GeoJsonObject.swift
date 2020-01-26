@@ -103,13 +103,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         return true
     case .polygon:
-        guard let lhs = lhs as? GeoJsonPolygon, let rhs = rhs as? GeoJsonPolygon, lhs.negativeRings.count == rhs.negativeRings.count else { return false }
+        guard let lhs = lhs as? GeodesicPolygon, let rhs = rhs as? GeodesicPolygon else { return false }
         
-        guard lhs.geoJsonMainRing == rhs.geoJsonMainRing else { return false }
-        
-        for linearRing in lhs.geoJsonNegativeRings where !(rhs.geoJsonNegativeRings).contains { $0 == linearRing } { return false }
-        
-        return true
+        return lhs == rhs
     case .multiLineString:
         guard let lhs = lhs as? GeoJsonMultiLineString, let rhs = rhs as? GeoJsonMultiLineString, lhs.lineStrings.count == rhs.lineStrings.count else { return false }
         
@@ -117,11 +113,9 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         return true
     case .lineString:
-        guard let lhs = lhs as? GeoJsonLineString, let rhs = rhs as? GeoJsonLineString, lhs.points.count == rhs.points.count else { return false }
+        guard let lhs = lhs as? GeodesicLine, let rhs = rhs as? GeodesicLine else { return false }
         
-        for (index, point) in lhs.points.enumerated() where !(rhs.points[index] == point) { return false }
-        
-        return true
+        return lhs == rhs
     case .multiPoint:
         guard let lhs = lhs as? GeoJsonMultiPoint, let rhs = rhs as? GeoJsonMultiPoint, lhs.points.count == rhs.points.count else { return false }
         

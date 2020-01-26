@@ -25,8 +25,8 @@ extension GeoJson {
         // SOMEDAY: Maybe a new type for altitude, Point3D?
         public var altitude: Double?
         
-        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
-            guard (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }).count ?? 0 >= 2 else { return ["A valid Point must have at least a longitude and latitude"] }
+        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+            guard (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }).count ?? 0 >= 2 else { return .init(reason: "A valid Point must have at least a longitude and latitude") }
             
             return nil
         }

@@ -277,6 +277,14 @@
 		1EFFA4D820FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
 		1EFFA4D920FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
 		1EFFA4DA20FD10770017D8C1 /* MockGeoJsonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */; };
+		60F9958723DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
+		60F9958823DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
+		60F9958923DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
+		60F9958A23DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
+		60F9958C23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
+		60F9958D23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
+		60F9958E23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
+		60F9958F23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -401,6 +409,8 @@
 		1E9A9BD420EEF5E4003F381B /* MockGeodesicCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeodesicCalculator.swift; sourceTree = "<group>"; };
 		1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicCalculatorTests.swift; sourceTree = "<group>"; };
 		1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonGeometry.swift; sourceTree = "<group>"; };
+		60F9958623DCEB600006B70C /* InvalidGeoJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvalidGeoJson.swift; sourceTree = "<group>"; };
+		60F9958B23DD34A20006B70C /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -593,8 +603,9 @@
 		1E8B7828209394D20097A986 /* Parser */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7829209394D20097A986 /* WktParser.swift */,
 				1E8B782A209394D20097A986 /* GeoJsonParser.swift */,
+				60F9958623DCEB600006B70C /* InvalidGeoJson.swift */,
+				1E8B7829209394D20097A986 /* WktParser.swift */,
 			);
 			path = Parser;
 			sourceTree = "<group>";
@@ -605,6 +616,7 @@
 				1E8B782C209394D20097A986 /* Array.swift */,
 				1E53D4E020AB5DF30006F1E1 /* Bundle.swift */,
 				1E8B782E209394D20097A986 /* FloatingPoint.swift */,
+				60F9958B23DD34A20006B70C /* Result.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -623,13 +635,13 @@
 		1E8B7833209394D20097A986 /* GeoJson */ = {
 			isa = PBXGroup;
 			children = (
+				1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */,
+				1E4BDD492121C59A008DC2BC /* GeodesicLine.swift */,
+				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
+				1E8B7841209394D20097A986 /* GeodesicPoint.swift */,
+				1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */,
 				1E8B7840209394D20097A986 /* GeoJson.swift */,
 				1E8B7835209394D20097A986 /* GeoJsonDictionary.swift */,
-				1E8B7841209394D20097A986 /* GeodesicPoint.swift */,
-				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
-				1E4BDD492121C59A008DC2BC /* GeodesicLine.swift */,
-				1E8BF41F211DE20D00A247BF /* GeodesicPolygon.swift */,
-				1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */,
 				1E8B7836209394D20097A986 /* Object */,
 			);
 			path = GeoJson;
@@ -638,16 +650,16 @@
 		1E8B7836209394D20097A986 /* Object */ = {
 			isa = PBXGroup;
 			children = (
-				1E92ABA820ED935600EF4A4E /* Protocol */,
-				1E8B7839209394D20097A986 /* Point.swift */,
-				1E8B783A209394D20097A986 /* MultiPoint.swift */,
-				1E8B783C209394D20097A986 /* LineString.swift */,
-				1E8B783E209394D20097A986 /* MultiLineString.swift */,
-				1E8B783D209394D20097A986 /* Polygon.swift */,
-				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
-				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
 				1E8B7837209394D20097A986 /* Feature.swift */,
 				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
+				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				1E8B783C209394D20097A986 /* LineString.swift */,
+				1E8B783E209394D20097A986 /* MultiLineString.swift */,
+				1E8B783A209394D20097A986 /* MultiPoint.swift */,
+				1E8B783F209394D20097A986 /* MultiPolygon.swift */,
+				1E8B7839209394D20097A986 /* Point.swift */,
+				1E8B783D209394D20097A986 /* Polygon.swift */,
+				1E92ABA820ED935600EF4A4E /* Protocol */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -711,8 +723,8 @@
 		1E8B786B209394DE0097A986 /* GeoJson */ = {
 			isa = PBXGroup;
 			children = (
-				1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */,
 				1E8B786C209394DE0097A986 /* BoundingBoxTests.swift */,
+				1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */,
 				1E8B786D209394DE0097A986 /* Object */,
 			);
 			path = GeoJson;
@@ -721,15 +733,15 @@
 		1E8B786D209394DE0097A986 /* Object */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7876209394DE0097A986 /* PointTests.swift */,
-				1E8B7874209394DE0097A986 /* MultiPointTests.swift */,
+				1E8B7870209394DE0097A986 /* FeatureCollectionTests.swift */,
+				1E8B786F209394DE0097A986 /* FeatureTests.swift */,
+				1E8B7871209394DE0097A986 /* GeometryCollectionTests.swift */,
 				1E8B7872209394DE0097A986 /* LineStringTests.swift */,
 				1E8B7875209394DE0097A986 /* MultiLineStringTests.swift */,
-				1E8B786E209394DE0097A986 /* PolygonTests.swift */,
+				1E8B7874209394DE0097A986 /* MultiPointTests.swift */,
 				1E8B7873209394DE0097A986 /* MultiPolygonTests.swift */,
-				1E8B7871209394DE0097A986 /* GeometryCollectionTests.swift */,
-				1E8B786F209394DE0097A986 /* FeatureTests.swift */,
-				1E8B7870209394DE0097A986 /* FeatureCollectionTests.swift */,
+				1E8B7876209394DE0097A986 /* PointTests.swift */,
+				1E8B786E209394DE0097A986 /* PolygonTests.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -763,13 +775,13 @@
 		1E8B787F209394DE0097A986 /* GeoJson */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B7884209394DE0097A986 /* MockGeoJson.swift */,
-				1E8B7886209394DE0097A986 /* MockGeoJsonObject.swift */,
-				1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */,
-				1E8B7887209394DE0097A986 /* MockGeoJsonCoordinatesGeometry.swift */,
-				1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */,
-				1E92ABCF20EDA69700EF4A4E /* MockGeoJsonLinearGeometry.swift */,
 				1E8B7880209394DE0097A986 /* Box */,
+				1E8B7884209394DE0097A986 /* MockGeoJson.swift */,
+				1E6CC19C20A09AA40041DBA4 /* MockGeoJsonClosedGeometry.swift */,
+				1E8B7887209394DE0097A986 /* MockGeoJsonCoordinatesGeometry.swift */,
+				1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */,
+				1E92ABCF20EDA69700EF4A4E /* MockGeoJsonLinearGeometry.swift */,
+				1E8B7886209394DE0097A986 /* MockGeoJsonObject.swift */,
 				1E8B7888209394DE0097A986 /* Object */,
 			);
 			path = GeoJson;
@@ -787,15 +799,15 @@
 		1E8B7888209394DE0097A986 /* Object */ = {
 			isa = PBXGroup;
 			children = (
-				1E8B788B209394DE0097A986 /* MockGeoJsonPoint.swift */,
-				1E8B788F209394DE0097A986 /* MockGeoJsonMultiPoint.swift */,
-				1E8B7890209394DE0097A986 /* MockGeoJsonLineString.swift */,
-				1E8B788C209394DE0097A986 /* MockGeoJsonMultiLineString.swift */,
-				1E8B788E209394DE0097A986 /* MockGeoJsonPolygon.swift */,
-				1E8B7891209394DE0097A986 /* MockGeoJsonMultiPolygon.swift */,
-				1E8B7889209394DE0097A986 /* MockGeoJsonGeometryCollection.swift */,
 				1E8B788D209394DE0097A986 /* MockGeoJsonFeature.swift */,
 				1E8B788A209394DE0097A986 /* MockGeoJsonFeatureCollection.swift */,
+				1E8B7889209394DE0097A986 /* MockGeoJsonGeometryCollection.swift */,
+				1E8B7890209394DE0097A986 /* MockGeoJsonLineString.swift */,
+				1E8B788C209394DE0097A986 /* MockGeoJsonMultiLineString.swift */,
+				1E8B788F209394DE0097A986 /* MockGeoJsonMultiPoint.swift */,
+				1E8B7891209394DE0097A986 /* MockGeoJsonMultiPolygon.swift */,
+				1E8B788B209394DE0097A986 /* MockGeoJsonPoint.swift */,
+				1E8B788E209394DE0097A986 /* MockGeoJsonPolygon.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -820,9 +832,9 @@
 			isa = PBXGroup;
 			children = (
 				1E8B7899209394DE0097A986 /* GeoJsonTestJson.swift */,
+				1E8B789C209394DE0097A986 /* GeoTestHelper.swift */,
 				1E8B789A209394DE0097A986 /* MockData.swift */,
 				1E8B789B209394DE0097A986 /* WktTestJson.swift */,
-				1E8B789C209394DE0097A986 /* GeoTestHelper.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -840,12 +852,12 @@
 		1E92ABA820ED935600EF4A4E /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
+				1E92ABC020ED948E00EF4A4E /* GeoJsonClosedGeometry.swift */,
+				1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */,
+				1E92ABA920ED938D00EF4A4E /* GeoJsonGeometry.swift */,
+				1E92ABCA20ED955800EF4A4E /* GeoJsonLinearGeometry.swift */,
 				1E92ABA620EC113D00EF4A4E /* GeoJsonObject.swift */,
 				1E92ABC520ED94B200EF4A4E /* GeoJsonObjectType.swift */,
-				1E92ABA920ED938D00EF4A4E /* GeoJsonGeometry.swift */,
-				1E92ABB120ED93B400EF4A4E /* GeoJsonCoordinatesGeometry.swift */,
-				1E92ABC020ED948E00EF4A4E /* GeoJsonClosedGeometry.swift */,
-				1E92ABCA20ED955800EF4A4E /* GeoJsonLinearGeometry.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -1383,6 +1395,7 @@
 				1E9091322093A3EE00DAEF11 /* MultiPoint.swift in Sources */,
 				1E92ABA720EC113D00EF4A4E /* GeoJsonObject.swift in Sources */,
 				1E53D4DC20AB5D370006F1E1 /* Timber.swift in Sources */,
+				60F9958C23DD34A20006B70C /* Result.swift in Sources */,
 				1E92ABCB20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
 				1E90912C2093A3EE00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E9091382093A3EE00DAEF11 /* GeodesicCalculator.swift in Sources */,
@@ -1392,6 +1405,7 @@
 				1E9091342093A3EE00DAEF11 /* LineString.swift in Sources */,
 				1E9091302093A3EE00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAA20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
+				60F9958723DCEB600006B70C /* InvalidGeoJson.swift in Sources */,
 				1E9091362093A3EE00DAEF11 /* MultiLineString.swift in Sources */,
 				1E4BDD4A2121C59A008DC2BC /* GeodesicLine.swift in Sources */,
 				1E9091312093A3EE00DAEF11 /* Point.swift in Sources */,
@@ -1470,6 +1484,7 @@
 				1E53D4DD20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091442093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCC20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
+				60F9958D23DD34A20006B70C /* Result.swift in Sources */,
 				1E9091502093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90914B2093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABAE20ED939200EF4A4E /* GeoJsonObject.swift in Sources */,
@@ -1479,6 +1494,7 @@
 				1E9091482093A3EF00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAB20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90914E2093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
+				60F9958823DCEB600006B70C /* InvalidGeoJson.swift in Sources */,
 				1E9091492093A3EF00DAEF11 /* Point.swift in Sources */,
 				1E4BDD4B2121C59A008DC2BC /* GeodesicLine.swift in Sources */,
 				1E8BF421211DE22000A247BF /* GeodesicPolygon.swift in Sources */,
@@ -1557,6 +1573,7 @@
 				1E53D4DE20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E90915C2093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCD20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
+				60F9958E23DD34A20006B70C /* Result.swift in Sources */,
 				1E9091682093A3EF00DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E9091632093A3EF00DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABAF20ED939300EF4A4E /* GeoJsonObject.swift in Sources */,
@@ -1566,6 +1583,7 @@
 				1E9091602093A3EF00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAC20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E9091662093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
+				60F9958923DCEB600006B70C /* InvalidGeoJson.swift in Sources */,
 				1E9091612093A3EF00DAEF11 /* Point.swift in Sources */,
 				1E4BDD4C2121C59A008DC2BC /* GeodesicLine.swift in Sources */,
 				1E8BF422211DE22100A247BF /* GeodesicPolygon.swift in Sources */,
@@ -1644,6 +1662,7 @@
 				1E53D4DF20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091742093A3F000DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCE20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
+				60F9958F23DD34A20006B70C /* Result.swift in Sources */,
 				1E9091802093A3F000DAEF11 /* GeodesicCalculator.swift in Sources */,
 				1E90917B2093A3F000DAEF11 /* GeometryCollection.swift in Sources */,
 				1E92ABB020ED939400EF4A4E /* GeoJsonObject.swift in Sources */,
@@ -1653,6 +1672,7 @@
 				1E9091782093A3F000DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAD20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90917E2093A3F000DAEF11 /* MultiLineString.swift in Sources */,
+				60F9958A23DCEB600006B70C /* InvalidGeoJson.swift in Sources */,
 				1E9091792093A3F000DAEF11 /* Point.swift in Sources */,
 				1E4BDD4D2121C59A008DC2BC /* GeodesicLine.swift in Sources */,
 				1E8BF423211DE22200A247BF /* GeodesicPolygon.swift in Sources */,

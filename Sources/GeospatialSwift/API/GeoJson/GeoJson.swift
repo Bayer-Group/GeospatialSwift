@@ -1,16 +1,16 @@
 public protocol GeoJsonProtocol {
-    func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject?
+    func parse(geoJson: GeoJsonDictionary) -> Result<GeoJsonObject, InvalidGeoJson>
     func parse(validatedGeoJson: GeoJsonDictionary) -> GeoJsonObject
     
     // GeoJsonObject Factory methods
-    func featureCollection(features: [GeoJsonFeature]) -> GeoJsonFeatureCollection?
-    func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature?
+    func featureCollection(features: [GeoJsonFeature]) -> Result<GeoJsonFeatureCollection, InvalidGeoJson>
+    func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> Result<GeoJsonFeature, InvalidGeoJson>
     func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeoJsonGeometryCollection
-    func multiPolygon(polygons: [GeoJsonPolygon]) -> GeoJsonMultiPolygon?
-    func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> GeoJsonPolygon?
-    func multiLineString(lineStrings: [GeoJsonLineString]) -> GeoJsonMultiLineString?
-    func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString?
-    func multiPoint(points: [GeoJsonPoint]) -> GeoJsonMultiPoint?
+    func multiPolygon(polygons: [GeoJsonPolygon]) -> Result<GeoJsonMultiPolygon, InvalidGeoJson>
+    func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> Result<GeoJsonPolygon, InvalidGeoJson>
+    func multiLineString(lineStrings: [GeoJsonLineString]) -> Result<GeoJsonMultiLineString, InvalidGeoJson>
+    func lineString(points: [GeoJsonPoint]) -> Result<GeoJsonLineString, InvalidGeoJson>
+    func multiPoint(points: [GeoJsonPoint]) -> Result<GeoJsonMultiPoint, InvalidGeoJson>
     func point(longitude: Double, latitude: Double, altitude: Double?) -> GeoJsonPoint
     func point(longitude: Double, latitude: Double) -> GeoJsonPoint
 }
@@ -27,7 +27,7 @@ public struct GeoJson: GeoJsonProtocol {
      
      - returns: A successfully parsed GeoJsonObject or nil if the specification was not correct
      */
-    public func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject? { GeoJson.parser.geoJsonObject(fromGeoJson: geoJson) }
+    public func parse(geoJson: GeoJsonDictionary) -> Result<GeoJsonObject, InvalidGeoJson> { GeoJson.parser.geoJsonObject(fromGeoJson: geoJson) }
     
     /**
      Parses a validated GeoJsonDictionary into a GeoJsonObject.

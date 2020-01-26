@@ -6,19 +6,25 @@ extension GeoJson {
     /**
      Creates a GeoJsonFeatureCollection
      */
-    public func featureCollection(features: [GeoJsonFeature]) -> GeoJsonFeatureCollection? { FeatureCollection(features: features) }
+    public func featureCollection(features: [GeoJsonFeature]) -> Result<GeoJsonFeatureCollection, InvalidGeoJson> {
+        guard features.count >= 1 else { return .failure(.init(reason: "A valid FeatureCollection must have at least one feature")) }
+        
+        return .success(FeatureCollection(features: features))
+    }
     
     public struct FeatureCollection: GeoJsonFeatureCollection {
         public let type: GeoJsonObjectType = .featureCollection
         
         public let features: [GeoJsonFeature]
         
-        internal static func invalidReasons(geoJson: GeoJsonDictionary) -> [String]? {
-            guard let featuresJson = geoJson["features"] as? [GeoJsonDictionary] else { return ["A valid FeatureCollection must have a \"features\" key"] }
+        internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
+            guard let featuresJson = geoJson["features"] as? [GeoJsonDictionary] else { return .init(reason: "A valid FeatureCollection must have a \"features\" key") }
             
-            guard featuresJson.count >= 1 else { return ["A valid FeatureCollection must have at least one feature"] }
+            guard featuresJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
             
-            return featuresJson.compactMap { parser.invalidReasons(fromGeoJson: $0, type: .feature) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Feature in FeatureCollection"] + $0 }
+            let validateFeatures = featuresJson.reduce(nil) { $0 + parser.validate(geoJson: $1, type: .feature) }
+            
+            return validateFeatures.flatMap { .init(reason: "Invalid Feature(s) in FeatureCollection") + $0 }
         }
         
         internal init(geoJson: GeoJsonDictionary) {
@@ -28,9 +34,7 @@ extension GeoJson {
             features = featuresJson.map { Feature(geoJson: $0) }
         }
         
-        fileprivate init?(features: [GeoJsonFeature]) {
-            guard features.count >= 1 else { Log.warning("A valid FeatureCollection must have at least one feature"); return nil }
-            
+        fileprivate init(features: [GeoJsonFeature]) {
             self.features = features
         }
     }

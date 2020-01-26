@@ -13,19 +13,25 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testBadGeoJson() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: [:])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: [:])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid geoJson must have a \"type\" key"])
     }
     
     func testBadGeoJsonType() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Nothing"])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Nothing"])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid GeoJson Geometry type: Nothing"])
     }
     
     func testPoint() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Point"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Point"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Point)
         XCTAssertEqual((geoJsonObject as? Point)?.longitude, 100.0)
@@ -34,13 +40,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testPoint_ValidatedJson() {
-        let pointJson = MockData.testGeoJson("Point")
+        let geoJson = MockData.testGeoJson("Point")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: pointJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: pointJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is Point)
         XCTAssertEqual((geoJsonObject as? Point)?.longitude, 100.0)
@@ -49,7 +55,9 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testPointWithAltitude() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": [1, 2, 3]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": [1, 2, 3]])
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Point)
         XCTAssertEqual((geoJsonObject as? Point)?.longitude, 1)
@@ -58,19 +66,25 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testPointNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": NSNull()])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": NSNull()])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array"])
     }
     
     func testPointBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": [1]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Point", "coordinates": [1]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid Point must have at least a longitude and latitude"])
     }
     
     func testMultiPoint() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiPoint"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiPoint"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is MultiPoint)
         XCTAssertEqual((geoJsonObject as? MultiPoint)?.points.count, 2)
@@ -83,13 +97,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testMultiPoint_ValidatedJson() {
-        let multiPointJson = MockData.testGeoJson("MultiPoint")
+        let geoJson = MockData.testGeoJson("MultiPoint")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: multiPointJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: multiPointJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is MultiPoint)
         XCTAssertEqual((geoJsonObject as? MultiPoint)?.points.count, 2)
@@ -102,19 +116,25 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testMultiPointNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPoint", "coordinates": []])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPoint", "coordinates": []])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid MultiPoint must have at least one Point"])
     }
     
     func testMultiPointBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPoint", "coordinates": [[""]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPoint", "coordinates": [[""]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Point(s) in MultiPoint", "A valid Point must have at least a longitude and latitude"])
     }
     
     func testLineString() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("LineString"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("LineString"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is LineString)
         XCTAssertEqual((geoJsonObject as? LineString)?.points.count, 2)
@@ -127,13 +147,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testLineString_ValidatedJson() {
-        let lineStringJson = MockData.testGeoJson("LineString")
+        let geoJson = MockData.testGeoJson("LineString")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: lineStringJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: lineStringJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is LineString)
         XCTAssertEqual((geoJsonObject as? LineString)?.points.count, 2)
@@ -146,152 +166,188 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testLineStringNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": []])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": []])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid LineString must have at least two Points"])
     }
     
     func testLineStringNotEnoughCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": [[0, 1]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": [[0, 1]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid LineString must have at least two Points"])
     }
     
     func testLineStringBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": [[""], [""]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "LineString", "coordinates": [[""], [""]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Point(s) in LineString", "A valid Point must have at least a longitude and latitude", "A valid Point must have at least a longitude and latitude"])
     }
     
     func testMultiLineString() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiLineString"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiLineString"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is MultiLineString)
         XCTAssertEqual((geoJsonObject as? MultiLineString)?.lineStrings.count, 2)
     }
     
     func testMultiLineString_ValidatedJson() {
-        let multiLineStringJson = MockData.testGeoJson("MultiLineString")
+        let geoJson = MockData.testGeoJson("MultiLineString")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: multiLineStringJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: multiLineStringJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is MultiLineString)
         XCTAssertEqual((geoJsonObject as? MultiLineString)?.lineStrings.count, 2)
     }
     
     func testMultiLineStringNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": []])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": []])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid MultiLineString must have at least one LineString"])
     }
     
     func testMultiLineStringNotEnoughCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": [[[0, 1]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": [[[0, 1]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid LineString(s) in MultiLineString", "A valid LineString must have at least two Points"])
     }
     
     func testMultiLineStringBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": [[""], [""]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiLineString", "coordinates": [[""], [""]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid LineString(s) in MultiLineString", "A valid LineString must have valid coordinates", "A valid LineString must have valid coordinates"])
     }
     
     func testPolygon() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Polygon"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Polygon"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Polygon)
         XCTAssertEqual((geoJsonObject as? Polygon)?.linearRings.count, 1)
     }
     
     func testPolygon_ValidatedJson() {
-        let polygonJson = MockData.testGeoJson("Polygon")
+        let geoJson = MockData.testGeoJson("Polygon")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: polygonJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: polygonJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is Polygon)
         XCTAssertEqual((geoJsonObject as? Polygon)?.linearRings.count, 1)
     }
     
     func testPolygonMultipleRings() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Polygon: Multiple Rings"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Polygon: Multiple Rings"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Polygon)
         XCTAssertEqual((geoJsonObject as? Polygon)?.linearRings.count, 2)
     }
     
     func testPolygonNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": []])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": []])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid Polygon must have at least one LinearRing"])
     }
     
     func testPolygonNotEnoughCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid LinearRing(s) in Polygon", "A valid LinearRing must have at least 4 points"])
     }
     
     func testPolygonBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[""], [""]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[""], [""]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid LinearRing(s) in Polygon", "A valid LinearRing must have valid coordinates"])
     }
     
     func testPolygonNotALinearRing() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[0, 1], [0, 2], [0, 3], [0, 4]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Polygon", "coordinates": [[[0, 1], [0, 2], [0, 3], [0, 4]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid LinearRing(s) in Polygon", "A valid LinearRing must have valid coordinates"])
     }
     
     func testMultiPolygon() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiPolygon"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("MultiPolygon"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is MultiPolygon)
         XCTAssertEqual((geoJsonObject as? MultiPolygon)?.polygons.count, 2)
     }
     
     func testMultiPolygon_ValidatedJson() {
-        let multiPolygonJson = MockData.testGeoJson("MultiPolygon")
+        let geoJson = MockData.testGeoJson("MultiPolygon")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: multiPolygonJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: multiPolygonJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is MultiPolygon)
         XCTAssertEqual((geoJsonObject as? MultiPolygon)?.polygons.count, 2)
     }
     
     func testMultiPolygonNoCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": []])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": []])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid FeatureCollection must have at least one feature"])
     }
     
     func testMultiPolygonNotEnoughCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": [[[[]]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": [[[[]]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Polygon(s) in MultiPolygon", "Invalid LinearRing(s) in Polygon", "A valid LinearRing must have at least 4 points"])
     }
     
     func testMultiPolygonBadCoordinates() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": [[[[""], [""]]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "MultiPolygon", "coordinates": [[[[""], [""]]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Polygon(s) in MultiPolygon", "Invalid LinearRing(s) in Polygon", "A valid LinearRing must have valid coordinates"])
     }
     
     func testGeometryCollection() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("GeometryCollection"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("GeometryCollection"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
         XCTAssertNotNil((geoJsonObject as? GeometryCollection)?.objectGeometries)
@@ -299,13 +355,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testGeometryCollection_ValidatedJson() {
-        let geometryCollectionJson = MockData.testGeoJson("GeometryCollection")
+        let geoJson = MockData.testGeoJson("GeometryCollection")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: geometryCollectionJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geometryCollectionJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
         XCTAssertNotNil((geoJsonObject as? GeometryCollection)?.objectGeometries)
@@ -313,26 +369,34 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testGeometryCollectionEmptyGeometries() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("GeometryCollection: Empty geometries"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("GeometryCollection: Empty geometries"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is GeometryCollection)
         XCTAssertEqual((geoJsonObject as? GeometryCollection)?.objectGeometries?.count ?? -1, 0)
     }
     
     func testGeometryCollectionNoGeometriesKey() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "GeometryCollection"])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "GeometryCollection"])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid GeometryCollection must have a \"geometries\" key"])
     }
     
     func testGeometryCollectionBadGeometry() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "GeometryCollection", "geometries": [["type": "Point", "coordinates": [1]]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "GeometryCollection", "geometries": [["type": "Point", "coordinates": [1]]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Geometry(s) in GeometryCollection", "A valid Point must have at least a longitude and latitude"])
     }
     
     func testFeature() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Feature)
         XCTAssertTrue((geoJsonObject as? Feature)?.geometry is Polygon)
@@ -342,13 +406,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeature_ValidatedJson() {
-        let featureJson = MockData.testGeoJson("Feature")
+        let geoJson = MockData.testGeoJson("Feature")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: featureJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: featureJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is Feature)
         XCTAssertTrue((geoJsonObject as? Feature)?.geometry is Polygon)
@@ -358,14 +422,18 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureGeometryCollection() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature: Geometry Collection"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature: Geometry Collection"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Feature)
         XCTAssertTrue((geoJsonObject as? Feature)?.geometry is GeometryCollection)
     }
     
     func testFeatureNullGeometry() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature: null geometry"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("Feature: null geometry"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is Feature)
         XCTAssertNil((geoJsonObject as? Feature)?.geometry)
@@ -374,19 +442,25 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureNoGeometryKey() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Feature"])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Feature"])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid Feature must have a \"geometry\" key"])
     }
     
     func testFeatureBadGeometry() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Feature", "geometry": ["type": "Point", "coordinates": [1]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "Feature", "geometry": ["type": "Point", "coordinates": [1]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Geometry in Feature", "A valid Point must have at least a longitude and latitude"])
     }
     
     func testFeatureCollection() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is FeatureCollection)
         XCTAssertEqual((geoJsonObject as? FeatureCollection)?.features.count, 3)
@@ -396,13 +470,13 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureCollection_ValidatedJson() {
-        let featureCollectionJson = MockData.testGeoJson("FeatureCollection")
+        let geoJson = MockData.testGeoJson("FeatureCollection")
         
-        let isGeoJsonValid = geoJsonParser.isGeoJsonValid(fromGeoJson: featureCollectionJson)
+        let isGeoJsonValid = geoJsonParser.validate(geoJson: geoJson) == nil
         
         guard isGeoJsonValid else { XCTFail("ValidatedJson"); return }
         
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: featureCollectionJson)
+        let geoJsonObject = geoJsonParser.geoJsonObject(fromValidatedGeoJson: geoJson)
         
         XCTAssertTrue(geoJsonObject is FeatureCollection)
         XCTAssertEqual((geoJsonObject as? FeatureCollection)?.features.count, 3)
@@ -412,7 +486,9 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureCollection2Features1NullGeometry() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection: 2 Features, 1 null geometry"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection: 2 Features, 1 null geometry"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is FeatureCollection)
         XCTAssertEqual((geoJsonObject as? FeatureCollection)?.features.count, 2)
@@ -421,7 +497,9 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureCollection1FeatureNullGeometry() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection: 1 Feature, null geometry"))
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: MockData.testGeoJson("FeatureCollection: 1 Feature, null geometry"))
+        
+        guard case .success(let geoJsonObject) = result else { XCTFail("Failed to parse GeoJson"); return }
         
         XCTAssertTrue(geoJsonObject is FeatureCollection)
         XCTAssertEqual((geoJsonObject as? FeatureCollection)?.features.count, 1)
@@ -429,15 +507,19 @@ class GeoJsonParserTests: XCTestCase {
     }
     
     func testFeatureCollectionNoFeaturesKey() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "FeatureCollection"])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "FeatureCollection"])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["A valid FeatureCollection must have a \"features\" key"])
     }
     
     func testFeatureCollectionBadFeature() {
-        let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "FeatureCollection", "features": [["": ""]]])
+        let result = geoJsonParser.geoJsonObject(fromGeoJson: ["type": "FeatureCollection", "features": [["": ""]]])
         
-        XCTAssertNil(geoJsonObject)
+        guard case .failure(let invalidGeoJson) = result else { XCTFail("Successfully parsed invalid GeoJson"); return }
+        
+        XCTAssertEqual(invalidGeoJson.reasons, ["Invalid Feature(s) in FeatureCollection", "A valid geoJson must have a \"type\" key"])
     }
     
     func testAllMockData() {
@@ -446,13 +528,10 @@ class GeoJsonParserTests: XCTestCase {
         var success = true
         MockData.geoJsonTestData.forEach { geoJsonData in
             // swiftlint:disable:next force_cast
-            let geoJsonObject = geoJsonParser.geoJsonObject(fromGeoJson: geoJsonData["geoJson"] as! GeoJsonDictionary)
+            let result = geoJsonParser.geoJsonObject(fromGeoJson: geoJsonData["geoJson"] as! GeoJsonDictionary)
             
-            XCTAssertNotNil(geoJsonObject)
-            
-            if geoJsonObject != nil {
-                Log.warning("Test Passed: \(geoJsonData["name"] ?? "")")
-            } else {
+            if case .failure = result {
+                XCTFail("Failed to parse GeoJson")
                 success = false
             }
         }

@@ -1,24 +1,28 @@
-public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine {
-    var geoJsonPoints: [GeoJsonPoint] { get }
-}
+public protocol GeoJsonLineString: GeoJsonLinearGeometry, GeodesicLine { }
 
 extension GeoJson {
     /**
      Creates a GeoJsonLineString
      */
-    public func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString? { LineString(points: points) }
+    public func lineString(points: [GeoJsonPoint]) -> Result<GeoJsonLineString, InvalidGeoJson> {
+        guard points.count >= 2 else { return .failure(.init(reason: "A valid LineString must have at least two Points")) }
+        
+        return .success(LineString(points: points))
+    }
     
     public struct LineString: GeoJsonLineString {
         public let type: GeoJsonObjectType = .lineString
         
-        public let geoJsonPoints: [GeoJsonPoint]
+        private let geoJsonPoints: [GeoJsonPoint]
         
-        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
-            guard let pointsCoordinatesJson = coordinatesJson as? [[Any]] else { return ["A valid LineString must have valid coordinates"] }
+        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+            guard let pointsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid LineString must have valid coordinates") }
             
-            guard pointsCoordinatesJson.count >= 2 else { return ["A valid LineString must have at least two Points"] }
+            guard pointsCoordinatesJson.count >= 2 else { return .init(reason: "A valid LineString must have at least two Points") }
             
-            return pointsCoordinatesJson.compactMap { Point.invalidReasons(coordinatesJson: $0) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Point in LineString"] + $0 }
+            let validatePoints = pointsCoordinatesJson.reduce(nil) { $0 + Point.validate(coordinatesJson: $1) }
+            
+            return validatePoints.flatMap { .init(reason: "Invalid Point(s) in LineString") + $0 }
         }
         
         internal init(coordinatesJson: [Any]) {
@@ -28,42 +32,50 @@ extension GeoJson {
             geoJsonPoints = pointsJson.map { Point(coordinatesJson: $0) }
         }
         
-        fileprivate init?(points: [GeoJsonPoint]) {
-            guard points.count >= 2 else { Log.warning("A valid LineString must have at least two Points"); return nil }
-            
-            self.geoJsonPoints = points
+        fileprivate init(points: [GeoJsonPoint]) {
+            geoJsonPoints = points
         }
     }
     
     internal struct LinearRing {
-        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
-            guard let pointsCoordinatesJson = coordinatesJson as? [[Double]] else { return ["A valid LinearRing must have valid coordinates"] }
+        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+            guard let pointsCoordinatesJson = coordinatesJson as? [[Double]] else { return .init(reason: "A valid LinearRing must have valid coordinates") }
             
-            guard pointsCoordinatesJson.first! == pointsCoordinatesJson.last! else { return ["A valid LinearRing must have the first and last points equal"] }
+            guard pointsCoordinatesJson.first! == pointsCoordinatesJson.last! else { return .init(reason: "A valid LinearRing must have the first and last points equal") }
             
-            guard pointsCoordinatesJson.count >= 4 else { return ["A valid Polygon LinearRing must have at least 4 points"] }
+            guard pointsCoordinatesJson.count >= 4 else { return .init(reason: "A valid LinearRing must have at least 4 points") }
             
-            return pointsCoordinatesJson.compactMap { Point.invalidReasons(coordinatesJson: $0) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Point in LinearRing"] + $0 }
+            let validatePoints = pointsCoordinatesJson.reduce(nil) { $0 + Point.validate(coordinatesJson: $1) }
+            
+            return validatePoints.flatMap { .init(reason: "Invalid Point in LinearRing") + $0 }
+        }
+        
+        internal static func validate(linearRing: GeoJsonLineString) -> InvalidGeoJson? {
+            guard linearRing.points.first! == linearRing.points.last! else { return .init(reason: "A valid LinearRing must have the first and last points equal") }
+            
+            guard linearRing.points.count >= 4 else { return .init(reason: "A valid LinearRing must have at least 4 points")}
+            
+            return nil
         }
     }
 }
 
 extension GeoJson.LineString {
+    public var points: [GeodesicPoint] { geoJsonPoints }
+    
+    public var lineStrings: [GeodesicLine] { [self] }
+    
     public var segments: [GeodesicLineSegment] {
-        geoJsonPoints.enumerated().compactMap { (offset, point) in
-            if geoJsonPoints.count == offset + 1 { return nil }
+        points.enumerated().compactMap { (offset, point) in
+            if points.count == offset + 1 { return nil }
             
-            return LineSegment(point: point, otherPoint: geoJsonPoints[offset + 1])
+            return LineSegment(point: point, otherPoint: points[offset + 1])
         }
     }
     
     public var geoJsonCoordinates: [Any] { geoJsonPoints.map { $0.geoJsonCoordinates } }
     
-    public var points: [GeodesicPoint] { geoJsonPoints }
-    
     public var boundingBox: GeodesicBoundingBox { BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })! }
-    
-    public var lineStrings: [GeoJsonLineString] { [self] }
     
     public var length: Double { Calculator.length(of: self) }
     

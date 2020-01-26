@@ -34,3 +34,11 @@ public struct SimpleLine: GeodesicLine {
         self.points = segments.map { $0.point } + [segments.last!.otherPoint]
     }
 }
+
+public func == (lhs: GeodesicLine, rhs: GeodesicLine) -> Bool {
+    guard lhs.points.count == rhs.points.count else { return false }
+    
+    for (index, point) in lhs.points.enumerated() where !(rhs.points[index] == point) { return false }
+    
+    return true
+}

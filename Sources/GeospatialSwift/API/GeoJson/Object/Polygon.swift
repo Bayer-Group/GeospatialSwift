@@ -1,67 +1,61 @@
-public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon {
-    var geoJsonLinearRings: [GeoJsonLineString] { get }
-    var geoJsonMainRing: GeoJsonLineString { get }
-    var geoJsonNegativeRings: [GeoJsonLineString] { get }
-    var centroid: GeodesicPoint { get }
-}
+public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon { }
 
 extension GeoJson {
     /**
      Creates a GeoJsonPolygon
      */
-    public func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> GeoJsonPolygon? { Polygon(mainRing: mainRing, negativeRings: negativeRings) }
+    public func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> Result<GeoJsonPolygon, InvalidGeoJson> {
+        if let invalidGeoJson = LinearRing.validate(linearRing: mainRing) + negativeRings.reduce(nil, { $0 + LinearRing.validate(linearRing: $1) }) { return .failure(invalidGeoJson) }
+        
+        return .success(Polygon(mainRing: mainRing, negativeRings: negativeRings))
+    }
     
     public struct Polygon: GeoJsonPolygon {
         public let type: GeoJsonObjectType = .polygon
         
-        public let geoJsonLinearRings: [GeoJsonLineString]
+        private let geoJsonMainRing: GeoJsonLineString
+        private let geoJsonNegativeRings: [GeoJsonLineString]
+        private var geoJsonLinearRings: [GeoJsonLineString] { [geoJsonMainRing] + geoJsonNegativeRings }
         
-        internal static func invalidReasons(coordinatesJson: [Any]) -> [String]? {
-            guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return ["A valid Polygon must have valid coordinates"] }
+        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+            guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid Polygon must have valid coordinates") }
             
-            guard linearRingsCoordinatesJson.count >= 1 else { return ["A valid Polygon must have at least one LinearRing"] }
+            guard linearRingsCoordinatesJson.count >= 1 else { return .init(reason: "A valid Polygon must have at least one LinearRing") }
             
-            return linearRingsCoordinatesJson.compactMap { LinearRing.invalidReasons(coordinatesJson: $0) }.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid LinearRing in Polygon"] + $0 }
+            let validateLinearRings = linearRingsCoordinatesJson.reduce(nil) { $0 + LinearRing.validate(coordinatesJson: $1) }
+            
+            return validateLinearRings.flatMap { .init(reason: "Invalid LinearRing(s) in Polygon") + $0 }
         }
         
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
             let linearRingsJson = coordinatesJson as! [[Any]]
             
-            geoJsonLinearRings = linearRingsJson.map { LineString(coordinatesJson: $0) }
+            geoJsonMainRing = LineString(coordinatesJson: linearRingsJson.first!)
+            geoJsonNegativeRings = linearRingsJson.dropFirst().map { LineString(coordinatesJson: $0) }
         }
         
-        fileprivate init?(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) {
-            let linearRings = [mainRing] + negativeRings
-            
-            for linearRing in linearRings {
-                guard linearRing.points.first! == linearRing.points.last! else { Log.warning("A valid Polygon LinearRing must have the first and last points equal"); return nil }
-                
-                guard linearRing.points.count >= 4 else { Log.warning("A valid Polygon LinearRing must have at least 4 points"); return nil }
-            }
-            
-            geoJsonLinearRings = linearRings
+        fileprivate init(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) {
+            geoJsonMainRing = mainRing
+            geoJsonNegativeRings = negativeRings
         }
     }
 }
 
 extension GeoJson.Polygon {
-    public var geoJsonCoordinates: [Any] { geoJsonLinearRings.map { $0.geoJsonCoordinates } }
-    
-    public var geoJsonMainRing: GeoJsonLineString { geoJsonLinearRings.first! }
-    public var geoJsonNegativeRings: [GeoJsonLineString] { geoJsonLinearRings.tail ?? [] }
-    
-    public var linearRings: [GeodesicLine] { geoJsonLinearRings }
     public var mainRing: GeodesicLine { geoJsonMainRing }
     public var negativeRings: [GeodesicLine] { geoJsonNegativeRings }
+    public var linearRings: [GeodesicLine] { geoJsonLinearRings }
+    
+    public var geoJsonCoordinates: [Any] { geoJsonLinearRings.map { $0.geoJsonCoordinates } }
     
     public var points: [GeodesicPoint] { linearRings.flatMap { $0.points } }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(geoJsonLinearRings.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(linearRings.map { $0.boundingBox })! }
     
     public var centroid: GeodesicPoint { Calculator.centroid(polygon: self) }
     
-    public var polygons: [GeoJsonPolygon] { [self] }
+    public var polygons: [GeodesicPolygon] { [self] }
     
     public var hasHole: Bool { negativeRings.count > 0 }
     
@@ -73,7 +67,7 @@ extension GeoJson.Polygon {
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool {
         // Must at least be within the bounding box.
-        guard geoJsonMainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return false }
+        guard mainRing.boundingBox.contains(point: point, tolerance: tolerance) else { return false }
         
         return Calculator.contains(point, in: self, tolerance: tolerance)
     }

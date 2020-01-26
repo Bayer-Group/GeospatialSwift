@@ -73,7 +73,7 @@ class MultiPolygonTests: XCTestCase {
             element.enumerated().forEach { linearRingsOffset, element in
                 XCTAssertEqual(element.count, polygons[polygonsOffset].linearRings[linearRingsOffset].points.count)
                 element.enumerated().forEach { pointsOffset, element in
-                    XCTAssertEqual(element, polygons[polygonsOffset].geoJsonLinearRings[linearRingsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
+                    XCTAssertEqual(element, (polygons[polygonsOffset].linearRings[linearRingsOffset].points[pointsOffset] as! Point).geoJsonCoordinates as! [Double] )
                 }
             }
         }

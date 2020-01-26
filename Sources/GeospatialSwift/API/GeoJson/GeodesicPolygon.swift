@@ -5,6 +5,8 @@ public protocol GeodesicPolygon {
     var linearRings: [GeodesicLine] { get }
     
     var boundingBox: GeodesicBoundingBox { get }
+    
+    var centroid: GeodesicPoint { get }
 }
 
 public struct SimplePolygon: GeodesicPolygon {
@@ -14,6 +16,8 @@ public struct SimplePolygon: GeodesicPolygon {
     public let negativeRings: [GeodesicLine]
     
     public var boundingBox: GeodesicBoundingBox { BoundingBox.best(linearRings.map { $0.boundingBox })! }
+    
+    public var centroid: GeodesicPoint { Calculator.centroid(polygon: self) }
     
     public init?(mainRing: GeodesicLine, negativeRings: [GeodesicLine] = []) {
         for linearRingSegments in ([mainRing.segments] + negativeRings.map { $0.segments }) {
@@ -25,4 +29,14 @@ public struct SimplePolygon: GeodesicPolygon {
         self.mainRing = mainRing
         self.negativeRings = negativeRings
     }
+}
+
+public func == (lhs: GeodesicPolygon, rhs: GeodesicPolygon) -> Bool {
+    guard lhs.negativeRings.count == rhs.negativeRings.count else { return false }
+    
+    guard lhs.mainRing == rhs.mainRing else { return false }
+    
+    for linearRing in lhs.negativeRings where !(rhs.negativeRings).contains { $0 == linearRing } { return false }
+    
+    return true
 }

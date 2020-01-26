@@ -123,7 +123,7 @@ class PolygonTests: XCTestCase {
         (coordinates as! [[[Double]]]).enumerated().forEach { linearRingsOffset, element in
             XCTAssertEqual(element.count, linearRings[linearRingsOffset].points.count)
             element.enumerated().forEach { pointsOffset, element in
-                XCTAssertEqual(element, linearRings[linearRingsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
+                XCTAssertEqual(element, (linearRings[linearRingsOffset].points[pointsOffset] as! Point).geoJsonCoordinates as! [Double] )
             }
         }
         // swiftlint:enable force_cast

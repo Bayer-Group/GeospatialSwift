@@ -4,6 +4,11 @@ public protocol GeodesicPoint {
     var altitude: Double? { get }
 }
 
+public extension GeodesicPoint {
+    var degreesToRadians: GeodesicPoint { SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
+    var radiansToDegrees: GeodesicPoint { SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
+}
+
 public struct SimplePoint: GeodesicPoint {
     public let longitude: Double
     public let latitude: Double
@@ -14,11 +19,6 @@ public struct SimplePoint: GeodesicPoint {
         self.latitude = latitude
         self.altitude = altitude
     }
-}
-
-public extension GeodesicPoint {
-    var degreesToRadians: GeodesicPoint { SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
-    var radiansToDegrees: GeodesicPoint { SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
 }
 
 public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {

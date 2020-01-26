@@ -13,18 +13,18 @@ extension GeoJson {
         
         public let objectGeometries: [GeoJsonGeometry]?
         
-        internal static func invalidReasons(geoJson: GeoJsonDictionary) -> [String]? {
-            guard let geometriesJson = geoJson["geometries"] as? [GeoJsonDictionary] else { return ["A valid GeometryCollection must have a \"geometries\" key"] }
+        internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
+            guard let geometriesJson = geoJson["geometries"] as? [GeoJsonDictionary] else { return .init(reason: "A valid GeometryCollection must have a \"geometries\" key") }
             
-            let geometriesInvalidReasons: [[String]] = geometriesJson.compactMap { geometryJson in
-                guard let type = parser.geoJsonObjectType(geoJson: geometryJson) else { return ["Not a valid feature geometry"] }
+            let validateGeometries: InvalidGeoJson? = geometriesJson.reduce(nil) { result, geometryJson in
+                guard let type = parser.geoJsonObjectType(geoJson: geometryJson) else { return .init(reason: "Not a valid feature geometry") }
                 
-                guard type.isGeometry else { return ["Not a valid feature geometry: \(type.name)"] }
+                guard type.isGeometry else { return .init(reason: "Not a valid feature geometry: \(type.name)") }
                 
-                return parser.invalidReasons(fromGeoJson: geometryJson, type: type)
+                return result + parser.validate(geoJson: geometryJson, type: type)
             }
             
-            return geometriesInvalidReasons.flatMap { $0 }.nilIfEmpty.flatMap { ["Invalid Geometry in GeometryCollection"] + $0 }
+            return validateGeometries.flatMap { .init(reason: "Invalid Geometry(s) in GeometryCollection") + $0 }
         }
         
         internal init(geoJson: GeoJsonDictionary) {

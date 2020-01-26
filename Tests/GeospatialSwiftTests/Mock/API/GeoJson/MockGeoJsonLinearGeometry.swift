@@ -2,8 +2,8 @@
 
 class MockGeoJsonLinearGeometry: MockGeoJsonCoordinatesGeometry, GeoJsonLinearGeometry {
     private(set) var lineStringsCallCount = 0
-    var lineStringsResult: [GeoJsonLineString] = []
-    var lineStrings: [GeoJsonLineString] {
+    var lineStringsResult: [GeodesicLine] = []
+    var lineStrings: [GeodesicLine] {
         lineStringsCallCount += 1
         
         return lineStringsResult

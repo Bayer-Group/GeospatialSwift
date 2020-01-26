@@ -2,8 +2,8 @@
 
 class MockGeoJsonClosedGeometry: MockGeoJsonCoordinatesGeometry, GeoJsonClosedGeometry {
     private(set) var polygonsCallCount = 0
-    var polygonsResult: [GeoJsonPolygon] = []
-    var polygons: [GeoJsonPolygon] {
+    var polygonsResult: [GeodesicPolygon] = []
+    var polygons: [GeodesicPolygon] {
         polygonsCallCount += 1
         
         return polygonsResult
