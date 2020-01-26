@@ -3,7 +3,7 @@ import XCTest
 @testable import GeospatialSwift
 
 class WktParserTests: XCTestCase {
-    var geoJson: GeoJsonProtocol!
+    var geoJson: GeoJson!
     
     let wktTestData = MockData.wktTestData
     

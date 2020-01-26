@@ -12,11 +12,11 @@ public struct SimpleLine: GeodesicLine {
         points.enumerated().compactMap { (offset, point) in
             if points.count == offset + 1 { return nil }
             
-            return LineSegment(point: point, otherPoint: points[offset + 1])
+            return .init(point: point, otherPoint: points[offset + 1])
         }
     }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(points.map { BoundingBox(minLongitude: $0.longitude, minLatitude: $0.latitude, maxLongitude: $0.longitude, maxLatitude: $0.latitude) })! }
+    public var boundingBox: GeodesicBoundingBox { .best(points.map { .init(minLongitude: $0.longitude, minLatitude: $0.latitude, maxLongitude: $0.longitude, maxLatitude: $0.latitude) })! }
     
     public init?(points: [GeodesicPoint]) {
         guard points.count >= 2 else { return nil }

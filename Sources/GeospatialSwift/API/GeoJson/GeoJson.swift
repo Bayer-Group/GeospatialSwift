@@ -1,21 +1,4 @@
-public protocol GeoJsonProtocol {
-    func parse(geoJson: GeoJsonDictionary) -> Result<GeoJsonObject, InvalidGeoJson>
-    func parse(validatedGeoJson: GeoJsonDictionary) -> GeoJsonObject
-    
-    // GeoJsonObject Factory methods
-    func featureCollection(features: [GeoJsonFeature]) -> Result<GeoJsonFeatureCollection, InvalidGeoJson>
-    func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> Result<GeoJsonFeature, InvalidGeoJson>
-    func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeoJsonGeometryCollection
-    func multiPolygon(polygons: [GeoJsonPolygon]) -> Result<GeoJsonMultiPolygon, InvalidGeoJson>
-    func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> Result<GeoJsonPolygon, InvalidGeoJson>
-    func multiLineString(lineStrings: [GeoJsonLineString]) -> Result<GeoJsonMultiLineString, InvalidGeoJson>
-    func lineString(points: [GeoJsonPoint]) -> Result<GeoJsonLineString, InvalidGeoJson>
-    func multiPoint(points: [GeoJsonPoint]) -> Result<GeoJsonMultiPoint, InvalidGeoJson>
-    func point(longitude: Double, latitude: Double, altitude: Double?) -> GeoJsonPoint
-    func point(longitude: Double, latitude: Double) -> GeoJsonPoint
-}
-
-public struct GeoJson: GeoJsonProtocol {
+public struct GeoJson {
     internal static let parser = GeoJsonParser()
     
     internal static func coordinates(geoJson: GeoJsonDictionary) -> [Any]? { geoJson["coordinates"] as? [Any] }

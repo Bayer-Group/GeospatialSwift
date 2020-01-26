@@ -1,23 +1,16 @@
 import class Foundation.NSNull
 
-public protocol GeoJsonFeature: GeoJsonObject {
-    var geometry: GeoJsonGeometry? { get }
-    var id: Any? { get }
-    var idAsString: String? { get }
-    var properties: GeoJsonDictionary? { get }
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonFeature
+     Creates a Feature
      */
-    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> Result<GeoJsonFeature, InvalidGeoJson> {
+    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> Result<Feature, InvalidGeoJson> {
         guard id == nil || id is NSNull || id is String || id is Double || id is Int else { return .failure(.init(reason: "Id must be of type null, String, Double, or Int")) }
         
         return .success(Feature(geometry: geometry, id: id, properties: properties))
     }
     
-    public struct Feature: GeoJsonFeature {
+    public struct Feature: GeoJsonObject {
         public let type: GeoJsonObjectType = .feature
         
         public let geometry: GeoJsonGeometry?

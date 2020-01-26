@@ -1,21 +1,19 @@
-public protocol GeoJsonPolygon: GeoJsonClosedGeometry, GeodesicPolygon { }
-
 extension GeoJson {
     /**
-     Creates a GeoJsonPolygon
+     Creates a Polygon
      */
-    public func polygon(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) -> Result<GeoJsonPolygon, InvalidGeoJson> {
+    public func polygon(mainRing: LineString, negativeRings: [LineString]) -> Result<Polygon, InvalidGeoJson> {
         if let invalidGeoJson = LinearRing.validate(linearRing: mainRing) + negativeRings.reduce(nil, { $0 + LinearRing.validate(linearRing: $1) }) { return .failure(invalidGeoJson) }
         
         return .success(Polygon(mainRing: mainRing, negativeRings: negativeRings))
     }
     
-    public struct Polygon: GeoJsonPolygon {
+    public struct Polygon: GeoJsonClosedGeometry, GeodesicPolygon {
         public let type: GeoJsonObjectType = .polygon
         
-        private let geoJsonMainRing: GeoJsonLineString
-        private let geoJsonNegativeRings: [GeoJsonLineString]
-        private var geoJsonLinearRings: [GeoJsonLineString] { [geoJsonMainRing] + geoJsonNegativeRings }
+        private let geoJsonMainRing: LineString
+        private let geoJsonNegativeRings: [LineString]
+        private var geoJsonLinearRings: [LineString] { [geoJsonMainRing] + geoJsonNegativeRings }
         
         internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
             guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid Polygon must have valid coordinates") }
@@ -35,7 +33,7 @@ extension GeoJson {
             geoJsonNegativeRings = linearRingsJson.dropFirst().map { LineString(coordinatesJson: $0) }
         }
         
-        fileprivate init(mainRing: GeoJsonLineString, negativeRings: [GeoJsonLineString]) {
+        fileprivate init(mainRing: LineString, negativeRings: [LineString]) {
             geoJsonMainRing = mainRing
             geoJsonNegativeRings = negativeRings
         }
@@ -51,7 +49,7 @@ extension GeoJson.Polygon {
     
     public var points: [GeodesicPoint] { linearRings.flatMap { $0.points } }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(linearRings.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(linearRings.map { $0.boundingBox })! }
     
     public var centroid: GeodesicPoint { Calculator.centroid(polygon: self) }
     

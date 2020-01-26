@@ -35,7 +35,7 @@ class MultiPointTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(multiPoint.objectBoundingBox as? BoundingBox, multiPoint.boundingBox as? BoundingBox)
+        XCTAssertEqual(multiPoint.objectBoundingBox, multiPoint.boundingBox)
     }
     
     func testGeoJson() {
@@ -105,9 +105,9 @@ class MultiPointTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiPoint.boundingBox
         
-        let boundingBox = BoundingBox.best(points.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(points.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance() {

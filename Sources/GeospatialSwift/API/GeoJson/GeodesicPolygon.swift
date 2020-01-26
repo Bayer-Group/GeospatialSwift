@@ -15,7 +15,7 @@ public struct SimplePolygon: GeodesicPolygon {
     public let mainRing: GeodesicLine
     public let negativeRings: [GeodesicLine]
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(linearRings.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(linearRings.map { $0.boundingBox })! }
     
     public var centroid: GeodesicPoint { Calculator.centroid(polygon: self) }
     

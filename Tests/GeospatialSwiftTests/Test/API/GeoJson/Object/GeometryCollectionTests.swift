@@ -9,7 +9,7 @@ class GeometryCollectionTests: XCTestCase {
     var nilGeometryCollection: GeometryCollection?
     var distancePoint: SimplePoint!
     
-    var point: GeoJsonPoint!
+    var point: GeoJson.Point!
     
     override func setUp() {
         super.setUp()
@@ -54,9 +54,9 @@ class GeometryCollectionTests: XCTestCase {
     func testObjectBoundingBox() {
         let resultBoundingBox = geometryCollection.objectBoundingBox
         
-        let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.compactMap { $0.objectBoundingBox })
+        let boundingBox = GeodesicBoundingBox.best(geometryCollection.objectGeometries!.compactMap { $0.objectBoundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testGeoJson() {

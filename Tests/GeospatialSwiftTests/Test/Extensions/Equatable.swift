@@ -14,9 +14,7 @@ extension SimplePoint: Equatable {
     public static func == (lhs: SimplePoint, rhs: SimplePoint) -> Bool { lhs as GeodesicPoint == rhs as GeodesicPoint }
 }
 
-extension BoundingBox: Equatable {
-    public static func == (lhs: BoundingBox, rhs: BoundingBox) -> Bool { lhs as GeodesicBoundingBox == rhs as GeodesicBoundingBox }
-}
+extension GeodesicBoundingBox: Equatable { }
 
 extension Point: Equatable {
     public static func == (lhs: Point, rhs: Point) -> Bool { lhs as GeoJsonObject == rhs as GeoJsonObject }

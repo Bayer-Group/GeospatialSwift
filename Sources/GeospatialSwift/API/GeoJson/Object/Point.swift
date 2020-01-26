@@ -1,22 +1,17 @@
 import class Foundation.NSNumber
 
-public protocol GeoJsonPoint: GeodesicPoint, GeoJsonCoordinatesGeometry {
-    var normalize: GeodesicPoint { get }
-    var normalizePostitive: GeodesicPoint { get }
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonPoint without altitiude
+     Creates a Point without altitiude
      */
-    public func point(longitude: Double, latitude: Double) -> GeoJsonPoint { Point(longitude: longitude, latitude: latitude) }
+    public func point(longitude: Double, latitude: Double) -> Point { Point(longitude: longitude, latitude: latitude) }
     
     /**
-     Creates a GeoJsonPoint
+     Creates a Point
      */
-    public func point(longitude: Double, latitude: Double, altitude: Double?) -> GeoJsonPoint { Point(longitude: longitude, latitude: latitude, altitude: altitude) }
+    public func point(longitude: Double, latitude: Double, altitude: Double?) -> Point { Point(longitude: longitude, latitude: latitude, altitude: altitude) }
     
-    public struct Point: GeoJsonPoint {
+    public struct Point: GeodesicPoint, GeoJsonCoordinatesGeometry {
         public let type: GeoJsonObjectType = .point
         
         public let longitude: Double
@@ -54,7 +49,7 @@ extension GeoJson.Point {
     
     public var points: [GeodesicPoint] { [self] }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox(minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude) }
+    public var boundingBox: GeodesicBoundingBox { .init(minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude) }
     
     // SOMEDAY: Consider Altitude? What to do if altitude is nil in some cases?
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: self, to: point, tolerance: tolerance) }

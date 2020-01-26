@@ -15,11 +15,11 @@ final class MockData {
     
     static func testWkt(_ name: String) -> String { wktTestData.first { ($0["name"] as! String) == name }!["wkt"] as! String }
     
-    static let point: GeoJsonPoint = geoJson.point(longitude: 1, latitude: 2, altitude: 3)
-    static let points: [GeoJsonPoint] = linesPoints.first!
-    static let lineStrings: [GeoJsonLineString] = linesPoints.map { geoJson.lineString(points: $0).success! }
-    static let linearRings: [GeoJsonLineString] = linearRingsList.first!
-    static let polygons: [GeoJsonPolygon] = linearRingsList.map { geoJson.polygon(mainRing: $0.first!, negativeRings: Array($0.dropFirst())).success! }
+    static let point: GeoJson.Point = geoJson.point(longitude: 1, latitude: 2, altitude: 3)
+    static let points: [GeoJson.Point] = linesPoints.first!
+    static let lineStrings: [GeoJson.LineString] = linesPoints.map { geoJson.lineString(points: $0).success! }
+    static let linearRings: [GeoJson.LineString] = linearRingsList.first!
+    static let polygons: [GeoJson.Polygon] = linearRingsList.map { geoJson.polygon(mainRing: $0.first!, negativeRings: Array($0.dropFirst())).success! }
     static let geometries: [GeoJsonGeometry] = [
         MockData.point,
         geoJson.multiPoint(points: MockData.points).success!,
@@ -28,7 +28,7 @@ final class MockData {
         geoJson.polygon(mainRing: MockData.linearRings.first!, negativeRings: Array(MockData.linearRings.dropFirst())).success!,
         geoJson.multiPolygon(polygons: MockData.polygons).success!
     ]
-    static let features: [GeoJsonFeature] = [
+    static let features: [GeoJson.Feature] = [
         geoJson.feature(geometry: geoJson.point(longitude: 1, latitude: 2, altitude: 3), id: nil, properties: nil).success!,
         geoJson.feature(geometry: geoJson.lineString(points: MockData.points).success!, id: nil, properties: nil).success!,
         geoJson.feature(geometry: geoJson.polygon(mainRing: MockData.linearRings.first!, negativeRings: Array(MockData.linearRings.dropFirst())).success!, id: nil, properties: nil).success!
@@ -55,14 +55,14 @@ extension MockData {
         return jsonData as! GeoJsonDictionary
     }
     
-    private static let linesPoints: [[GeoJsonPoint]] = [
+    private static let linesPoints: [[GeoJson.Point]] = [
         [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)],
         [GeoTestHelper.point(2, 3, 3), GeoTestHelper.point(3, 3, 4), GeoTestHelper.point(3, 4, 5), GeoTestHelper.point(4, 5, 6)]
     ]
     
-    private static let polygonPoints: [[GeoJsonPoint]] = polygonPointsList.first!
+    private static let polygonPoints: [[GeoJson.Point]] = polygonPointsList.first!
     
-    private static let polygonPointsList: [[[GeoJsonPoint]]] = [
+    private static let polygonPointsList: [[[GeoJson.Point]]] = [
         [
             [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 3, 4), GeoTestHelper.point(1, 2, 3)],
             [GeoTestHelper.point(2, 3, 3), GeoTestHelper.point(3, 3, 4), GeoTestHelper.point(3, 4, 5), GeoTestHelper.point(2, 4, 4), GeoTestHelper.point(2, 3, 3)]
@@ -73,5 +73,5 @@ extension MockData {
         ]
     ]
     
-    private static let linearRingsList: [[GeoJsonLineString]] = polygonPointsList.map { $0.map { geoJson.lineString(points: $0).success! } }
+    private static let linearRingsList: [[GeoJson.LineString]] = polygonPointsList.map { $0.map { geoJson.lineString(points: $0).success! } }
 }

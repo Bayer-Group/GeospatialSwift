@@ -1,70 +1,22 @@
 import Foundation
 
+// SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
+//    func contains(_ lineSegment: GeodesicLineSegment, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
+// SOMEDAY: Split Lines
+//    func canSplit(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Bool
+//    func split(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> (GeodesicPolygon, GeodesicPolygon)
+
 // SOMEDAY: Altitude is not considered. Perhaps there should be 3D calculations as well.
 // SOMEDAY: Break this up into pieces.
 // swiftlint:disable file_length
-public protocol GeodesicCalculatorProtocol {
-    func area(of polygon: GeodesicPolygon) -> Double
-    func length(of line: GeodesicLine) -> Double
-    
-    func centroid(polygon: GeodesicPolygon) -> GeodesicPoint
-    func destinationPoint(origin: GeodesicPoint, bearing: Double, distance: Double) -> GeodesicPoint
-    
-    func haversineDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
-    func lawOfCosinesDistance(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
-    
-    func distance(from point: GeodesicPoint, to otherPoint: GeodesicPoint, tolerance: Double) -> Double
-    func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double
-    func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double
-    func distance(from point: GeodesicPoint, to line: GeodesicLine, tolerance: Double) -> Double
-    func distance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
-    func edgeDistance(from point: GeodesicPoint, to polygon: GeodesicPolygon, tolerance: Double) -> Double
-    
-    func equals(_ points: [GeodesicPoint], tolerance: Double) -> Bool
-    func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int]
-    
-    func hasIntersection(_ lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
-    func hasIntersection(_ lineSegment: GeodesicLineSegment, with polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool
-    func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    
-    func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint?
-    func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int]
-    func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]]
-    
-    func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool
-    func contains(_ point: GeodesicPoint, in line: GeodesicLine, tolerance: Double) -> Bool
-    func contains(_ point: GeodesicPoint, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    
-    // SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
-    //    func contains(_ lineSegment: GeodesicLineSegment, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
-    // SOMEDAY: Split Lines
-    //    func canSplit(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Bool
-    //    func split(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> (GeodesicPolygon, GeodesicPolygon)
-    
-    func midpoint(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> GeodesicPoint
-    
-    func initialBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
-    func averageBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
-    func finalBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double
-    
-    func normalize(longitude: Double) -> Double
-    func normalize(latitude: Double) -> Double
-    func normalize(_ point: GeodesicPoint) -> GeodesicPoint
-    func normalizePositive(longitude: Double) -> Double
-    func normalizePositive(latitude: Double) -> Double
-    func normalizePositive(_ point: GeodesicPoint) -> GeodesicPoint
-}
 
-internal let Calculator = GeodesicCalculator.shared
+internal let Calculator = GeodesicCalculator()
 
 /**
  All calculation input and output is based in meters. Geospatial input and output is expected in longitude/latitude and degrees.
  */
-public struct GeodesicCalculator: GeodesicCalculatorProtocol {
-    internal static let shared: GeodesicCalculatorProtocol = GeodesicCalculator()
-    
-    private init() { }
+public struct GeodesicCalculator {
+    fileprivate init() { }
     
     // Guess at the radius of the earth based on latitude
     private let earthRadiusEquator: Double = 6378137
@@ -187,7 +139,7 @@ extension GeodesicCalculator {
     
     public func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
         let distance1 = distancePartialResult(from: point, to: lineSegment)
-        let reverseSegment = LineSegment(point: lineSegment.otherPoint, otherPoint: lineSegment.point)
+        let reverseSegment = GeodesicLineSegment(point: lineSegment.otherPoint, otherPoint: lineSegment.point)
         let distance2 = distancePartialResult(from: point, to: reverseSegment)
         
         return max(min(distance1, distance2) - tolerance, 0.0)

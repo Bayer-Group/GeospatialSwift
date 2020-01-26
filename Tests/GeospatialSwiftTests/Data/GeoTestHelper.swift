@@ -1,6 +1,5 @@
 @testable import GeospatialSwift
 
-// swiftlint:disable force_cast
 class GeoTestHelper {
     static private let geoJsonHandler = GeoJson()
     
@@ -8,21 +7,21 @@ class GeoTestHelper {
     
     static func simplePoint(_ longitude: Double, _ latitude: Double, _ altitude: Double? = nil) -> SimplePoint { SimplePoint(longitude: longitude, latitude: latitude, altitude: altitude) }
     
-    static func point(_ longitude: Double, _ latitude: Double, _ altitude: Double? = nil) -> Point { geoJsonHandler.point(longitude: longitude, latitude: latitude, altitude: altitude) as! Point }
+    static func point(_ longitude: Double, _ latitude: Double, _ altitude: Double? = nil) -> Point { geoJsonHandler.point(longitude: longitude, latitude: latitude, altitude: altitude) }
     
-    static func multiPoint(_ points: [GeoJsonPoint]) -> MultiPoint { geoJsonHandler.multiPoint(points: points).success as! MultiPoint }
+    static func multiPoint(_ points: [GeoJson.Point]) -> MultiPoint { geoJsonHandler.multiPoint(points: points).success! }
     
-    static func lineString(_ points: [GeoJsonPoint]) -> LineString { geoJsonHandler.lineString(points: points).success as! LineString }
+    static func lineString(_ points: [GeoJson.Point]) -> LineString { geoJsonHandler.lineString(points: points).success! }
     
-    static func multiLineString(_ lineStrings: [GeoJsonLineString]) -> MultiLineString { geoJsonHandler.multiLineString(lineStrings: lineStrings).success as! MultiLineString }
+    static func multiLineString(_ lineStrings: [GeoJson.LineString]) -> MultiLineString { geoJsonHandler.multiLineString(lineStrings: lineStrings).success! }
     
-    static func polygon(_ mainRing: GeoJsonLineString, _ negativeRings: [GeoJsonLineString] = []) -> Polygon { geoJsonHandler.polygon(mainRing: mainRing, negativeRings: negativeRings).success as! Polygon }
+    static func polygon(_ mainRing: GeoJson.LineString, _ negativeRings: [GeoJson.LineString] = []) -> Polygon { geoJsonHandler.polygon(mainRing: mainRing, negativeRings: negativeRings).success! }
     
-    static func multiPolygon(_ polygons: [GeoJsonPolygon]) -> MultiPolygon { geoJsonHandler.multiPolygon(polygons: polygons).success as! MultiPolygon }
+    static func multiPolygon(_ polygons: [GeoJson.Polygon]) -> MultiPolygon { geoJsonHandler.multiPolygon(polygons: polygons).success! }
     
-    static func geometryCollection(_ geometries: [GeoJsonGeometry]? = nil) -> GeometryCollection { geoJsonHandler.geometryCollection(geometries: geometries) as! GeometryCollection }
+    static func geometryCollection(_ geometries: [GeoJsonGeometry]? = nil) -> GeometryCollection { geoJsonHandler.geometryCollection(geometries: geometries) }
     
-    static func feature(_ geometry: GeoJsonGeometry?, _ id: Any? = nil, _ properties: GeoJsonDictionary? = nil) -> Feature { geoJsonHandler.feature(geometry: geometry, id: id, properties: properties).success as! Feature }
+    static func feature(_ geometry: GeoJsonGeometry?, _ id: Any? = nil, _ properties: GeoJsonDictionary? = nil) -> Feature { geoJsonHandler.feature(geometry: geometry, id: id, properties: properties).success! }
     
-    static func featureCollection(_ features: [GeoJsonFeature]) -> FeatureCollection { geoJsonHandler.featureCollection(features: features).success as! FeatureCollection }
+    static func featureCollection(_ features: [GeoJson.Feature]) -> FeatureCollection { geoJsonHandler.featureCollection(features: features).success! }
 }

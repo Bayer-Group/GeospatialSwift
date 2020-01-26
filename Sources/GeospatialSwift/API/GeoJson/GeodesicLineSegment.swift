@@ -1,14 +1,4 @@
-public protocol GeodesicLineSegment {
-    var point: GeodesicPoint { get }
-    var otherPoint: GeodesicPoint { get }
-    
-    var midpoint: GeodesicPoint { get }
-    var initialBearing: GeodesicBearing { get }
-    var averageBearing: GeodesicBearing { get }
-    var finalBearing: GeodesicBearing { get }
-}
-
-internal struct LineSegment: GeodesicLineSegment {
+public struct GeodesicLineSegment {
     public let point: GeodesicPoint
     public let otherPoint: GeodesicPoint
     

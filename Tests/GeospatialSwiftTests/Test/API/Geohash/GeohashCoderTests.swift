@@ -3,7 +3,7 @@ import XCTest
 @testable import GeospatialSwift
 
 class GeohashCoderTests: XCTestCase {
-    var geohashCoder: GeohashCoderProtocol!
+    var geohashCoder: GeohashCoder!
     
     var geohash: String!
     var geohashNeighbors: [String]!
@@ -160,7 +160,7 @@ class GeohashCoderTests: XCTestCase {
     }
     
     func testGeohashes() {
-        let boundingBox = BoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
+        let boundingBox = GeodesicBoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
         let geohashes = geohashCoder.geohashes(for: boundingBox, precision: 9)
         
         XCTAssertEqual(geohashes.count, 9)
@@ -168,7 +168,7 @@ class GeohashCoderTests: XCTestCase {
     }
     
     func testGeohashBoxes() {
-        let boundingBox = BoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
+        let boundingBox = GeodesicBoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
         let geohashBoxes = geohashCoder.geohashBoxes(for: boundingBox, precision: 9)
         
         XCTAssertEqual(geohashBoxes.count, 9)

@@ -1,14 +1,12 @@
 import class Foundation.NSNull
 
-public protocol GeoJsonGeometryCollection: GeoJsonGeometry { }
-
 extension GeoJson {
     /**
-     Creates a GeoJsonGeometryCollection
+     Creates a GeometryCollection
      */
-    public func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeoJsonGeometryCollection { GeometryCollection(geometries: geometries) }
+    public func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeometryCollection { GeometryCollection(geometries: geometries) }
     
-    public struct GeometryCollection: GeoJsonGeometryCollection {
+    public struct GeometryCollection: GeoJsonGeometry {
         public let type: GeoJsonObjectType = .geometryCollection
         
         public let objectGeometries: [GeoJsonGeometry]?
@@ -44,7 +42,7 @@ extension GeoJson {
 extension GeoJson.GeometryCollection {
     public var geoJson: GeoJsonDictionary { ["type": type.name, "geometries": objectGeometries?.map { $0.geoJson } ?? [] ] }
     
-    public var objectBoundingBox: GeodesicBoundingBox? { BoundingBox.best(objectGeometries?.compactMap { $0.objectBoundingBox } ?? []) }
+    public var objectBoundingBox: GeodesicBoundingBox? { .best(objectGeometries?.compactMap { $0.objectBoundingBox } ?? []) }
     
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { objectGeometries?.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min() }
     

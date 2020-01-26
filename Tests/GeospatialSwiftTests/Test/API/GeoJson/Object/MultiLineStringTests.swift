@@ -10,7 +10,7 @@ class MultiLineStringTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        lineStrings = MockData.lineStrings as? [LineString]
+        lineStrings = MockData.lineStrings
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
         
@@ -35,7 +35,7 @@ class MultiLineStringTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(multiLineString.objectBoundingBox as? BoundingBox, multiLineString.boundingBox as? BoundingBox)
+        XCTAssertEqual(multiLineString.objectBoundingBox, multiLineString.boundingBox)
     }
     
     func testGeoJson() {
@@ -106,9 +106,9 @@ class MultiLineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiLineString.boundingBox
         
-        let boundingBox = BoundingBox.best(lineStrings.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(lineStrings.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance_On() {

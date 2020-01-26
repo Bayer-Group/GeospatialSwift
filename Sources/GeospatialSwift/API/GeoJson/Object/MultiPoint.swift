@@ -1,19 +1,17 @@
-public protocol GeoJsonMultiPoint: GeoJsonCoordinatesGeometry { }
-
 extension GeoJson {
     /**
-     Creates a GeoJsonMultiPoint
+     Creates a MultiPoint
      */
-    public func multiPoint(points: [GeoJsonPoint]) -> Result<GeoJsonMultiPoint, InvalidGeoJson> {
+    public func multiPoint(points: [Point]) -> Result<MultiPoint, InvalidGeoJson> {
         guard points.count >= 1 else { return .failure(.init(reason: "A valid MultiPoint must have at least one Point")) }
         
         return .success(MultiPoint(points: points))
     }
     
-    public struct MultiPoint: GeoJsonMultiPoint {
+    public struct MultiPoint: GeoJsonCoordinatesGeometry {
         public let type: GeoJsonObjectType = .multiPoint
         
-        private let geoJsonPoints: [GeoJsonPoint]
+        private let geoJsonPoints: [Point]
         
         internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
             guard let pointsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPoint must have valid coordinates") }
@@ -32,7 +30,7 @@ extension GeoJson {
             geoJsonPoints = pointsJson.map { Point(coordinatesJson: $0) }
         }
         
-        fileprivate init(points: [GeoJsonPoint]) {
+        fileprivate init(points: [Point]) {
             geoJsonPoints = points
         }
     }
@@ -43,7 +41,7 @@ extension GeoJson.MultiPoint {
     
     public var geoJsonCoordinates: [Any] { geoJsonPoints.map { $0.geoJsonCoordinates } }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(geoJsonPoints.compactMap { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(geoJsonPoints.compactMap { $0.boundingBox })! }
     
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPoints.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     

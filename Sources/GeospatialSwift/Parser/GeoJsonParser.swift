@@ -1,12 +1,4 @@
-internal protocol GeoJsonParserProtocol {
-    func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson?
-    func validate(geoJson: GeoJsonDictionary, type: GeoJsonObjectType) -> InvalidGeoJson?
-    func geoJsonObjectType(geoJson: GeoJsonDictionary) -> GeoJsonObjectType?
-    func geoJsonObject(fromGeoJson geoJson: GeoJsonDictionary) -> Result<GeoJsonObject, InvalidGeoJson>
-    func geoJsonObject(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonObject
-}
-
-internal struct GeoJsonParser: GeoJsonParserProtocol {
+internal struct GeoJsonParser {
     func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
         if let invalidGeoJson = self.typeInvalidReason(geoJson: geoJson) { return invalidGeoJson }
         

@@ -1,19 +1,17 @@
-public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry { }
-
 extension GeoJson {
     /**
-     Creates a GeoJsonMultiLineString
+     Creates a MultiLineString
      */
-    public func multiLineString(lineStrings: [GeoJsonLineString]) -> Result<GeoJsonMultiLineString, InvalidGeoJson> {
+    public func multiLineString(lineStrings: [LineString]) -> Result<MultiLineString, InvalidGeoJson> {
         guard lineStrings.count >= 1 else { return .failure(.init(reason: "A valid MultiLineString must have at least one LineString")) }
         
         return .success(MultiLineString(lineStrings: lineStrings))
     }
     
-    public struct MultiLineString: GeoJsonMultiLineString {
+    public struct MultiLineString: GeoJsonLinearGeometry {
         public let type: GeoJsonObjectType = .multiLineString
         
-        private let geoJsonLineStrings: [GeoJsonLineString]
+        private let geoJsonLineStrings: [LineString]
         
         internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
             guard let lineStringsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiLineString must have valid coordinates") }
@@ -32,7 +30,7 @@ extension GeoJson {
             geoJsonLineStrings = lineStringsJson.map { LineString(coordinatesJson: $0) }
         }
         
-        fileprivate init(lineStrings: [GeoJsonLineString]) {
+        fileprivate init(lineStrings: [LineString]) {
             geoJsonLineStrings = lineStrings
         }
     }
@@ -45,7 +43,7 @@ extension GeoJson.MultiLineString {
     
     public var points: [GeodesicPoint] { lineStrings.flatMap { $0.points } }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(lineStrings.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(lineStrings.map { $0.boundingBox })! }
     
     public var length: Double { geoJsonLineStrings.reduce(0) { $0 + $1.length } }
     

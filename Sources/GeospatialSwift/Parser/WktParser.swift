@@ -1,12 +1,8 @@
 import Foundation
 
-internal protocol WktParserProtocol {
-    func geoJsonObject(from wkt: String) -> GeoJsonObject?
-}
-
 // SOMEDAY: Forced unwrapping leads to exceptions when WKT is invalid.
-internal struct WktParser: WktParserProtocol {
-    let geoJson: GeoJsonProtocol
+internal struct WktParser {
+    let geoJson: GeoJson
     
     func geoJsonObject(from wkt: String) -> GeoJsonObject? {
         guard let startRange = wkt.range(of: "(") else { Log.warning("Malformed WKT: \(wkt)"); return nil }
@@ -53,7 +49,7 @@ internal struct WktParser: WktParserProtocol {
         }
     }
     
-    private func parsePointString(_ data: String) throws -> GeoJsonPoint {
+    private func parsePointString(_ data: String) throws -> GeoJson.Point {
         let formatter = NumberFormatter.formatterForCoordinates
         
         let coordinates = data.trimmingCharacters(in: CharacterSet(charactersIn: " ")).components(separatedBy: " ")
@@ -63,14 +59,14 @@ internal struct WktParser: WktParserProtocol {
         return geoJson.point(longitude: longitude, latitude: latitude)
     }
     
-    private func parseLineString(_ data: String) throws -> GeoJsonLineString {
+    private func parseLineString(_ data: String) throws -> GeoJson.LineString {
         let points = try data.components(separatedBy: ",").map { try parsePointString($0) }
         
         return geoJson.lineString(points: points).success!
     }
     
-    private func parsePolygonString(_ data: String) throws -> GeoJsonPolygon {
-        let linearRings: [GeoJsonLineString] = try data.wktTokens.map { wktLinearRing in
+    private func parsePolygonString(_ data: String) throws -> GeoJson.Polygon {
+        let linearRings: [GeoJson.LineString] = try data.wktTokens.map { wktLinearRing in
             let wktPoints = wktLinearRing.components(separatedBy: ",")
             
             return geoJson.lineString(points: try wktPoints.map { try parsePointString($0) }).success!

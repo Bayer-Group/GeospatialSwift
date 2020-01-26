@@ -7,12 +7,12 @@ class MultiPolygonTests: XCTestCase {
     var multiPolygon: MultiPolygon!
     var distancePoint: SimplePoint!
     
-    var point: GeoJsonPoint!
+    var point: GeoJson.Point!
     
     override func setUp() {
         super.setUp()
         
-        polygons = MockData.polygons as? [Polygon]
+        polygons = MockData.polygons
         
         multiPolygon = GeoTestHelper.multiPolygon(polygons)
         
@@ -39,7 +39,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(multiPolygon.objectBoundingBox as? BoundingBox, multiPolygon.boundingBox as? BoundingBox)
+        XCTAssertEqual(multiPolygon.objectBoundingBox, multiPolygon.boundingBox)
     }
     
     func testGeoJson() {
@@ -88,9 +88,9 @@ class MultiPolygonTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiPolygon.boundingBox
         
-        let boundingBox = BoundingBox.best(polygons.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(polygons.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance() {

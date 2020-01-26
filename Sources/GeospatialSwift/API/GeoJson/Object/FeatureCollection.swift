@@ -1,21 +1,17 @@
-public protocol GeoJsonFeatureCollection: GeoJsonObject {
-    var features: [GeoJsonFeature] { get }
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonFeatureCollection
+     Creates a FeatureCollection
      */
-    public func featureCollection(features: [GeoJsonFeature]) -> Result<GeoJsonFeatureCollection, InvalidGeoJson> {
+    public func featureCollection(features: [Feature]) -> Result<FeatureCollection, InvalidGeoJson> {
         guard features.count >= 1 else { return .failure(.init(reason: "A valid FeatureCollection must have at least one feature")) }
         
         return .success(FeatureCollection(features: features))
     }
     
-    public struct FeatureCollection: GeoJsonFeatureCollection {
+    public struct FeatureCollection: GeoJsonObject {
         public let type: GeoJsonObjectType = .featureCollection
         
-        public let features: [GeoJsonFeature]
+        public let features: [Feature]
         
         internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
             guard let featuresJson = geoJson["features"] as? [GeoJsonDictionary] else { return .init(reason: "A valid FeatureCollection must have a \"features\" key") }
@@ -34,7 +30,7 @@ extension GeoJson {
             features = featuresJson.map { Feature(geoJson: $0) }
         }
         
-        fileprivate init(features: [GeoJsonFeature]) {
+        fileprivate init(features: [Feature]) {
             self.features = features
         }
     }
@@ -45,7 +41,7 @@ extension GeoJson.FeatureCollection {
     
     public var objectGeometries: [GeoJsonGeometry]? { features.compactMap { $0.objectGeometries }.flatMap { $0 }.nilIfEmpty }
     
-    public var objectBoundingBox: GeodesicBoundingBox? { objectGeometries.flatMap { BoundingBox.best($0.compactMap { $0.objectBoundingBox }) } }
+    public var objectBoundingBox: GeodesicBoundingBox? { objectGeometries.flatMap { .best($0.compactMap { $0.objectBoundingBox }) } }
     
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min() }
     

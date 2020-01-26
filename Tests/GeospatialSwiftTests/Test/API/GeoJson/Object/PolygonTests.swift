@@ -11,21 +11,19 @@ class PolygonTests: XCTestCase {
     var polygonDistance: Polygon!
     var distancePoint: SimplePoint!
     
-    var point: GeoJsonPoint!
-    var otherPoint: GeoJsonPoint!
-    var point3: GeoJsonPoint!
+    var point: GeoJson.Point!
+    var otherPoint: GeoJson.Point!
+    var point3: GeoJson.Point!
     
-    var lineString1: GeoJsonLineString!
-    var lineString2: GeoJsonLineString!
-    var lineString3: GeoJsonLineString!
+    var lineString1: GeoJson.LineString!
+    var lineString2: GeoJson.LineString!
+    var lineString3: GeoJson.LineString!
     
     override func setUp() {
         super.setUp()
         
-        // swiftlint:disable:next force_cast
-        mainRing = (MockData.linearRings.first! as! LineString)
-        // swiftlint:disable:next force_cast
-        negativeRings = (Array(MockData.linearRings.dropFirst()) as! [LineString])
+        mainRing = MockData.linearRings.first!
+        negativeRings = Array(MockData.linearRings.dropFirst())
         linearRings = [mainRing] + negativeRings
         
         //3                   *
@@ -71,7 +69,7 @@ class PolygonTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(polygon.objectBoundingBox as? BoundingBox, polygon.boundingBox as? BoundingBox)
+        XCTAssertEqual(polygon.objectBoundingBox, polygon.boundingBox)
     }
     
     func testGeoJson() {
@@ -137,9 +135,9 @@ class PolygonTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = polygon.boundingBox
         
-        let boundingBox = BoundingBox.best(linearRings.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(linearRings.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance_FollowingLine() {

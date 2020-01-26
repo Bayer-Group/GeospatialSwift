@@ -14,7 +14,7 @@ class FeatureTests: XCTestCase {
     var featureWithProperties2: Feature!
     var featureWithProperties1Mixed: Feature!
     
-    var point: GeoJsonPoint!
+    var point: GeoJson.Point!
     
     var distancePoint: SimplePoint!
     
@@ -72,9 +72,9 @@ class FeatureTests: XCTestCase {
     
     func testObjectBoundingBox() {
         let resultBoundingBox = feature.objectBoundingBox
-        let boundingBox = BoundingBox.best([feature.geometry!.objectBoundingBox!])
+        let boundingBox = GeodesicBoundingBox.best([feature.geometry!.objectBoundingBox!])
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
         
         XCTAssertNil(featureEmpty.objectBoundingBox)
     }

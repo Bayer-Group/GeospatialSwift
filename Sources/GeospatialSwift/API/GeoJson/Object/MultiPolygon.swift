@@ -1,19 +1,17 @@
-public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry { }
-
 extension GeoJson {
     /**
-     Creates a GeoJsonMultiPolygon
+     Creates a MultiPolygon
      */
-    public func multiPolygon(polygons: [GeoJsonPolygon]) -> Result<GeoJsonMultiPolygon, InvalidGeoJson> {
+    public func multiPolygon(polygons: [Polygon]) -> Result<MultiPolygon, InvalidGeoJson> {
         guard polygons.count >= 1 else { return .failure(.init(reason: "A valid MultiPolygon must have at least one Polygon")) }
         
         return .success(MultiPolygon(polygons: polygons))
     }
     
-    public struct MultiPolygon: GeoJsonMultiPolygon {
+    public struct MultiPolygon: GeoJsonClosedGeometry {
         public let type: GeoJsonObjectType = .multiPolygon
         
-        public let geoJsonPolygons: [GeoJsonPolygon]
+        public let geoJsonPolygons: [Polygon]
         
         internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
             guard let multiPolygonCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPolygon must have valid coordinates") }
@@ -34,7 +32,7 @@ extension GeoJson {
         
         // SOMEDAY: More strict additions:
         // Multipolygon where two polygons intersect - validate that two polygons are merged as well
-        fileprivate init(polygons: [GeoJsonPolygon]) {
+        fileprivate init(polygons: [Polygon]) {
             geoJsonPolygons = polygons
         }
     }
@@ -47,7 +45,7 @@ extension GeoJson.MultiPolygon {
     
     public var points: [GeodesicPoint] { polygons.flatMap { $0.points } }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox.best(polygons.map { $0.boundingBox })! }
+    public var boundingBox: GeodesicBoundingBox { .best(polygons.map { $0.boundingBox })! }
     
     public var hasHole: Bool { geoJsonPolygons.contains { $0.hasHole } }
     

@@ -1,37 +1,25 @@
 /**
- A protocol provided for unit testing.
- */
-public protocol GeospatialProtocol: class {
-    var geoJson: GeoJsonProtocol { get }
-    var geohash: GeohashCoderProtocol { get }
-    
-    var calculator: GeodesicCalculatorProtocol { get }
-    
-    func parse(wkt: String) -> GeoJsonObject?
-}
-
-/**
  A framework to parse GeoJson and create GeoJson by means of a GeoJsonObject.
  
  The GeoJson object has many helper methods including boundingBox, which eliminates the need to add a bbox parameter on the geoJson.
  */
-open class Geospatial: GeospatialProtocol {
+open class Geospatial {
     /**
      Everything GeoJson. The base of all other functionality.
      */
-    public let geoJson: GeoJsonProtocol
+    public let geoJson: GeoJson
     
     /**
      Everything Geohash
      */
-    public let geohash: GeohashCoderProtocol
+    public let geohash: GeohashCoder
     
     /**
      Everything Geospatial Calculation
      */
-    public let calculator: GeodesicCalculatorProtocol
+    public let calculator: GeodesicCalculator
     
-    internal let wktParser: WktParserProtocol
+    internal let wktParser: WktParser
     
     /**
      Initialize the interface using a configuration to describe how the interface should react to requests.
@@ -41,7 +29,7 @@ open class Geospatial: GeospatialProtocol {
         
         geohash = GeohashCoder()
         
-        calculator = GeodesicCalculator.shared
+        calculator = Calculator
         
         wktParser = WktParser(geoJson: geoJson)
     }
