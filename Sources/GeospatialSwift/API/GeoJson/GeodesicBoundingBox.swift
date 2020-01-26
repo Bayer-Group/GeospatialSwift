@@ -68,6 +68,9 @@ public struct GeodesicBoundingBox {
     public func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox {
         return GeodesicBoundingBox(minLongitude: minLongitude - (longitudeDelta * leftPercent), minLatitude: minLatitude - (longitudeDelta * bottomPercent), maxLongitude: maxLongitude + (longitudeDelta * rightPercent), maxLatitude: maxLatitude + (longitudeDelta * topPercent))
     }
+    public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox { insetBoundingBox(widthPercent: percent, heightPercent: percent) }
+    public func insetBoundingBox(widthPercent: Double, heightPercent: Double) -> GeodesicBoundingBox { insetBoundingBox(topPercent: heightPercent, leftPercent: widthPercent, bottomPercent: heightPercent, rightPercent: widthPercent) }
+
 }
 
 public extension GeodesicBoundingBox {
