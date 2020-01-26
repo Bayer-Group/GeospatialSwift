@@ -161,9 +161,9 @@ extension GeohashCoder {
             }
         } while geohash.count < precision
         
-        let boundingCoordinates = (minLongitude: range.longitude.min, minLatitude: range.latitude.min, maxLongitude: range.longitude.max, maxLatitude: range.latitude.max)
+        let boundingBox = BoundingBox(minLongitude: range.longitude.min, minLatitude: range.latitude.min, maxLongitude: range.longitude.max, maxLatitude: range.latitude.max)
         
-        return GeohashBox(boundingCoordinates: boundingCoordinates, geohash: geohash)
+        return GeohashBox(boundingBox: boundingBox, geohash: geohash)
     }
     
     private func geohashBoxes(boundingBox: GeodesicBoundingBox, precision: Int) -> [GeoJsonGeohashBox] {
@@ -221,9 +221,9 @@ extension GeohashCoder {
             }
         }
         
-        let boundingCoordinates = (minLongitude: range.longitude.min, minLatitude: range.latitude.min, maxLongitude: range.longitude.max, maxLatitude: range.latitude.max)
+        let boundingBox = BoundingBox(minLongitude: range.longitude.min, minLatitude: range.latitude.min, maxLongitude: range.longitude.max, maxLatitude: range.latitude.max)
         
-        return GeohashBox(boundingCoordinates: boundingCoordinates, geohash: geohash)
+        return GeohashBox(boundingBox: boundingBox, geohash: geohash)
     }
     
     private func neighbors(geohash: String) -> [String] {

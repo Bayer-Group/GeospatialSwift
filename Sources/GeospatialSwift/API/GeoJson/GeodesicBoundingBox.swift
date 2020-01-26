@@ -1,7 +1,5 @@
 // TODO: "The concept of minimums and maximums is not right. Crossing the Antimeridian will do odd things. Fix all things BoundingCoordinates and BoundingBox.
 
-public typealias BoundingCoordinates = (minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double)
-
 public protocol GeodesicBoundingBox {
     var minLongitude: Double { get }
     var minLatitude: Double { get }
@@ -13,7 +11,6 @@ public protocol GeodesicBoundingBox {
     
     var points: [GeodesicPoint] { get }
     var centroid: GeodesicPoint { get }
-    var boundingCoordinates: BoundingCoordinates { get }
     var segments: [GeodesicLineSegment] { get }
     var box: GeodesicPolygon { get }
     
@@ -36,16 +33,14 @@ extension GeodesicBoundingBox {
  A bounding box intended to exactly fit a GeoJsonObject. Also known as a "Minimum Bounding Box", "Bounding Envelope".
  */
 public struct BoundingBox: GeodesicBoundingBox {
-    public let boundingCoordinates: BoundingCoordinates
-    
     public var points: [GeodesicPoint] { [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)] }
     
     public var centroid: GeodesicPoint { SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2)) }
     
-    public var minLongitude: Double { boundingCoordinates.minLongitude }
-    public var minLatitude: Double { boundingCoordinates.minLatitude }
-    public var maxLongitude: Double { boundingCoordinates.maxLongitude }
-    public var maxLatitude: Double { boundingCoordinates.maxLatitude }
+    public let minLongitude: Double
+    public let minLatitude: Double
+    public let maxLongitude: Double
+    public let maxLatitude: Double
     
     public var longitudeDelta: Double { maxLongitude - minLongitude }
     public var latitudeDelta: Double { maxLatitude - minLatitude }
@@ -54,8 +49,11 @@ public struct BoundingBox: GeodesicBoundingBox {
     
     public var box: GeodesicPolygon { SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     
-    public init(boundingCoordinates: BoundingCoordinates) {
-        self.boundingCoordinates = boundingCoordinates
+    public init(minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double) {
+        self.minLongitude = minLongitude
+        self.minLatitude = minLatitude
+        self.maxLongitude = maxLongitude
+        self.maxLatitude = maxLatitude
     }
     
     public func contains(point: GeodesicPoint) -> Bool { contains(point: point, tolerance: 0) }
@@ -85,9 +83,7 @@ public struct BoundingBox: GeodesicBoundingBox {
     // SOMEDAY: This should follow the rule "5.2. The Antimeridian" in the GeoJson spec.
     public func best(_ boundingBoxes: [GeodesicBoundingBox]) -> GeodesicBoundingBox {
         return boundingBoxes.reduce(self) {
-            let boundingCoordinates = (minLongitude: min($0.minLongitude, $1.minLongitude), minLatitude: min($0.minLatitude, $1.minLatitude), maxLongitude: max($0.maxLongitude, $1.maxLongitude), maxLatitude: max($0.maxLatitude, $1.maxLatitude))
-            
-            return BoundingBox(boundingCoordinates: boundingCoordinates)
+            return BoundingBox(minLongitude: min($0.minLongitude, $1.minLongitude), minLatitude: min($0.minLatitude, $1.minLatitude), maxLongitude: max($0.maxLongitude, $1.maxLongitude), maxLatitude: max($0.maxLatitude, $1.maxLatitude))
         }
     }
     
@@ -95,15 +91,11 @@ public struct BoundingBox: GeodesicBoundingBox {
         let longitudeAdjustment = minLongitude == maxLongitude ? minimumAdjustment : 0
         let latitudeAdjustment = minLatitude == maxLatitude ? minimumAdjustment : 0
         
-        let boundingCoordinates = (minLongitude: minLongitude - longitudeAdjustment, minLatitude: minLatitude - latitudeAdjustment, maxLongitude: maxLongitude + longitudeAdjustment, maxLatitude: maxLatitude + latitudeAdjustment)
-        
-        return BoundingBox(boundingCoordinates: boundingCoordinates)
+        return BoundingBox(minLongitude: minLongitude - longitudeAdjustment, minLatitude: minLatitude - latitudeAdjustment, maxLongitude: maxLongitude + longitudeAdjustment, maxLatitude: maxLatitude + latitudeAdjustment)
     }
     
     public func insetBoundingBox(topPercent: Double, leftPercent: Double, bottomPercent: Double, rightPercent: Double) -> GeodesicBoundingBox {
-        let boundingCoordinates = (minLongitude: minLongitude - (longitudeDelta * leftPercent), minLatitude: minLatitude - (longitudeDelta * bottomPercent), maxLongitude: maxLongitude + (longitudeDelta * rightPercent), maxLatitude: maxLatitude + (longitudeDelta * topPercent))
-        
-        return BoundingBox(boundingCoordinates: boundingCoordinates)
+        return BoundingBox(minLongitude: minLongitude - (longitudeDelta * leftPercent), minLatitude: minLatitude - (longitudeDelta * bottomPercent), maxLongitude: maxLongitude + (longitudeDelta * rightPercent), maxLatitude: maxLatitude + (longitudeDelta * topPercent))
     }
 }
 

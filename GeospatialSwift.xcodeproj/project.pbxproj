@@ -285,6 +285,10 @@
 		60F9958D23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
 		60F9958E23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
 		60F9958F23DD34A20006B70C /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958B23DD34A20006B70C /* Result.swift */; };
+		60F995A923DD49020006B70C /* GeodesicBearing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F995A823DD49020006B70C /* GeodesicBearing.swift */; };
+		60F995AA23DD49020006B70C /* GeodesicBearing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F995A823DD49020006B70C /* GeodesicBearing.swift */; };
+		60F995AB23DD49020006B70C /* GeodesicBearing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F995A823DD49020006B70C /* GeodesicBearing.swift */; };
+		60F995AC23DD49020006B70C /* GeodesicBearing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F995A823DD49020006B70C /* GeodesicBearing.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -411,6 +415,7 @@
 		1EFFA4D720FD10760017D8C1 /* MockGeoJsonGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockGeoJsonGeometry.swift; sourceTree = "<group>"; };
 		60F9958623DCEB600006B70C /* InvalidGeoJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvalidGeoJson.swift; sourceTree = "<group>"; };
 		60F9958B23DD34A20006B70C /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		60F995A823DD49020006B70C /* GeodesicBearing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicBearing.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -635,6 +640,7 @@
 		1E8B7833209394D20097A986 /* GeoJson */ = {
 			isa = PBXGroup;
 			children = (
+				60F995A823DD49020006B70C /* GeodesicBearing.swift */,
 				1E8B7834209394D20097A986 /* GeodesicBoundingBox.swift */,
 				1E4BDD492121C59A008DC2BC /* GeodesicLine.swift */,
 				1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */,
@@ -1392,6 +1398,7 @@
 				1E8BF420211DE20D00A247BF /* GeodesicPolygon.swift in Sources */,
 				1E9091282093A3EE00DAEF11 /* Geospatial.swift in Sources */,
 				1E90912A2093A3EE00DAEF11 /* GeohashCoder.swift in Sources */,
+				60F995A923DD49020006B70C /* GeodesicBearing.swift in Sources */,
 				1E9091322093A3EE00DAEF11 /* MultiPoint.swift in Sources */,
 				1E92ABA720EC113D00EF4A4E /* GeoJsonObject.swift in Sources */,
 				1E53D4DC20AB5D370006F1E1 /* Timber.swift in Sources */,
@@ -1481,6 +1488,7 @@
 				1E9091402093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E9091422093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E90914A2093A3EF00DAEF11 /* MultiPoint.swift in Sources */,
+				60F995AA23DD49020006B70C /* GeodesicBearing.swift in Sources */,
 				1E53D4DD20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091442093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCC20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
@@ -1570,6 +1578,7 @@
 				1E9091582093A3EF00DAEF11 /* Geospatial.swift in Sources */,
 				1E90915A2093A3EF00DAEF11 /* GeohashCoder.swift in Sources */,
 				1E9091622093A3EF00DAEF11 /* MultiPoint.swift in Sources */,
+				60F995AB23DD49020006B70C /* GeodesicBearing.swift in Sources */,
 				1E53D4DE20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E90915C2093A3EF00DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCD20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,
@@ -1659,6 +1668,7 @@
 				1E9091702093A3F000DAEF11 /* Geospatial.swift in Sources */,
 				1E9091722093A3F000DAEF11 /* GeohashCoder.swift in Sources */,
 				1E90917A2093A3F000DAEF11 /* MultiPoint.swift in Sources */,
+				60F995AC23DD49020006B70C /* GeodesicBearing.swift in Sources */,
 				1E53D4DF20AB5D370006F1E1 /* Timber.swift in Sources */,
 				1E9091742093A3F000DAEF11 /* GeodesicPoint.swift in Sources */,
 				1E92ABCE20ED955800EF4A4E /* GeoJsonLinearGeometry.swift in Sources */,

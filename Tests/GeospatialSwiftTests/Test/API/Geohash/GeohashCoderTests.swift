@@ -160,8 +160,7 @@ class GeohashCoderTests: XCTestCase {
     }
     
     func testGeohashes() {
-        let boundingCoordinates = (minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
-        let boundingBox = BoundingBox(boundingCoordinates: boundingCoordinates)
+        let boundingBox = BoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
         let geohashes = geohashCoder.geohashes(for: boundingBox, precision: 9)
         
         XCTAssertEqual(geohashes.count, 9)
@@ -169,8 +168,7 @@ class GeohashCoderTests: XCTestCase {
     }
     
     func testGeohashBoxes() {
-        let boundingCoordinates = (minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
-        let boundingBox = BoundingBox(boundingCoordinates: boundingCoordinates)
+        let boundingBox = BoundingBox(minLongitude: -90.422609, minLatitude: 38.701594, maxLongitude: -90.422523, maxLatitude: 38.70168)
         let geohashBoxes = geohashCoder.geohashBoxes(for: boundingBox, precision: 9)
         
         XCTAssertEqual(geohashBoxes.count, 9)
@@ -231,10 +229,10 @@ class GeohashCoderTests: XCTestCase {
         
         XCTAssertEqual(geohashNeighbor, "9yzsnmkm9")
         XCTAssertEqual(geohashBoxNeighbor.geohash, "9yzsnmkm9")
-        XCTAssertEqual(geohashBoxNeighbor.boundingBox.boundingCoordinates.minLongitude, -90.42258739471436, accuracy: 10)
-        XCTAssertEqual(geohashBoxNeighbor.boundingBox.boundingCoordinates.minLatitude, 38.70165824890137, accuracy: 10)
-        XCTAssertEqual(geohashBoxNeighbor.boundingBox.boundingCoordinates.maxLongitude, -90.42254447937012, accuracy: 10)
-        XCTAssertEqual(geohashBoxNeighbor.boundingBox.boundingCoordinates.maxLatitude, 38.701701164245605, accuracy: 10)
+        XCTAssertEqual(geohashBoxNeighbor.boundingBox.minLongitude, -90.42258739471436, accuracy: 10)
+        XCTAssertEqual(geohashBoxNeighbor.boundingBox.minLatitude, 38.70165824890137, accuracy: 10)
+        XCTAssertEqual(geohashBoxNeighbor.boundingBox.maxLongitude, -90.42254447937012, accuracy: 10)
+        XCTAssertEqual(geohashBoxNeighbor.boundingBox.maxLatitude, 38.701701164245605, accuracy: 10)
     }
     
     func testGeohashNeighbors() {

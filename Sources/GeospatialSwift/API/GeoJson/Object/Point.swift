@@ -54,7 +54,7 @@ extension GeoJson.Point {
     
     public var points: [GeodesicPoint] { [self] }
     
-    public var boundingBox: GeodesicBoundingBox { BoundingBox(boundingCoordinates: (minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude)) }
+    public var boundingBox: GeodesicBoundingBox { BoundingBox(minLongitude: longitude, minLatitude: latitude, maxLongitude: longitude, maxLatitude: latitude) }
     
     // SOMEDAY: Consider Altitude? What to do if altitude is nil in some cases?
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: self, to: point, tolerance: tolerance) }

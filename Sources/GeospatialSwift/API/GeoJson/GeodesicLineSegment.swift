@@ -3,9 +3,9 @@ public protocol GeodesicLineSegment {
     var otherPoint: GeodesicPoint { get }
     
     var midpoint: GeodesicPoint { get }
-    var initialBearing: (bearing: Double, back: Double) { get }
-    var averageBearing: (bearing: Double, back: Double) { get }
-    var finalBearing: (bearing: Double, back: Double) { get }
+    var initialBearing: GeodesicBearing { get }
+    var averageBearing: GeodesicBearing { get }
+    var finalBearing: GeodesicBearing { get }
 }
 
 internal struct LineSegment: GeodesicLineSegment {
@@ -14,22 +14,22 @@ internal struct LineSegment: GeodesicLineSegment {
     
     public var midpoint: GeodesicPoint { Calculator.midpoint(from: point, to: otherPoint) }
     
-    public var initialBearing: (bearing: Double, back: Double) {
+    public var initialBearing: GeodesicBearing {
         let bearing = Calculator.initialBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
-        return (bearing, back)
+        return .init(bearing: bearing, back: back)
     }
     
-    public var averageBearing: (bearing: Double, back: Double) {
+    public var averageBearing: GeodesicBearing {
         let bearing = Calculator.averageBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
-        return (bearing, back)
+        return .init(bearing: bearing, back: back)
     }
     
-    public var finalBearing: (bearing: Double, back: Double) {
+    public var finalBearing: GeodesicBearing {
         let bearing = Calculator.finalBearing(from: point, to: otherPoint)
         let back = bearing > 180 ? bearing - 180 : bearing + 180
-        return (bearing, back)
+        return .init(bearing: bearing, back: back)
     }
 }
 

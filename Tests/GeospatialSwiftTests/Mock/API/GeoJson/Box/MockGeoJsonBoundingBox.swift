@@ -8,31 +8,35 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
     var description: String = ""
     
     private(set) var minLongitudeCallCount = 0
+    var minLongitudeResult: Double = 0
     var minLongitude: Double {
         minLongitudeCallCount += 1
         
-        return boundingCoordinatesResult.minLongitude
+        return minLongitudeResult
     }
     
     private(set) var minLatitudeCallCount = 0
+    var minLatitudeResult: Double = 0
     var minLatitude: Double {
         minLatitudeCallCount += 1
         
-        return boundingCoordinatesResult.minLatitude
+        return minLatitudeResult
     }
     
     private(set) var maxLongitudeCallCount = 0
+    var maxLongitudeResult: Double = 0
     var maxLongitude: Double {
         maxLongitudeCallCount += 1
         
-        return boundingCoordinatesResult.maxLongitude
+        return maxLongitudeResult
     }
     
     private(set) var maxLatitudeCallCount = 0
+    var maxLatitudeResult: Double = 0
     var maxLatitude: Double {
         maxLatitudeCallCount += 1
         
-        return boundingCoordinatesResult.maxLatitude
+        return maxLatitudeResult
     }
     
     private(set) var longitudeDeltaCallCount = 0
@@ -115,13 +119,5 @@ class MockGeoJsonBoundingBox: GeodesicBoundingBox {
         overlapsCallCount += 1
         
         return overlapsResult
-    }
-    
-    private(set) var boundingCoordinatesCallCount = 0
-    var boundingCoordinatesResult: BoundingCoordinates = (0, 0, 0, 0)
-    var boundingCoordinates: BoundingCoordinates {
-        boundingCoordinatesCallCount += 1
-        
-        return boundingCoordinatesResult
     }
 }

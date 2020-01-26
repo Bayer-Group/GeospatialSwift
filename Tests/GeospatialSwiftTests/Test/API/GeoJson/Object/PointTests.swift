@@ -109,7 +109,7 @@ class PointTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = point.boundingBox
         
-        let boundingBox = BoundingBox(boundingCoordinates: (minLongitude: point.longitude, minLatitude: point.latitude, maxLongitude: point.longitude, maxLatitude: point.latitude))
+        let boundingBox = BoundingBox(minLongitude: point.longitude, minLatitude: point.latitude, maxLongitude: point.longitude, maxLatitude: point.latitude)
         
         XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox)
     }
