@@ -20,30 +20,6 @@ extension GeoJson {
         internal let idDouble: Double?
         internal let idInt: Int?
         
-        internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
-            func validateGeometry() -> InvalidGeoJson? {
-                guard let geometryJson = geoJson["geometry"] else { return .init(reason: "A valid Feature must have a \"geometry\" key") }
-                
-                if geometryJson is NSNull { return nil }
-                
-                guard let geometryGeoJson = geometryJson as? GeoJsonDictionary, let type = parser.geoJsonObjectType(geoJson: geometryGeoJson) else { return .init(reason: "Not a valid feature geometry") }
-                
-                guard type.isGeometry else { return .init(reason: "Not a valid feature geometry: \(type.name)") }
-                
-                return parser.validate(geoJson: geometryGeoJson, type: type).flatMap { .init(reason: "Invalid Geometry in Feature") + $0 }
-            }
-            
-            func validateId() -> InvalidGeoJson? {
-                if geoJson["id"].flatMap({ !($0 is NSNull || $0 is String || $0 is Double || $0 is Int) }) ?? false {
-                    return .init(reason: "Id must be of type null, String, Double, or Int")
-                }
-                
-                return nil
-            }
-            
-            return validateGeometry() + validateId()
-        }
-        
         internal init(geoJson: GeoJsonDictionary) {
             let id: Any? = geoJson["id"]
             let geometryJson = geoJson["geometry"] as? GeoJsonDictionary
@@ -83,4 +59,30 @@ extension GeoJson.Feature {
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { geometry?.objectDistance(to: point, tolerance: tolerance) }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geometry?.contains(point, tolerance: tolerance) ?? false }
+}
+
+extension GeoJson.Feature {
+    internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
+        func validateGeometry() -> InvalidGeoJson? {
+            guard let geometryJson = geoJson["geometry"] else { return .init(reason: "A valid Feature must have a \"geometry\" key") }
+            
+            if geometryJson is NSNull { return nil }
+            
+            guard let geometryGeoJson = geometryJson as? GeoJsonDictionary, let type = GeoJson.parser.geoJsonObjectType(geoJson: geometryGeoJson) else { return .init(reason: "Not a valid feature geometry") }
+            
+            guard type.isGeometry else { return .init(reason: "Not a valid feature geometry: \(type.name)") }
+            
+            return GeoJson.parser.validate(geoJson: geometryGeoJson, type: type).flatMap { .init(reason: "Invalid Geometry in Feature") + $0 }
+        }
+        
+        func validateId() -> InvalidGeoJson? {
+            if geoJson["id"].flatMap({ !($0 is NSNull || $0 is String || $0 is Double || $0 is Int) }) ?? false {
+                return .init(reason: "Id must be of type null, String, Double, or Int")
+            }
+            
+            return nil
+        }
+        
+        return validateGeometry() + validateId()
+    }
 }

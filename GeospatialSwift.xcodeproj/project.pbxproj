@@ -220,6 +220,10 @@
 		1EE89F1321147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
 		1EE89F1421147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
 		1EE89F1521147C890039554D /* GeodesicCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */; };
+		600290C923DD5EED007441BD /* LinearRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600290C823DD5EED007441BD /* LinearRing.swift */; };
+		600290CA23DD5EED007441BD /* LinearRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600290C823DD5EED007441BD /* LinearRing.swift */; };
+		600290CB23DD5EED007441BD /* LinearRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600290C823DD5EED007441BD /* LinearRing.swift */; };
+		600290CC23DD5EED007441BD /* LinearRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600290C823DD5EED007441BD /* LinearRing.swift */; };
 		60F9958723DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
 		60F9958823DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
 		60F9958923DCEB600006B70C /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F9958623DCEB600006B70C /* InvalidGeoJson.swift */; };
@@ -337,6 +341,7 @@
 		1E92ABD320EDC7AA00EF4A4E /* GeodesicLineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegment.swift; sourceTree = "<group>"; };
 		1E9A9BA320EE8B51003F381B /* GeodesicLineSegmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicLineSegmentTests.swift; sourceTree = "<group>"; };
 		1EE89F1221147C890039554D /* GeodesicCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicCalculatorTests.swift; sourceTree = "<group>"; };
+		600290C823DD5EED007441BD /* LinearRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearRing.swift; sourceTree = "<group>"; };
 		60F9958623DCEB600006B70C /* InvalidGeoJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvalidGeoJson.swift; sourceTree = "<group>"; };
 		60F9958B23DD34A20006B70C /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		60F995A823DD49020006B70C /* GeodesicBearing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicBearing.swift; sourceTree = "<group>"; };
@@ -582,6 +587,7 @@
 				1E8B7837209394D20097A986 /* Feature.swift */,
 				1E8B7838209394D20097A986 /* FeatureCollection.swift */,
 				1E8B783B209394D20097A986 /* GeometryCollection.swift */,
+				600290C823DD5EED007441BD /* LinearRing.swift */,
 				1E8B783C209394D20097A986 /* LineString.swift */,
 				1E8B783E209394D20097A986 /* MultiLineString.swift */,
 				1E8B783A209394D20097A986 /* MultiPoint.swift */,
@@ -1258,6 +1264,7 @@
 				1E9091332093A3EE00DAEF11 /* GeometryCollection.swift in Sources */,
 				1E9091292093A3EE00DAEF11 /* GeohashBox.swift in Sources */,
 				1E92ABC120ED948E00EF4A4E /* GeoJsonClosedGeometry.swift in Sources */,
+				600290C923DD5EED007441BD /* LinearRing.swift in Sources */,
 				1E9091342093A3EE00DAEF11 /* LineString.swift in Sources */,
 				1E9091302093A3EE00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAA20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
@@ -1329,6 +1336,7 @@
 				1E9091412093A3EF00DAEF11 /* GeohashBox.swift in Sources */,
 				1E92ABC220ED948E00EF4A4E /* GeoJsonClosedGeometry.swift in Sources */,
 				1E90914C2093A3EF00DAEF11 /* LineString.swift in Sources */,
+				600290CA23DD5EED007441BD /* LinearRing.swift in Sources */,
 				1E9091482093A3EF00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAB20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90914E2093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
@@ -1400,6 +1408,7 @@
 				1E9091592093A3EF00DAEF11 /* GeohashBox.swift in Sources */,
 				1E92ABC320ED948E00EF4A4E /* GeoJsonClosedGeometry.swift in Sources */,
 				1E9091642093A3EF00DAEF11 /* LineString.swift in Sources */,
+				600290CB23DD5EED007441BD /* LinearRing.swift in Sources */,
 				1E9091602093A3EF00DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAC20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E9091662093A3EF00DAEF11 /* MultiLineString.swift in Sources */,
@@ -1471,6 +1480,7 @@
 				1E9091712093A3F000DAEF11 /* GeohashBox.swift in Sources */,
 				1E92ABC420ED948E00EF4A4E /* GeoJsonClosedGeometry.swift in Sources */,
 				1E90917C2093A3F000DAEF11 /* LineString.swift in Sources */,
+				600290CC23DD5EED007441BD /* LinearRing.swift in Sources */,
 				1E9091782093A3F000DAEF11 /* FeatureCollection.swift in Sources */,
 				1E92ABAD20ED938D00EF4A4E /* GeoJsonGeometry.swift in Sources */,
 				1E90917E2093A3F000DAEF11 /* MultiLineString.swift in Sources */,

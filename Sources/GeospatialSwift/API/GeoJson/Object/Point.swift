@@ -20,12 +20,6 @@ extension GeoJson {
         // SOMEDAY: Maybe a new type for altitude, Point3D?
         public var altitude: Double?
         
-        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
-            guard (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }).count ?? 0 >= 2 else { return .init(reason: "A valid Point must have at least a longitude and latitude") }
-            
-            return nil
-        }
-        
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
             let pointJson = (coordinatesJson as! [NSNumber]).map { $0.doubleValue }
@@ -55,4 +49,12 @@ extension GeoJson.Point {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: self, to: point, tolerance: tolerance) }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { Calculator.distance(from: self, to: point, tolerance: tolerance) == 0 }
+}
+
+extension GeoJson.Point {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard (coordinatesJson as? [NSNumber])?.map({ $0.doubleValue }).count ?? 0 >= 2 else { return .init(reason: "A valid Point must have at least a longitude and latitude") }
+        
+        return nil
+    }
 }

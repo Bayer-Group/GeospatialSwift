@@ -13,16 +13,6 @@ extension GeoJson {
         
         public let geoJsonPolygons: [Polygon]
         
-        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
-            guard let multiPolygonCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPolygon must have valid coordinates") }
-            
-            guard multiPolygonCoordinatesJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
-            
-            let validatePolygons = multiPolygonCoordinatesJson.reduce(nil) { $0 + Polygon.validate(coordinatesJson: $1) }
-            
-            return validatePolygons.flatMap { .init(reason: "Invalid Polygon(s) in MultiPolygon") + $0 }
-        }
-        
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
             let multiPolygonJson = coordinatesJson as! [[Any]]
@@ -56,4 +46,16 @@ extension GeoJson.MultiPolygon {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPolygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPolygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+}
+
+extension GeoJson.MultiPolygon {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard let multiPolygonCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPolygon must have valid coordinates") }
+        
+        guard multiPolygonCoordinatesJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
+        
+        let validatePolygons = multiPolygonCoordinatesJson.reduce(nil) { $0 + GeoJson.Polygon.validate(coordinatesJson: $1) }
+        
+        return validatePolygons.flatMap { .init(reason: "Invalid Polygon(s) in MultiPolygon") + $0 }
+    }
 }

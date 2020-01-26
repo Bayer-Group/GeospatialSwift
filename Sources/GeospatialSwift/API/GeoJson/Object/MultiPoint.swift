@@ -13,16 +13,6 @@ extension GeoJson {
         
         private let geoJsonPoints: [Point]
         
-        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
-            guard let pointsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPoint must have valid coordinates") }
-            
-            guard pointsCoordinatesJson.count >= 1 else { return .init(reason: "A valid MultiPoint must have at least one Point") }
-            
-            let validatePoints = pointsCoordinatesJson.reduce(nil) { $0 + Point.validate(coordinatesJson: $1) }
-            
-            return validatePoints.flatMap { .init(reason: "Invalid Point(s) in MultiPoint") + $0 }
-        }
-        
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
             let pointsJson = coordinatesJson as! [[Any]]
@@ -46,4 +36,16 @@ extension GeoJson.MultiPoint {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPoints.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPoints.first { $0.contains(point, tolerance: tolerance) } != nil }
+}
+
+extension GeoJson.MultiPoint {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard let pointsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPoint must have valid coordinates") }
+        
+        guard pointsCoordinatesJson.count >= 1 else { return .init(reason: "A valid MultiPoint must have at least one Point") }
+        
+        let validatePoints = pointsCoordinatesJson.reduce(nil) { $0 + GeoJson.Point.validate(coordinatesJson: $1) }
+        
+        return validatePoints.flatMap { .init(reason: "Invalid Point(s) in MultiPoint") + $0 }
+    }
 }

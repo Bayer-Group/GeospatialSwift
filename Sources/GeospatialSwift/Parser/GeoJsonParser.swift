@@ -12,17 +12,17 @@ internal struct GeoJsonParser {
         
         switch type {
         case .point:
-            return GeoJson.Point.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.Point.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiPoint:
-            return GeoJson.MultiPoint.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiPoint.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .lineString:
-            return GeoJson.LineString.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.LineString.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiLineString:
-            return GeoJson.MultiLineString.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiLineString.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .polygon:
-            return GeoJson.Polygon.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.Polygon.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiPolygon:
-            return GeoJson.MultiPolygon.validate(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiPolygon.validate(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .geometryCollection:
             return GeoJson.GeometryCollection.validate(geoJson: geoJson)
         case .feature:
@@ -43,17 +43,17 @@ internal struct GeoJsonParser {
     func geoJsonObject(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonObject {
         switch geoJsonObjectType(geoJson: geoJson)! {
         case .point:
-            return GeoJson.Point(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.Point(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiPoint:
-            return GeoJson.MultiPoint(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiPoint(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .lineString:
-            return GeoJson.LineString(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.LineString(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiLineString:
-            return GeoJson.MultiLineString(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiLineString(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .polygon:
-            return GeoJson.Polygon(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.Polygon(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .multiPolygon:
-            return GeoJson.MultiPolygon(coordinatesJson: coordinatesJson(geoJson: geoJson)!)
+            return GeoJson.MultiPolygon(coordinatesJson: coordinatesJson(geoJson: geoJson))
         case .geometryCollection:
             return GeoJson.GeometryCollection(geoJson: geoJson)
         case .feature:
@@ -77,5 +77,5 @@ private extension GeoJsonParser {
         return coordinatesJson(geoJson: geoJson) == nil ? InvalidGeoJson(reason: "A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array") : nil
     }
     
-    private func coordinatesJson(geoJson: GeoJsonDictionary) -> [Any]? { (geoJson["coordinates"] as? [Any]) }
+    private func coordinatesJson(geoJson: GeoJsonDictionary) -> [Any]! { (geoJson["coordinates"] as? [Any]) }
 }

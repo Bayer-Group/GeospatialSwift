@@ -13,17 +13,6 @@ extension GeoJson {
         
         private let geoJsonMainRing: LineString
         private let geoJsonNegativeRings: [LineString]
-        private var geoJsonLinearRings: [LineString] { [geoJsonMainRing] + geoJsonNegativeRings }
-        
-        internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
-            guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid Polygon must have valid coordinates") }
-            
-            guard linearRingsCoordinatesJson.count >= 1 else { return .init(reason: "A valid Polygon must have at least one LinearRing") }
-            
-            let validateLinearRings = linearRingsCoordinatesJson.reduce(nil) { $0 + LinearRing.validate(coordinatesJson: $1) }
-            
-            return validateLinearRings.flatMap { .init(reason: "Invalid LinearRing(s) in Polygon") + $0 }
-        }
         
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
@@ -44,6 +33,8 @@ extension GeoJson.Polygon {
     public var mainRing: GeodesicLine { geoJsonMainRing }
     public var negativeRings: [GeodesicLine] { geoJsonNegativeRings }
     public var linearRings: [GeodesicLine] { geoJsonLinearRings }
+
+    private var geoJsonLinearRings: [GeoJson.LineString] { [geoJsonMainRing] + geoJsonNegativeRings }
     
     public var geoJsonCoordinates: [Any] { geoJsonLinearRings.map { $0.geoJsonCoordinates } }
     
@@ -80,4 +71,16 @@ extension GeoJson.Polygon {
     // Polygon where area threshold removes geometry AFTER clipping
     // Polygon with reversed winding order
     // Polygon with hole where hole has invalid winding order
+}
+
+extension GeoJson.Polygon {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard let linearRingsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid Polygon must have valid coordinates") }
+        
+        guard linearRingsCoordinatesJson.count >= 1 else { return .init(reason: "A valid Polygon must have at least one LinearRing") }
+        
+        let validateLinearRings = linearRingsCoordinatesJson.reduce(nil) { $0 + GeoJson.LinearRing.validate(coordinatesJson: $1) }
+        
+        return validateLinearRings.flatMap { .init(reason: "Invalid LinearRing(s) in Polygon") + $0 }
+    }
 }
