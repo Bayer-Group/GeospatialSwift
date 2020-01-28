@@ -44,7 +44,7 @@ extension GeoJson.FeatureCollection {
         
         guard featuresJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
         
-        let validateFeatures = featuresJson.reduce(nil) { $0 + GeoJson.parser.validate(geoJson: $1, type: .feature) }
+        let validateFeatures = featuresJson.reduce(nil) { $0 + GeoJson.parser.validateGeoJsonObject(geoJson: $1, validTypes: [.feature]) }
         
         return validateFeatures.flatMap { .init(reason: "Invalid Feature(s) in FeatureCollection") + $0 }
     }

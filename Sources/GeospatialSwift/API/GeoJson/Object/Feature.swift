@@ -26,7 +26,7 @@ extension GeoJson {
             let propertiesJson = geoJson["properties"] as? GeoJsonDictionary
             
             // swiftlint:disable:next force_cast
-            geometry = geometryJson.flatMap { (parser.geoJsonObject(fromValidatedGeoJson: $0) as! GeoJsonGeometry) }
+            geometry = geometryJson.flatMap { parser.geoJsonGeometry(fromValidatedGeoJson: $0) }
             idString = id as? String
             idDouble = id as? Double
             idInt = id as? Int
@@ -66,21 +66,18 @@ extension GeoJson.Feature {
         func validateGeometry() -> InvalidGeoJson? {
             guard let geometryJson = geoJson["geometry"] else { return .init(reason: "A valid Feature must have a \"geometry\" key") }
             
+            // No geometry value is valid
             if geometryJson is NSNull { return nil }
             
-            guard let geometryGeoJson = geometryJson as? GeoJsonDictionary, let type = GeoJson.parser.geoJsonObjectType(geoJson: geometryGeoJson) else { return .init(reason: "Not a valid feature geometry") }
+            guard let geometryGeoJson = geometryJson as? GeoJsonDictionary else { return .init(reason: "Not a valid feature geometry") }
             
-            guard type.isGeometry else { return .init(reason: "Not a valid feature geometry: \(type.name)") }
-            
-            return GeoJson.parser.validate(geoJson: geometryGeoJson, type: type).flatMap { .init(reason: "Invalid Geometry in Feature") + $0 }
+            return GeoJson.parser.validateGeoJsonGeometry(geoJson: geometryGeoJson).flatMap { .init(reason: "Invalid Geometry in Feature") + $0 }
         }
         
         func validateId() -> InvalidGeoJson? {
-            if geoJson["id"].flatMap({ !($0 is NSNull || $0 is String || $0 is Double || $0 is Int) }) ?? false {
-                return .init(reason: "Id must be of type null, String, Double, or Int")
-            }
+            guard let id = geoJson["id"] else { return nil }
             
-            return nil
+            return (id is NSNull || id is String || id is Double || id is Int) ? nil : .init(reason: "Id must be of type NSNull, String, Double, or Int")
         }
         
         return validateGeometry() + validateId()

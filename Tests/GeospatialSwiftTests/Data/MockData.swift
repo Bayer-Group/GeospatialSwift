@@ -11,7 +11,7 @@ final class MockData {
     
     static func testGeoJson(_ name: String) -> GeoJsonDictionary { geoJsonTestData.first { ($0["name"] as! String) == name }!["geoJson"] as! GeoJsonDictionary }
     
-    static func testGeoJsonObject(geoJsonDataName: String) -> GeoJsonObject { geoJson.parse(validatedGeoJson: testGeoJson(geoJsonDataName)) }
+    static func testGeoJsonObject(geoJsonDataName: String) -> GeoJsonObject { geoJson.parseObject(fromValidatedGeoJson: testGeoJson(geoJsonDataName)) }
     
     static func testWkt(_ name: String) -> String { wktTestData.first { ($0["name"] as! String) == name }!["wkt"] as! String }
     

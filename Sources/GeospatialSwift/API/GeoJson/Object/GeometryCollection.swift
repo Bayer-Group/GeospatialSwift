@@ -37,14 +37,10 @@ extension GeoJson.GeometryCollection {
 
 extension GeoJson.GeometryCollection {
     internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
-        guard let geometriesJson = geoJson["geometries"] as? [GeoJsonDictionary] else { return .init(reason: "A valid GeometryCollection must have a \"geometries\" key") }
+        guard let geometriesGeoJson = geoJson["geometries"] as? [GeoJsonDictionary] else { return .init(reason: "A valid GeometryCollection must have a \"geometries\" key") }
         
-        let validateGeometries: InvalidGeoJson? = geometriesJson.reduce(nil) { result, geometryJson in
-            guard let type = GeoJson.parser.geoJsonObjectType(geoJson: geometryJson) else { return .init(reason: "Not a valid feature geometry") }
-            
-            guard type.isGeometry else { return .init(reason: "Not a valid feature geometry: \(type.name)") }
-            
-            return result + GeoJson.parser.validate(geoJson: geometryJson, type: type)
+        let validateGeometries: InvalidGeoJson? = geometriesGeoJson.reduce(nil) { result, geometryGeoJson in
+            return result + GeoJson.parser.validateGeoJsonGeometry(geoJson: geometryGeoJson)
         }
         
         return validateGeometries.flatMap { .init(reason: "Invalid Geometry(s) in GeometryCollection") + $0 }

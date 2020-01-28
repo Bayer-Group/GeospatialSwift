@@ -3,7 +3,7 @@
 class GeoTestHelper {
     static private let geoJsonHandler = GeoJson()
     
-    static func parse(_ geoJson: GeoJsonDictionary) -> GeoJsonObject { geoJsonHandler.parse(validatedGeoJson: geoJson) }
+    static func parse(_ geoJson: GeoJsonDictionary) -> GeoJsonObject { geoJsonHandler.parseObject(fromValidatedGeoJson: geoJson) }
     
     static func simplePoint(_ longitude: Double, _ latitude: Double, _ altitude: Double? = nil) -> SimplePoint { SimplePoint(longitude: longitude, latitude: latitude, altitude: altitude) }
     
