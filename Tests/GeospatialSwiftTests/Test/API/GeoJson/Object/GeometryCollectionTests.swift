@@ -9,7 +9,7 @@ class GeometryCollectionTests: XCTestCase {
     var nilGeometryCollection: GeometryCollection?
     var distancePoint: SimplePoint!
     
-    var point: GeoJsonPoint!
+    var point: GeoJson.Point!
     
     override func setUp() {
         super.setUp()
@@ -32,13 +32,13 @@ class GeometryCollectionTests: XCTestCase {
     }
     
     func testObjectGeometries() {
-        XCTAssertEqual(geometryCollection.objectGeometries?.count, 6)
-        XCTAssertTrue(geometryCollection.objectGeometries?[0] is Point)
-        XCTAssertTrue(geometryCollection.objectGeometries?[1] is MultiPoint)
-        XCTAssertTrue(geometryCollection.objectGeometries?[2] is LineString)
-        XCTAssertTrue(geometryCollection.objectGeometries?[3] is MultiLineString)
-        XCTAssertTrue(geometryCollection.objectGeometries?[4] is Polygon)
-        XCTAssertTrue(geometryCollection.objectGeometries?[5] is MultiPolygon)
+        XCTAssertEqual(geometryCollection.objectGeometries.count, 6)
+        XCTAssertTrue(geometryCollection.objectGeometries[0] is Point)
+        XCTAssertTrue(geometryCollection.objectGeometries[1] is MultiPoint)
+        XCTAssertTrue(geometryCollection.objectGeometries[2] is LineString)
+        XCTAssertTrue(geometryCollection.objectGeometries[3] is MultiLineString)
+        XCTAssertTrue(geometryCollection.objectGeometries[4] is Polygon)
+        XCTAssertTrue(geometryCollection.objectGeometries[5] is MultiPolygon)
     }
     
     func testGeometryTypes() {
@@ -54,9 +54,9 @@ class GeometryCollectionTests: XCTestCase {
     func testObjectBoundingBox() {
         let resultBoundingBox = geometryCollection.objectBoundingBox
         
-        let boundingBox = BoundingBox.best(geometryCollection.objectGeometries!.compactMap { $0.objectBoundingBox })
+        let boundingBox = GeodesicBoundingBox.best(geometryCollection.objectGeometries.compactMap { $0.objectBoundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testGeoJson() {
@@ -100,16 +100,16 @@ class GeometryCollectionTests: XCTestCase {
     }
     
     func testEquals_NoGeometries_Versus_NoGeometries() {
-        XCTAssertEqual(GeoTestHelper.geometryCollection(nil), GeoTestHelper.geometryCollection(nil))
+        XCTAssertEqual(GeoTestHelper.geometryCollection([]), GeoTestHelper.geometryCollection([]))
     }
     
     func testNotEquals_Geometries_Versus_NilGeometries() {
-        XCTAssertNotEqual(GeoTestHelper.geometryCollection([point]), GeoTestHelper.geometryCollection(nil))
+        XCTAssertNotEqual(GeoTestHelper.geometryCollection([point]), GeoTestHelper.geometryCollection([]))
     }
     
     // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals_DifferentGeometries() {
-        let polygon = GeoTestHelper.polygon([GeoTestHelper.lineString([point, point, point, point])])
+        let polygon = GeoTestHelper.polygon(GeoTestHelper.lineString([point, point, point, point]))
         
         XCTAssertNotEqual(geometryCollection, GeoTestHelper.geometryCollection([GeoTestHelper.multiPolygon([polygon, polygon])]))
     }

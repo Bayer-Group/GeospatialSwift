@@ -14,7 +14,7 @@ final class GeoJsonParsingPerformanceTest: XCTestCase {
         measure {
             for _ in 0..<50 {
                 for geoJson in geoJsons {
-                    cacheForMemoryUsageInfo.append(geospatial.geoJson.parse(geoJson: geoJson)!)
+                    cacheForMemoryUsageInfo.append(geospatial.geoJson.parseObject(fromValidatedGeoJson: geoJson))
                 }
             }
         }

@@ -1,73 +1,55 @@
-public protocol GeoJsonMultiLineString: GeoJsonLinearGeometry {
-    var lineStrings: [GeoJsonLineString] { get }
-    
-    func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]]
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonMultiLineString
+     Creates a MultiLineString
      */
-    public func multiLineString(lineStrings: [GeoJsonLineString]) -> GeoJsonMultiLineString? {
-        return MultiLineString(lineStrings: lineStrings)
+    public func multiLineString(lineStrings: [LineString]) -> Result<MultiLineString, InvalidGeoJson> {
+        guard lineStrings.count >= 1 else { return .failure(.init(reason: "A valid MultiLineString must have at least one LineString")) }
+        
+        return .success(MultiLineString(lineStrings: lineStrings))
     }
     
-    public struct MultiLineString: GeoJsonMultiLineString {
+    public struct MultiLineString: GeoJsonLinearGeometry {
         public let type: GeoJsonObjectType = .multiLineString
-        public var geoJsonCoordinates: [Any] { return lineStrings.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            MultiLineString: \(
-            """
-            (\n\(lineStrings.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
+        private let geoJsonLineStrings: [LineString]
         
-        public let lineStrings: [GeoJsonLineString]
-        
-        public var points: [GeodesicPoint] {
-            return lineStrings.flatMap { $0.points }
-        }
-        
-        public var boundingBox: GeodesicBoundingBox {
-            return BoundingBox.best(lineStrings.map { $0.boundingBox })!
-        }
-        
-        public var length: Double {
-            return lineStrings.reduce(0) { $0 + $1.length }
-        }
-        
-        internal init?(coordinatesJson: [Any]) {
-            guard let lineStringsJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiLineString must have valid coordinates"); return nil }
+        internal init(coordinatesJson: [Any]) {
+            // swiftlint:disable:next force_cast
+            let lineStringsJson = coordinatesJson as! [[Any]]
             
-            var lineStrings = [GeoJsonLineString]()
-            for lineStringJson in lineStringsJson {
-                if let lineString = LineString(coordinatesJson: lineStringJson) {
-                    lineStrings.append(lineString)
-                } else {
-                    Log.warning("Invalid LineString in MultiLineString"); return nil
-                }
-            }
-            
-            self.init(lineStrings: lineStrings)
+            geoJsonLineStrings = lineStringsJson.map { LineString(coordinatesJson: $0) }
         }
         
-        fileprivate init?(lineStrings: [GeoJsonLineString]) {
-            guard lineStrings.count >= 1 else { Log.warning("A valid MultiLineString must have at least one LineString"); return nil }
-            
-            self.lineStrings = lineStrings
+        fileprivate init(lineStrings: [LineString]) {
+            geoJsonLineStrings = lineStrings
         }
+    }
+}
+
+extension GeoJson.MultiLineString {
+    public var lines: [GeodesicLine] { geoJsonLineStrings }
+    
+    public var geoJsonCoordinates: [Any] { geoJsonLineStrings.map { $0.geoJsonCoordinates } }
+    
+    public var points: [GeodesicPoint] { lines.flatMap { $0.points } }
+    
+    public var boundingBox: GeodesicBoundingBox { .best(lines.map { $0.boundingBox })! }
+    
+    public var length: Double { geoJsonLineStrings.reduce(0) { $0 + $1.length } }
+    
+    public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonLineStrings.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonLineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
+}
+
+extension GeoJson.MultiLineString {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard let lineStringsCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiLineString must have valid coordinates") }
         
-        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return lineStrings.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
+        guard lineStringsCoordinatesJson.count >= 1 else { return .init(reason: "A valid MultiLineString must have at least one LineString") }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return lineStrings.first { $0.contains(point, tolerance: tolerance) } != nil }
+        let validateLineStrings = lineStringsCoordinatesJson.reduce(nil) { $0 + GeoJson.LineString.validate(coordinatesJson: $1) }
         
-        public func invalidReasons(tolerance: Double) -> [[LineStringInvalidReason]] {
-            return lineStrings.map { $0.invalidReasons(tolerance: tolerance) }
-        }
+        return validateLineStrings.flatMap { .init(reason: "Invalid LineString(s) in MultiLineString") + $0 }
     }
 }

@@ -1,21 +1,7 @@
-public protocol GeoJsonProtocol {
-    func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject?
-    
-    // GeoJsonObject Factory methods
-    func featureCollection(features: [GeoJsonFeature]) -> GeoJsonFeatureCollection?
-    func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature?
-    func geometryCollection(geometries: [GeoJsonGeometry]?) -> GeoJsonGeometryCollection
-    func multiPolygon(polygons: [GeoJsonPolygon]) -> GeoJsonMultiPolygon?
-    func polygon(linearRings: [GeoJsonLineString]) -> GeoJsonPolygon?
-    func multiLineString(lineStrings: [GeoJsonLineString]) -> GeoJsonMultiLineString?
-    func lineString(points: [GeoJsonPoint]) -> GeoJsonLineString?
-    func multiPoint(points: [GeoJsonPoint]) -> GeoJsonMultiPoint?
-    func point(longitude: Double, latitude: Double, altitude: Double?) -> GeoJsonPoint
-    func point(longitude: Double, latitude: Double) -> GeoJsonPoint
-}
-
-public struct GeoJson: GeoJsonProtocol {
+public struct GeoJson {
     internal static let parser = GeoJsonParser()
+    
+    internal static func coordinates(geoJson: GeoJsonDictionary) -> [Any]? { geoJson["coordinates"] as? [Any] }
     
     /**
      Parses a GeoJsonDictionary into a GeoJsonObject.
@@ -24,7 +10,17 @@ public struct GeoJson: GeoJsonProtocol {
      
      - returns: A successfully parsed GeoJsonObject or nil if the specification was not correct
      */
-    public func parse(geoJson: GeoJsonDictionary) -> GeoJsonObject? {
-        return GeoJson.parser.geoJsonObject(from: geoJson)
-    }
+    public func parseObject(fromGeoJson geoJson: GeoJsonDictionary) -> Result<GeoJsonObject, InvalidGeoJson> { GeoJson.parser.geoJsonObject(fromGeoJson: geoJson) }
+    public func parseCoordinatesGeometry(fromGeoJson geoJson: GeoJsonDictionary) -> Result<GeoJsonCoordinatesGeometry, InvalidGeoJson> { GeoJson.parser.geoJsonCoordinatesGeometry(fromGeoJson: geoJson) }
+    
+    /**
+     Parses a validated GeoJsonDictionary into a GeoJsonObject.
+     Assumes validated GeoJson for performance and will crash if invalid!
+     
+     - geoJson: An JSON dictionary conforming to the GeoJson current spcification.
+     
+     - returns: A GeoJsonObject or nil if the specification was not correct
+     */
+    public func parseObject(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonObject { GeoJson.parser.geoJsonObject(fromValidatedGeoJson: geoJson) }
+    public func parseCoordinatesGeometry(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonCoordinatesGeometry { GeoJson.parser.geoJsonCoordinatesGeometry(fromValidatedGeoJson: geoJson) }
 }

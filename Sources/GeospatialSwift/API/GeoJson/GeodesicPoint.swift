@@ -1,7 +1,12 @@
-public protocol GeodesicPoint: CustomStringConvertible {
+public protocol GeodesicPoint {
     var longitude: Double { get }
     var latitude: Double { get }
     var altitude: Double? { get }
+}
+
+public extension GeodesicPoint {
+    var degreesToRadians: GeodesicPoint { SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
+    var radiansToDegrees: GeodesicPoint { SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
 }
 
 public struct SimplePoint: GeodesicPoint {
@@ -14,13 +19,6 @@ public struct SimplePoint: GeodesicPoint {
         self.latitude = latitude
         self.altitude = altitude
     }
-    
-    public var description: String { return "SimplePoint: (longitude: \(longitude), latitude: \(latitude)\(altitude != nil ? ", altitude: \(altitude!.description)" : ""))" }
-}
-
-public extension GeodesicPoint {
-    var degreesToRadians: GeodesicPoint { return SimplePoint(longitude: longitude.degreesToRadians, latitude: latitude.degreesToRadians, altitude: altitude) }
-    var radiansToDegrees: GeodesicPoint { return SimplePoint(longitude: longitude.radiansToDegrees, latitude: latitude.radiansToDegrees, altitude: altitude) }
 }
 
 public func == (lhs: GeodesicPoint, rhs: GeodesicPoint) -> Bool {

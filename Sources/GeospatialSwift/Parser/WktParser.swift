@@ -1,16 +1,12 @@
 import Foundation
 
-internal protocol WktParserProtocol {
-    func geoJsonObject(from wkt: String) -> GeoJsonObject?
-}
-
 // SOMEDAY: Forced unwrapping leads to exceptions when WKT is invalid.
-internal struct WktParser: WktParserProtocol {
-    let geoJson: GeoJsonProtocol
+internal struct WktParser {
+    let geoJson: GeoJson
     
     func geoJsonObject(from wkt: String) -> GeoJsonObject? {
-        guard let startRange = wkt.range(of: "(") else { Log.warning("Malformed WKT: \(wkt)"); return nil }
-        guard let endRange = wkt.range(of: ")", options: .backwards) else { Log.warning("Malformed WKT: \(wkt)"); return nil }
+        guard let startRange = wkt.range(of: "(") else { return nil }
+        guard let endRange = wkt.range(of: ")", options: .backwards) else { return nil }
         
         let range = startRange.upperBound..<endRange.lowerBound
         let data = String(wkt[range])
@@ -26,7 +22,7 @@ internal struct WktParser: WktParserProtocol {
             } else if wkt.uppercased().hasPrefix("MULTILINESTRING") {
                 let lineStrings = wkt.wktTokens.flatMap { $0.wktTokens }
                 
-                return geoJson.multiLineString(lineStrings: try lineStrings.map { try parseLineString($0) })
+                return geoJson.multiLineString(lineStrings: try lineStrings.map { try parseLineString($0) }).success
             } else {
                 if wkt.uppercased().hasPrefix("MULTIPOLYGON") {
                     let regex = try NSRegularExpression(pattern: "(\\({2}.*?\\){2})", options: [])
@@ -37,23 +33,19 @@ internal struct WktParser: WktParserProtocol {
                         return String(data[begin..<end])
                     }
                     
-                    return geoJson.multiPolygon(polygons: try polygonStrings.map { try parsePolygonString($0) })
+                    return geoJson.multiPolygon(polygons: try polygonStrings.map { try parsePolygonString($0) }).success
                 } else if wkt.uppercased().hasPrefix("POLYGON") {
                     return try parsePolygonString(data)
                 } else {
-                    Log.warning("Unsupported Geometry type: \(wkt)")
-                    
                     return nil
                 }
             }
         } catch {
-            Log.warning("Could not parse geometry: \(wkt)")
-            
             return nil
         }
     }
     
-    private func parsePointString(_ data: String) throws -> GeoJsonPoint {
+    private func parsePointString(_ data: String) throws -> GeoJson.Point {
         let formatter = NumberFormatter.formatterForCoordinates
         
         let coordinates = data.trimmingCharacters(in: CharacterSet(charactersIn: " ")).components(separatedBy: " ")
@@ -63,20 +55,20 @@ internal struct WktParser: WktParserProtocol {
         return geoJson.point(longitude: longitude, latitude: latitude)
     }
     
-    private func parseLineString(_ data: String) throws -> GeoJsonLineString {
+    private func parseLineString(_ data: String) throws -> GeoJson.LineString {
         let points = try data.components(separatedBy: ",").map { try parsePointString($0) }
         
-        return geoJson.lineString(points: points)!
+        return geoJson.lineString(points: points).success!
     }
     
-    private func parsePolygonString(_ data: String) throws -> GeoJsonPolygon {
-        let linearRings: [GeoJsonLineString] = try data.wktTokens.map { wktLinearRing in
+    private func parsePolygonString(_ data: String) throws -> GeoJson.Polygon {
+        let linearRings: [GeoJson.LineString] = try data.wktTokens.map { wktLinearRing in
             let wktPoints = wktLinearRing.components(separatedBy: ",")
             
-            return geoJson.lineString(points: try wktPoints.map { try parsePointString($0) })!
+            return geoJson.lineString(points: try wktPoints.map { try parsePointString($0) }).success!
         }
         
-        return geoJson.polygon(linearRings: linearRings)!
+        return geoJson.polygon(mainRing: linearRings.first!, negativeRings: Array(linearRings.dropFirst())).success!
     }
 }
 

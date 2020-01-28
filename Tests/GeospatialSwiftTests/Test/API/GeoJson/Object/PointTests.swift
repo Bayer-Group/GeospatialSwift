@@ -4,12 +4,12 @@ import XCTest
 
 class PointTests: XCTestCase {
     var point: Point!
-    var distancePoint: GeoJsonPoint!
+    var distancePoint: GeoJson.Point!
     
     override func setUp() {
         super.setUp()
         
-        point = MockData.point as? Point
+        point = MockData.point
         
         distancePoint = GeoTestHelper.point(10, 10, 10)
     }
@@ -32,7 +32,7 @@ class PointTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(point.objectBoundingBox as? BoundingBox, point.boundingBox as? BoundingBox)
+        XCTAssertEqual(point.objectBoundingBox, point.boundingBox)
     }
     
     func testGeoJson() {
@@ -109,9 +109,9 @@ class PointTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = point.boundingBox
         
-        let boundingBox = BoundingBox(boundingCoordinates: (minLongitude: point.longitude, minLatitude: point.latitude, maxLongitude: point.longitude, maxLatitude: point.latitude))
+        let boundingBox = GeodesicBoundingBox(minLongitude: point.longitude, minLatitude: point.latitude, maxLongitude: point.longitude, maxLatitude: point.latitude)
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance() {

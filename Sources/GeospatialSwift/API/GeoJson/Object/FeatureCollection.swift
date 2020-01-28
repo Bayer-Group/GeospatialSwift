@@ -1,67 +1,51 @@
-public protocol GeoJsonFeatureCollection: GeoJsonObject {
-    var features: [GeoJsonFeature] { get }
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonFeatureCollection
+     Creates a FeatureCollection
      */
-    public func featureCollection(features: [GeoJsonFeature]) -> GeoJsonFeatureCollection? {
-        return FeatureCollection(features: features)
+    public func featureCollection(features: [Feature]) -> Result<FeatureCollection, InvalidGeoJson> {
+        guard features.count >= 1 else { return .failure(.init(reason: "A valid FeatureCollection must have at least one feature")) }
+        
+        return .success(FeatureCollection(features: features))
     }
     
-    public struct FeatureCollection: GeoJsonFeatureCollection {
+    public struct FeatureCollection: GeoJsonObject {
         public let type: GeoJsonObjectType = .featureCollection
-        public var geoJson: GeoJsonDictionary { return ["type": type.name, "features": features.map { $0.geoJson } ] }
         
-        public var description: String {
-            return """
-            FeatureCollection: \(
-            """
-            (\n\(features.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
+        public let features: [Feature]
+        
+        internal init(geoJson: GeoJsonDictionary) {
+            // swiftlint:disable:next force_cast
+            let featuresJson = geoJson["features"] as! [GeoJsonDictionary]
+            
+            features = featuresJson.map { Feature(geoJson: $0) }
         }
         
-        public let features: [GeoJsonFeature]
-        
-        public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeodesicBoundingBox?
-        
-        internal init?(geoJsonDictionary: GeoJsonDictionary) {
-            guard let featuresJson = geoJsonDictionary["features"] as? [GeoJsonDictionary] else { Log.warning("A valid FeatureCollection must have a \"features\" key: String : \(geoJsonDictionary)"); return nil }
-            
-            var features = [GeoJsonFeature]()
-            for featureJson in featuresJson {
-                if let feature = Feature(geoJsonDictionary: featureJson) {
-                    features.append(feature)
-                } else {
-                    Log.warning("Invalid Feature in FeatureCollection")
-                    return nil
-                }
-            }
-            
-            self.init(features: features)
-        }
-        
-        fileprivate init?(features: [GeoJsonFeature]) {
-            guard features.count >= 1 else { Log.warning("A valid FeatureCollection must have at least one feature."); return nil }
-            
+        fileprivate init(features: [Feature]) {
             self.features = features
-            
-            let geometries = features.compactMap { $0.objectGeometries }.flatMap { $0 }
-            
-            self.objectGeometries = geometries.count > 0 ? geometries : nil
-            
-            objectBoundingBox = BoundingBox.best(geometries.compactMap { $0.objectBoundingBox })
         }
+    }
+}
+
+extension GeoJson.FeatureCollection {
+    public var geoJson: GeoJsonDictionary { ["type": type.name, "features": features.map { $0.geoJson } ] }
+    
+    public var objectGeometries: [GeoJsonGeometry] { features.compactMap { $0.objectGeometries }.flatMap { $0 } }
+    
+    public var objectBoundingBox: GeodesicBoundingBox? { .best(objectGeometries.compactMap { $0.objectBoundingBox }) }
+    
+    public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min() }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { features.first { $0.contains(point, tolerance: tolerance) } != nil }
+}
+
+extension GeoJson.FeatureCollection {
+    internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
+        guard let featuresJson = geoJson["features"] as? [GeoJsonDictionary] else { return .init(reason: "A valid FeatureCollection must have a \"features\" key") }
         
-        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? {
-            return features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min()
-        }
+        guard featuresJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return features.first { $0.contains(point, tolerance: tolerance) } != nil }
+        let validateFeatures = featuresJson.reduce(nil) { $0 + GeoJson.parser.validateGeoJsonObject(geoJson: $1, validTypes: [.feature]) }
+        
+        return validateFeatures.flatMap { .init(reason: "Invalid Feature(s) in FeatureCollection") + $0 }
     }
 }

@@ -2,6 +2,8 @@
  A GeoJsonClosedGeometry is a geometry made of polygons
  */
 public protocol GeoJsonClosedGeometry: GeoJsonCoordinatesGeometry {
+    var polygons: [GeodesicPolygon] { get }
+    
     var hasHole: Bool { get }
     
     var area: Double { get }
@@ -10,5 +12,5 @@ public protocol GeoJsonClosedGeometry: GeoJsonCoordinatesGeometry {
 }
 
 public extension GeoJsonClosedGeometry {
-    func edgeDistance(to point: GeodesicPoint) -> Double { return edgeDistance(to: point, tolerance: 0) }
+    func edgeDistance(to point: GeodesicPoint) -> Double { edgeDistance(to: point, tolerance: 0) }
 }

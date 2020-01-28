@@ -3,45 +3,45 @@ import XCTest
 @testable import GeospatialSwift
 
 class BoundingBoxTests: XCTestCase {
-    private(set) var simpleBoundingBox: BoundingBox!
+    private(set) var simpleBoundingBox: GeodesicBoundingBox!
     
-    private(set) var pointBoundingBox: BoundingBox!
-    private(set) var horizontalBoundingBox: BoundingBox!
-    private(set) var verticalBoundingBox: BoundingBox!
+    private(set) var pointBoundingBox: GeodesicBoundingBox!
+    private(set) var horizontalBoundingBox: GeodesicBoundingBox!
+    private(set) var verticalBoundingBox: GeodesicBoundingBox!
 
-    private(set) var insideBoundingBox: BoundingBox!
-    private(set) var horizontalOverlapBoundingBox: BoundingBox!
-    private(set) var verticalOverlapBoundingBox: BoundingBox!
-    private(set) var horizontalVerticalOverlapBoundingBox: BoundingBox!
-    private(set) var noOverlapBoundingBox: BoundingBox!
+    private(set) var insideBoundingBox: GeodesicBoundingBox!
+    private(set) var horizontalOverlapBoundingBox: GeodesicBoundingBox!
+    private(set) var verticalOverlapBoundingBox: GeodesicBoundingBox!
+    private(set) var horizontalVerticalOverlapBoundingBox: GeodesicBoundingBox!
+    private(set) var noOverlapBoundingBox: GeodesicBoundingBox!
     
     let boundingBoxMinimumAdjustment = 0.00005
     
-    private var boundingCoordinatesHorizontalOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: simpleBoundingBox.maxLatitude) }
+    private var boundingCoordinatesHorizontalOverlap: GeodesicBoundingBox { .init(minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: simpleBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesVerticalOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: simpleBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesVerticalOverlap: GeodesicBoundingBox { .init(minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: simpleBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesCornerOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesCornerOverlap: GeodesicBoundingBox { .init(minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: horizontalOverlapBoundingBox.maxLongitude, maxLatitude: verticalOverlapBoundingBox.maxLatitude) }
     
-    private var boundingCoordinatesNoOverlap: BoundingCoordinates { return (minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: noOverlapBoundingBox.maxLongitude, maxLatitude: noOverlapBoundingBox.maxLatitude) }
+    private var boundingCoordinatesNoOverlap: GeodesicBoundingBox { .init(minLongitude: simpleBoundingBox.minLongitude, minLatitude: simpleBoundingBox.minLatitude, maxLongitude: noOverlapBoundingBox.maxLongitude, maxLatitude: noOverlapBoundingBox.maxLatitude) }
     
     override func setUp() {
         super.setUp()
         
-        simpleBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 0, minLatitude: 1, maxLongitude: 2, maxLatitude: 4))
+        simpleBoundingBox = .init(minLongitude: 0, minLatitude: 1, maxLongitude: 2, maxLatitude: 4)
         
-        pointBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 0, minLatitude: 1, maxLongitude: 0, maxLatitude: 1))
-        horizontalBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 0, minLatitude: 1, maxLongitude: 2, maxLatitude: 1))
-        verticalBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 0, minLatitude: 1, maxLongitude: 0, maxLatitude: 3))
+        pointBoundingBox = .init(minLongitude: 0, minLatitude: 1, maxLongitude: 0, maxLatitude: 1)
+        horizontalBoundingBox = .init(minLongitude: 0, minLatitude: 1, maxLongitude: 2, maxLatitude: 1)
+        verticalBoundingBox = .init(minLongitude: 0, minLatitude: 1, maxLongitude: 0, maxLatitude: 3)
         
         // 0 - 2, 1 - 4
         // 1 - 1.5, 2 - 3
-        insideBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 1, minLatitude: 2, maxLongitude: 1.5, maxLatitude: 3))
+        insideBoundingBox = .init(minLongitude: 1, minLatitude: 2, maxLongitude: 1.5, maxLatitude: 3)
         // 1 - 2, 3 - 3
-        horizontalOverlapBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 1, minLatitude: 2, maxLongitude: 3, maxLatitude: 3))
-        verticalOverlapBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 1, minLatitude: 2, maxLongitude: 1.5, maxLatitude: 5))
-        horizontalVerticalOverlapBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 1, minLatitude: 2, maxLongitude: 3, maxLatitude: 5))
-        noOverlapBoundingBox = BoundingBox(boundingCoordinates: (minLongitude: 5, minLatitude: 6, maxLongitude: 7, maxLatitude: 9))
+        horizontalOverlapBoundingBox = .init(minLongitude: 1, minLatitude: 2, maxLongitude: 3, maxLatitude: 3)
+        verticalOverlapBoundingBox = .init(minLongitude: 1, minLatitude: 2, maxLongitude: 1.5, maxLatitude: 5)
+        horizontalVerticalOverlapBoundingBox = .init(minLongitude: 1, minLatitude: 2, maxLongitude: 3, maxLatitude: 5)
+        noOverlapBoundingBox = .init(minLongitude: 5, minLatitude: 6, maxLongitude: 7, maxLatitude: 9)
     }
     
     func testBoundingCoordinates() {
@@ -186,48 +186,38 @@ class BoundingBoxTests: XCTestCase {
     }
     
     func testBest_WhenEmpty_ThenNil() {
-        XCTAssertEqual(BoundingBox.best([]) as? BoundingBox, nil)
+        XCTAssertEqual(GeodesicBoundingBox.best([]), nil)
     }
     
     func testBest_WhenOnlySelf_ThenSelf() {
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox]) as? BoundingBox, simpleBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox]), simpleBoundingBox)
     }
     
     func testBest_WhenSame_ThenSelf() {
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, simpleBoundingBox]) as? BoundingBox, simpleBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, simpleBoundingBox]), simpleBoundingBox)
     }
     
     func testBest_WhenInside_ThenSelf() {
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, insideBoundingBox]) as? BoundingBox, simpleBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, insideBoundingBox]), simpleBoundingBox)
     }
     
     func testBest_WhenHorizontalOverlap_ThenBest() {
-        let expectedBoundingBox = BoundingBox(boundingCoordinates: boundingCoordinatesHorizontalOverlap)
-        
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, horizontalOverlapBoundingBox]) as? BoundingBox, expectedBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, horizontalOverlapBoundingBox]), boundingCoordinatesHorizontalOverlap)
     }
     
     func testBest_WhenVerticalOverlap_ThenBest() {
-        let expectedBoundingBox = BoundingBox(boundingCoordinates: boundingCoordinatesVerticalOverlap)
-        
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, verticalOverlapBoundingBox]) as? BoundingBox, expectedBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, verticalOverlapBoundingBox]), boundingCoordinatesVerticalOverlap)
     }
     
     func testBest_WhenHorizontalVerticalOverlap_ThenBest() {
-        let expectedBoundingBox = BoundingBox(boundingCoordinates: boundingCoordinatesCornerOverlap)
-        
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, horizontalVerticalOverlapBoundingBox]) as? BoundingBox, expectedBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, horizontalVerticalOverlapBoundingBox]), boundingCoordinatesCornerOverlap)
     }
     
     func testBest_Multiple_ThenBest() {
-        let expectedBoundingBox = BoundingBox(boundingCoordinates: boundingCoordinatesCornerOverlap)
-        
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, pointBoundingBox, horizontalOverlapBoundingBox, verticalOverlapBoundingBox]) as? BoundingBox, expectedBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, pointBoundingBox, horizontalOverlapBoundingBox, verticalOverlapBoundingBox]), boundingCoordinatesCornerOverlap)
     }
     
     func testBest_WhenNoOverlap_ThenBest() {
-        let expectedBoundingBox = BoundingBox(boundingCoordinates: boundingCoordinatesNoOverlap)
-        
-        XCTAssertEqual(BoundingBox.best([simpleBoundingBox, noOverlapBoundingBox]) as? BoundingBox, expectedBoundingBox)
+        XCTAssertEqual(GeodesicBoundingBox.best([simpleBoundingBox, noOverlapBoundingBox]), boundingCoordinatesNoOverlap)
     }
 }

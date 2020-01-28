@@ -1,82 +1,85 @@
-import Foundation
-
-public protocol GeoJsonFeature: GeoJsonObject {
-    var geometry: GeoJsonGeometry? { get }
-    var id: Any? { get }
-    var idAsString: String? { get }
-    var properties: GeoJsonDictionary? { get }
-}
+import class Foundation.NSNull
 
 extension GeoJson {
     /**
-     Creates a GeoJsonFeature
+     Creates a Feature
      */
-    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> GeoJsonFeature? {
-        return Feature(geometry: geometry, id: id, properties: properties)
+    public func feature(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) -> Result<Feature, InvalidGeoJson> {
+        guard id == nil || id is NSNull || id is String || id is Double || id is Int else { return .failure(.init(reason: "Id must be of type null, String, Double, or Int")) }
+        
+        return .success(Feature(geometry: geometry, id: id, properties: properties))
     }
     
-    public struct Feature: GeoJsonFeature {
+    public struct Feature: GeoJsonObject {
         public let type: GeoJsonObjectType = .feature
-        public var geoJson: GeoJsonDictionary {
-            var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
-            if let id = id { geoJson["id"] = id }
-            return geoJson
-        }
-        
-        public var id: Any? { return idString ?? idDouble ?? idInt }
-        public var idAsString: String? { return idString ?? idDouble?.description ?? idInt?.description }
-        
-        public var description: String {
-            return """
-            Feature: \(
-            """
-            (\n\(geometry != nil ? "Geometry - \(geometry!)" : "null")
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
         
         public let geometry: GeoJsonGeometry?
         public let properties: GeoJsonDictionary?
-        
-        public let objectGeometries: [GeoJsonGeometry]?
-        public let objectBoundingBox: GeodesicBoundingBox?
         
         internal let idString: String?
         internal let idDouble: Double?
         internal let idInt: Int?
         
-        internal init?(geoJsonDictionary: GeoJsonDictionary) {
-            let id = geoJsonDictionary["id"] as? String ?? (geoJsonDictionary["id"] as? Double)?.description ?? (geoJsonDictionary["id"] as? Int)?.description
+        internal init(geoJson: GeoJsonDictionary) {
+            let id: Any? = geoJson["id"]
+            let geometryJson = geoJson["geometry"] as? GeoJsonDictionary
+            let propertiesJson = geoJson["properties"] as? GeoJsonDictionary
             
-            let properties = geoJsonDictionary["properties"] as? GeoJsonDictionary
-            
-            if geoJsonDictionary["geometry"] is NSNull { self.init(geometry: nil, id: id, properties: properties); return }
-            
-            guard let geometryJson = geoJsonDictionary["geometry"] as? GeoJsonDictionary else { Log.warning("A valid Feature must have a \"geometry\" key: String : \(geoJsonDictionary)"); return nil }
-            
-            guard let geometry = parser.geoJsonObject(from: geometryJson) as? GeoJsonGeometry else { Log.warning("Feature must contain a valid geometry"); return nil }
-            
-            self.init(geometry: geometry, id: id, properties: properties)
+            // swiftlint:disable:next force_cast
+            geometry = geometryJson.flatMap { parser.geoJsonGeometry(fromValidatedGeoJson: $0) }
+            idString = id as? String
+            idDouble = id as? Double
+            idInt = id as? Int
+            properties = propertiesJson
         }
         
-        fileprivate init?(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) {
-            guard id == nil || id is String || id is Double || id is Int else { return nil }
-            
+        fileprivate init(geometry: GeoJsonGeometry?, id: Any?, properties: GeoJsonDictionary?) {
             self.geometry = geometry
             self.idString = id as? String
             self.idDouble = id as? Double
             self.idInt = id as? Int
             self.properties = properties
+        }
+    }
+}
+
+extension GeoJson.Feature {
+    public var geoJson: GeoJsonDictionary {
+        var geoJson: GeoJsonDictionary = ["type": type.name, "geometry": geometry?.geoJson ?? NSNull(), "properties": properties ?? NSNull()]
+        if let id = id { geoJson["id"] = id }
+        return geoJson
+    }
+    
+    public var id: Any? { idString ?? idDouble ?? idInt }
+    public var idAsString: String? { idString ?? idDouble?.description ?? idInt?.description }
+    
+    public var objectGeometries: [GeoJsonGeometry] { geometry.flatMap { [$0] } ?? [] }
+    public var objectBoundingBox: GeodesicBoundingBox? { geometry?.objectBoundingBox }
+    
+    public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { geometry?.objectDistance(to: point, tolerance: tolerance) }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geometry?.contains(point, tolerance: tolerance) ?? false }
+}
+
+extension GeoJson.Feature {
+    internal static func validate(geoJson: GeoJsonDictionary) -> InvalidGeoJson? {
+        func validateGeometry() -> InvalidGeoJson? {
+            guard let geometryJson = geoJson["geometry"] else { return .init(reason: "A valid Feature must have a \"geometry\" key") }
             
-            objectGeometries = geometry != nil ? [geometry!] : nil
+            // No geometry value is valid
+            if geometryJson is NSNull { return nil }
             
-            objectBoundingBox = geometry?.objectBoundingBox
+            guard let geometryGeoJson = geometryJson as? GeoJsonDictionary else { return .init(reason: "Not a valid feature geometry") }
+            
+            return GeoJson.parser.validateGeoJsonGeometry(geoJson: geometryGeoJson).flatMap { .init(reason: "Invalid Geometry in Feature") + $0 }
         }
         
-        public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { return geometry?.objectDistance(to: point, tolerance: tolerance) }
+        func validateId() -> InvalidGeoJson? {
+            guard let id = geoJson["id"] else { return nil }
+            
+            return (id is NSNull || id is String || id is Double || id is Int) ? nil : .init(reason: "Id must be of type NSNull, String, Double, or Int")
+        }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return geometry?.contains(point, tolerance: tolerance) ?? false }
+        return validateGeometry() + validateId()
     }
 }

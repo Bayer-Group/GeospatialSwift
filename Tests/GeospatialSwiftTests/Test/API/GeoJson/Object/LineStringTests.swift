@@ -35,7 +35,7 @@ class LineStringTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(lineString.objectBoundingBox as? BoundingBox, lineString.boundingBox as? BoundingBox)
+        XCTAssertEqual(lineString.objectBoundingBox, lineString.boundingBox)
     }
     
     func testGeoJson() {
@@ -88,9 +88,9 @@ class LineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = lineString.boundingBox
         
-        let boundingBox = BoundingBox.best(points.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(points.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance() {

@@ -3,7 +3,7 @@ import XCTest
 @testable import GeospatialSwift
 
 class WktParserTests: XCTestCase {
-    var geoJson: GeoJsonProtocol!
+    var geoJson: GeoJson!
     
     let wktTestData = MockData.wktTestData
     
@@ -86,7 +86,7 @@ class WktParserTests: XCTestCase {
         wktTestData.forEach { wktData in
             // SOMEDAY: Lots of Unsupported types, check WktTestData.json for names with prefix "Unsupported"
             guard !((wktData["name"] as? String)?.hasPrefix("Unsupported ") ?? false) else {
-                Log.warning("Test Unsupported: \(wktData["name"] ?? "")")
+                print("Test Unsupported: \(wktData["name"] ?? "")")
                 return
             }
             
@@ -95,7 +95,7 @@ class WktParserTests: XCTestCase {
             
             XCTAssertNotNil(geoJsonObject)
             
-            Log.warning("Test \(geoJsonObject == nil ? "Failed" : "Passed"): \(wktData["name"] ?? "")")
+            print("Test \(geoJsonObject == nil ? "Failed" : "Passed"): \(wktData["name"] ?? "")")
         }
     }
 }

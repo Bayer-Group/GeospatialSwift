@@ -1,75 +1,61 @@
-public protocol GeoJsonMultiPolygon: GeoJsonClosedGeometry {
-    var polygons: [GeoJsonPolygon] { get }
-    
-    func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]]
-}
-
 extension GeoJson {
     /**
-     Creates a GeoJsonMultiPolygon
+     Creates a MultiPolygon
      */
-    public func multiPolygon(polygons: [GeoJsonPolygon]) -> GeoJsonMultiPolygon? {
-        return MultiPolygon(polygons: polygons)
+    public func multiPolygon(polygons: [Polygon]) -> Result<MultiPolygon, InvalidGeoJson> {
+        guard polygons.count >= 1 else { return .failure(.init(reason: "A valid MultiPolygon must have at least one Polygon")) }
+        
+        return .success(MultiPolygon(polygons: polygons))
     }
     
-    public struct MultiPolygon: GeoJsonMultiPolygon {
+    public struct MultiPolygon: GeoJsonClosedGeometry {
         public let type: GeoJsonObjectType = .multiPolygon
-        public var geoJsonCoordinates: [Any] { return polygons.map { $0.geoJsonCoordinates } }
         
-        public var description: String {
-            return """
-            MultiPolygon: \(
-            """
-            (\n\(polygons.enumerated().map { "Line \($0) - \($1)" }.joined(separator: ",\n"))
-            """
-            .replacingOccurrences(of: "\n", with: "\n\t")
-            )\n)
-            """
-        }
+        public let geoJsonPolygons: [Polygon]
         
-        public let polygons: [GeoJsonPolygon]
-        
-        public var points: [GeodesicPoint] { return polygons.flatMap { $0.points } }
-        
-        public var boundingBox: GeodesicBoundingBox { return BoundingBox.best(polygons.map { $0.boundingBox })! }
-        
-        public var hasHole: Bool { return polygons.contains { $0.hasHole } }
-        
-        public var area: Double { return polygons.reduce(0) { $0 + $1.area } }
-        
-        internal init?(coordinatesJson: [Any]) {
-            guard let multiPolygonJson = coordinatesJson as? [[Any]] else { Log.warning("A valid MultiPolygon must have valid coordinates"); return nil }
+        internal init(coordinatesJson: [Any]) {
+            // swiftlint:disable:next force_cast
+            let multiPolygonJson = coordinatesJson as! [[Any]]
             
-            var polygons = [GeoJsonPolygon]()
-            for polygonJson in multiPolygonJson {
-                if let polygon = Polygon(coordinatesJson: polygonJson) {
-                    polygons.append(polygon)
-                } else {
-                    Log.warning("Invalid Polygon in MultiPolygon"); return nil
-                }
-            }
-            
-            self.init(polygons: polygons)
+            geoJsonPolygons = multiPolygonJson.map { Polygon(coordinatesJson: $0) }
         }
         
         // SOMEDAY: More strict additions:
         // Multipolygon where two polygons intersect - validate that two polygons are merged as well
-        fileprivate init?(polygons: [GeoJsonPolygon]) {
-            guard polygons.count >= 1 else { Log.warning("A valid MultiPolygon must have at least one Polygon"); return nil }
-            
-            self.polygons = polygons
+        fileprivate init(polygons: [Polygon]) {
+            geoJsonPolygons = polygons
         }
+    }
+}
+
+extension GeoJson.MultiPolygon {
+    public var polygons: [GeodesicPolygon] { geoJsonPolygons }
+    
+    public var geoJsonCoordinates: [Any] { geoJsonPolygons.map { $0.geoJsonCoordinates } }
+    
+    public var points: [GeodesicPoint] { polygons.flatMap { $0.points } }
+    
+    public var boundingBox: GeodesicBoundingBox { .best(polygons.map { $0.boundingBox })! }
+    
+    public var hasHole: Bool { geoJsonPolygons.contains { $0.hasHole } }
+    
+    public var area: Double { geoJsonPolygons.reduce(0) { $0 + $1.area } }
+    
+    public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPolygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()! }
+    
+    public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPolygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
+    
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPolygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+}
+
+extension GeoJson.MultiPolygon {
+    internal static func validate(coordinatesJson: [Any]) -> InvalidGeoJson? {
+        guard let multiPolygonCoordinatesJson = coordinatesJson as? [[Any]] else { return .init(reason: "A valid MultiPolygon must have valid coordinates") }
         
-        public func edgeDistance(to point: GeodesicPoint, tolerance: Double) -> Double {
-            return polygons.map { $0.edgeDistance(to: point, tolerance: tolerance) }.min()!
-        }
+        guard multiPolygonCoordinatesJson.count >= 1 else { return .init(reason: "A valid FeatureCollection must have at least one feature") }
         
-        public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { return polygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
+        let validatePolygons = multiPolygonCoordinatesJson.reduce(nil) { $0 + GeoJson.Polygon.validate(coordinatesJson: $1) }
         
-        public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { return polygons.first { $0.contains(point, tolerance: tolerance) } != nil }
-        
-        public func invalidReasons(tolerance: Double) -> [[PolygonInvalidReason]] {
-            return polygons.map { $0.invalidReasons(tolerance: tolerance) }
-        }
+        return validatePolygons.flatMap { .init(reason: "Invalid Polygon(s) in MultiPolygon") + $0 }
     }
 }

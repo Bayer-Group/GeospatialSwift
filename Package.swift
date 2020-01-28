@@ -1,4 +1,4 @@
-// swift-tools-version:4.1
+// swift-tools-version:5.1
 
 import PackageDescription
 
@@ -10,13 +10,11 @@ let package = Package(
             targets:  ["GeospatialSwift"]
         )
     ],
-    dependencies: [
-        .package(url: "https://github.com/MonsantoCo/TimberSwift.git", .upToNextMajor(from: "0.1.0"))
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "GeospatialSwift",
-            dependencies: ["TimberSwift"]
+            dependencies: []
         ),
         .testTarget(
             name: "GeospatialSwiftTests",

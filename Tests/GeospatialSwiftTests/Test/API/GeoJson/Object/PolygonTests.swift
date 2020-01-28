@@ -4,23 +4,27 @@ import XCTest
 
 // swiftlint:disable type_body_length
 class PolygonTests: XCTestCase {
+    var mainRing: LineString!
+    var negativeRings: [LineString]!
     var linearRings: [LineString]!
     var polygon: Polygon!
     var polygonDistance: Polygon!
     var distancePoint: SimplePoint!
     
-    var point: GeoJsonPoint!
-    var otherPoint: GeoJsonPoint!
-    var point3: GeoJsonPoint!
+    var point: GeoJson.Point!
+    var otherPoint: GeoJson.Point!
+    var point3: GeoJson.Point!
     
-    var lineString1: GeoJsonLineString!
-    var lineString2: GeoJsonLineString!
-    var lineString3: GeoJsonLineString!
+    var lineString1: GeoJson.LineString!
+    var lineString2: GeoJson.LineString!
+    var lineString3: GeoJson.LineString!
     
     override func setUp() {
         super.setUp()
         
-        linearRings = MockData.linearRings as? [LineString]
+        mainRing = MockData.linearRings.first!
+        negativeRings = Array(MockData.linearRings.dropFirst())
+        linearRings = [mainRing] + negativeRings
         
         //3                   *
         //
@@ -32,9 +36,9 @@ class PolygonTests: XCTestCase {
         //
         //1
         //    0.5   1   1.5   2
-        polygonDistance = GeoTestHelper.polygon([GeoTestHelper.lineString([GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 2, 3)])])
+        polygonDistance = GeoTestHelper.polygon(GeoTestHelper.lineString([GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5), GeoTestHelper.point(1, 2, 3)]))
         
-        polygon = GeoTestHelper.polygon(linearRings)
+        polygon = GeoTestHelper.polygon(mainRing, negativeRings)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -65,7 +69,7 @@ class PolygonTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(polygon.objectBoundingBox as? BoundingBox, polygon.boundingBox as? BoundingBox)
+        XCTAssertEqual(polygon.objectBoundingBox, polygon.boundingBox)
     }
     
     func testGeoJson() {
@@ -117,7 +121,7 @@ class PolygonTests: XCTestCase {
         (coordinates as! [[[Double]]]).enumerated().forEach { linearRingsOffset, element in
             XCTAssertEqual(element.count, linearRings[linearRingsOffset].points.count)
             element.enumerated().forEach { pointsOffset, element in
-                XCTAssertEqual(element, linearRings[linearRingsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
+                XCTAssertEqual(element, (linearRings[linearRingsOffset].points[pointsOffset] as! Point).geoJsonCoordinates as! [Double] )
             }
         }
         // swiftlint:enable force_cast
@@ -131,9 +135,9 @@ class PolygonTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = polygon.boundingBox
         
-        let boundingBox = BoundingBox.best(linearRings.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(linearRings.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance_FollowingLine() {
@@ -232,7 +236,7 @@ class PolygonTests: XCTestCase {
     // SOMEDAY: Wrong?
     func testCentroid_NoHoles2() {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(-88.3254122, 39.5206294), GeoTestHelper.point(-88.3254123, 39.520643), GeoTestHelper.point(-88.3254549, 39.5206432), GeoTestHelper.point(-88.3254549, 39.5206296), GeoTestHelper.point(-88.3254122, 39.5206294)])
-        let polygon = GeoTestHelper.polygon([mainRing])
+        let polygon = GeoTestHelper.polygon(mainRing)
         
         XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(-88.325433565181825, 39.520636297343238))
     }
@@ -249,7 +253,7 @@ class PolygonTests: XCTestCase {
             GeoTestHelper.point(50, 50)
         ]
         let linearRings = [GeoTestHelper.lineString(points)]
-        let polygon = GeoTestHelper.polygon(linearRings)
+        let polygon = GeoTestHelper.polygon(linearRings.first!, Array(linearRings.dropFirst()))
         //let feature = geospatial.geoJson.feature(geometry: polygon, id: 1, properties: nil)
         
         let distance = polygon.distance(to: distancePoint)
@@ -263,7 +267,7 @@ class PolygonTests: XCTestCase {
     func testCentroid_SmallHole() {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(0.5, 1.5, 3), GeoTestHelper.point(0.5, 3.5, 4), GeoTestHelper.point(2.5, 3.5, 5), GeoTestHelper.point(2.5, 1.5, 3), GeoTestHelper.point(0.5, 1.5, 3)])
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(1.0, 2.0, 3), GeoTestHelper.point(1.9, 2.5, 4), GeoTestHelper.point(1.9, 2.9, 5), GeoTestHelper.point(1.5, 2.5, 3), GeoTestHelper.point(1.0, 2.0, 3)])
-        let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
+        let polygon = GeoTestHelper.polygon(mainRing, [negativeRing])
         
         XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(1.4909997590845703, 2.5030003816872175, 3.0))
     }
@@ -271,7 +275,7 @@ class PolygonTests: XCTestCase {
     func testCentroid_LargeHole() {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(100.0, 0.0, 3), GeoTestHelper.point(101.0, 0.0, 4), GeoTestHelper.point(101.0, 1.0, 5), GeoTestHelper.point(100.0, 1.0, 3), GeoTestHelper.point(100.0, 0.0, 3)])
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.05, 0.05, 3), GeoTestHelper.point(100.5, 0.05), GeoTestHelper.point(100.5, 0.95, 5), GeoTestHelper.point(100.05, 0.95, 3), GeoTestHelper.point(100.05, 0.05, 3)])
-        let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
+        let polygon = GeoTestHelper.polygon(mainRing, [negativeRing])
         
         XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.68225043951259, 0.50000059329894664, 3.0))
     }
@@ -279,7 +283,7 @@ class PolygonTests: XCTestCase {
     func testCentroid_CenterHole() {
         let mainRing = GeoTestHelper.lineString([GeoTestHelper.point(100.0, 0.0), GeoTestHelper.point(101.0, 0.0), GeoTestHelper.point(101.0, 1.0), GeoTestHelper.point(100.0, 1.0), GeoTestHelper.point(100.0, 0.0)])
         let negativeRing = GeoTestHelper.lineString([GeoTestHelper.point(100.2, 0.2), GeoTestHelper.point(100.8, 0.2), GeoTestHelper.point(100.8, 0.8), GeoTestHelper.point(100.2, 0.8), GeoTestHelper.point(100.2, 0.2)])
-        let polygon = GeoTestHelper.polygon([mainRing, negativeRing])
+        let polygon = GeoTestHelper.polygon(mainRing, [negativeRing])
         
         XCTAssertEqual(polygon.centroid as! SimplePoint, GeoTestHelper.simplePoint(100.5, 0.49999999999999994))
     }
@@ -376,15 +380,15 @@ class PolygonTests: XCTestCase {
     func testEquals() {
         XCTAssertEqual(polygon, polygon)
         
-        XCTAssertEqual(GeoTestHelper.polygon([lineString1]), GeoTestHelper.polygon([lineString1]))
+        XCTAssertEqual(GeoTestHelper.polygon(lineString1), GeoTestHelper.polygon(lineString1))
         
-        XCTAssertEqual(GeoTestHelper.polygon([lineString1, lineString2]), GeoTestHelper.polygon([lineString1, lineString2]))
+        XCTAssertEqual(GeoTestHelper.polygon(lineString1, [lineString2]), GeoTestHelper.polygon(lineString1, [lineString2]))
     }
     
     // SOMEDAY: Comparing the Json test data and this is confusing.
     func testNotEquals() {
-        XCTAssertNotEqual(polygon, GeoTestHelper.polygon([lineString1]))
+        XCTAssertNotEqual(polygon, GeoTestHelper.polygon(lineString1))
         
-        XCTAssertNotEqual(GeoTestHelper.polygon([lineString1, lineString2]), GeoTestHelper.polygon([lineString1, lineString3]))
+        XCTAssertNotEqual(GeoTestHelper.polygon(lineString1, [lineString2]), GeoTestHelper.polygon(lineString1, [lineString3]))
     }
 }

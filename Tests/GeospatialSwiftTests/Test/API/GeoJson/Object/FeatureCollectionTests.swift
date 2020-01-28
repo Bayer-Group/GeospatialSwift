@@ -11,7 +11,7 @@ class FeatureCollectionTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        features = MockData.features as? [Feature]
+        features = MockData.features
         
         featureCollection = GeoTestHelper.featureCollection(features)
         
@@ -27,7 +27,7 @@ class FeatureCollectionTests: XCTestCase {
     }
     
     func testObjectGeometries() {
-        XCTAssertEqual(featureCollection.objectGeometries?.count, 3)
+        XCTAssertEqual(featureCollection.objectGeometries.count, 3)
     }
     
     func testGeometryTypes() {
@@ -43,9 +43,9 @@ class FeatureCollectionTests: XCTestCase {
     func testObjectBoundingBox() {
         let resultBoundingBox = featureCollection.objectBoundingBox
         
-        let boundingBox = BoundingBox.best(featureCollection.features.compactMap { $0.geometry?.objectBoundingBox })
+        let boundingBox = GeodesicBoundingBox.best(featureCollection.features.compactMap { $0.geometry?.objectBoundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testGeoJson() {

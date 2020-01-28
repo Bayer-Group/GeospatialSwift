@@ -10,7 +10,7 @@ class MultiLineStringTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        lineStrings = MockData.lineStrings as? [LineString]
+        lineStrings = MockData.lineStrings
         
         multiLineString = GeoTestHelper.multiLineString(lineStrings)
         
@@ -35,7 +35,7 @@ class MultiLineStringTests: XCTestCase {
     }
     
     func testObjectBoundingBox() {
-        XCTAssertEqual(multiLineString.objectBoundingBox as? BoundingBox, multiLineString.boundingBox as? BoundingBox)
+        XCTAssertEqual(multiLineString.objectBoundingBox, multiLineString.boundingBox)
     }
     
     func testGeoJson() {
@@ -50,34 +50,34 @@ class MultiLineStringTests: XCTestCase {
     func testContains() {
         let point = multiLineString.points.first!
         
-        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.contains { $0 })
     }
     
     func testContains_DoesNot() {
         let point = distancePoint!
         
-        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point), lineStrings.map { $0.contains(point) }.contains { $0 })
     }
     
     func testContains_WithTolerance() {
         let point = multiLineString.points.first!
         let tolerance = 0.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     func testContains_WithTolerance_Does_WithError() {
         let point = distancePoint!
         let tolerance = 200000000.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     func testContains_WithTolerance_DoesNot() {
         let point = distancePoint!
         let tolerance = 0.0
         
-        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.reduce(false) { $0 || $1 })
+        XCTAssertEqual(multiLineString.contains(point, tolerance: tolerance), lineStrings.map { $0.contains(point, tolerance: tolerance) }.contains { $0 })
     }
     
     // GeoJsonCoordinatesGeometry Tests
@@ -92,7 +92,7 @@ class MultiLineStringTests: XCTestCase {
         (coordinates as! [[[Double]]]).enumerated().forEach { lineStringsOffset, element in
             XCTAssertEqual(element.count, lineStrings[lineStringsOffset].points.count)
             element.enumerated().forEach { pointsOffset, element in
-                XCTAssertEqual(element, lineStrings[lineStringsOffset].geoJsonPoints[pointsOffset].geoJsonCoordinates as! [Double] )
+                XCTAssertEqual(element, (lineStrings[lineStringsOffset].points[pointsOffset] as! Point).geoJsonCoordinates as! [Double] )
             }
         }
         // swiftlint:enablce force_cast
@@ -106,9 +106,9 @@ class MultiLineStringTests: XCTestCase {
     func testBoundingBox() {
         let resultBoundingBox = multiLineString.boundingBox
         
-        let boundingBox = BoundingBox.best(lineStrings.compactMap { $0.boundingBox })
+        let boundingBox = GeodesicBoundingBox.best(lineStrings.compactMap { $0.boundingBox })
         
-        XCTAssertEqual(resultBoundingBox as? BoundingBox, boundingBox as? BoundingBox)
+        XCTAssertEqual(resultBoundingBox, boundingBox)
     }
     
     func testDistance_On() {
@@ -159,7 +159,7 @@ class MultiLineStringTests: XCTestCase {
     // MultiLineString Tests
     
     func testLineStrings() {
-        XCTAssertEqual((multiLineString.lineStrings as? [LineString])!, lineStrings)
+        XCTAssertEqual((multiLineString.lines as? [LineString])!, lineStrings)
     }
     
     func testEquals() {
