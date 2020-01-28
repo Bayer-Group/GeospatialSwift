@@ -44,11 +44,10 @@ Geospatial.geoJson
 
 * Minimum distance to a given point (Optional error distance)
 * Contains a given point (Optional error distance)
-* Bounding box
-* GeoJson as a Dictionary
-* Points array which make up the geometry
-* GeodesicPoint with SimplePoint implementation
-* GeodesicLineSegment with midpoint and bearing functions
+* Bounding box for any shape
+* GeoJson returned as a Dictionary
+* Coordinates array for the associated geometry
+* Line segments with midpoint and bearing functions
 
 * Point
   * Normalize
@@ -70,10 +69,9 @@ Geospatial.geoJson
 
 Geospatial.geohash
 
-* Find the geohash of any coordinate
-* Find the center coordinate of any geohash
-* Find all 9 neighboring geohash given a coordinate
-* Create a bounding box (GeohashBox) from a geohash
+* Create a geohash from a coordinate or bounding box
+* Get geohash neighbors (8)
+* Create a bounding box for a geohash
 
 ### WKT - Not Fully Supported
 
