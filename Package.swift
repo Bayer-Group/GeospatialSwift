@@ -10,13 +10,11 @@ let package = Package(
             targets:  ["GeospatialSwift"]
         )
     ],
-    dependencies: [
-        .package(url: "https://github.com/MonsantoCo/TimberSwift.git", .branch("package-rework"))
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "GeospatialSwift",
-            dependencies: ["TimberSwift"]
+            dependencies: []
         ),
         .testTarget(
             name: "GeospatialSwiftTests",

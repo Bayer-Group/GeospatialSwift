@@ -5,8 +5,8 @@ internal struct WktParser {
     let geoJson: GeoJson
     
     func geoJsonObject(from wkt: String) -> GeoJsonObject? {
-        guard let startRange = wkt.range(of: "(") else { Log.warning("Malformed WKT: \(wkt)"); return nil }
-        guard let endRange = wkt.range(of: ")", options: .backwards) else { Log.warning("Malformed WKT: \(wkt)"); return nil }
+        guard let startRange = wkt.range(of: "(") else { return nil }
+        guard let endRange = wkt.range(of: ")", options: .backwards) else { return nil }
         
         let range = startRange.upperBound..<endRange.lowerBound
         let data = String(wkt[range])
@@ -37,14 +37,10 @@ internal struct WktParser {
                 } else if wkt.uppercased().hasPrefix("POLYGON") {
                     return try parsePolygonString(data)
                 } else {
-                    Log.warning("Unsupported Geometry type: \(wkt)")
-                    
                     return nil
                 }
             }
         } catch {
-            Log.warning("Could not parse geometry: \(wkt)")
-            
             return nil
         }
     }

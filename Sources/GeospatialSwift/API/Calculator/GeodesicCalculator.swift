@@ -393,10 +393,7 @@ extension GeodesicCalculator {
         let numerator1 = (longitudeDeltaSegment2 * latitudeSegmentsOffset) - (latitudeDeltaSegment2 * longitudeSegmentsOffset)
         let numerator2 = (longitudeDeltaSegment1 * latitudeSegmentsOffset) - (latitudeDeltaSegment1 * longitudeSegmentsOffset)
         
-        guard denominator != 0 && (numerator1 != 0 || numerator2 != 0) else {
-            Log.debug("denominator: \(denominator), numerator1: \(numerator1), numerator2: \(numerator2)")
-            return nil
-        }
+        guard denominator != 0 && (numerator1 != 0 || numerator2 != 0) else { return nil }
         
         let result1 = numerator1 / denominator
         let result2 = numerator2 / denominator

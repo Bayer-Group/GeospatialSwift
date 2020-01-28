@@ -1,11 +1,12 @@
 # Mac OS X
 .DS_Store
 
-# Xcode
-
 ## Build generated
 build/
 DerivedData
+
+## Tools
+Tools/
 
 ## Various settings
 *.pbxuser
@@ -36,6 +37,6 @@ playground.xcworkspace
 .build/
 
 # Carthage
-Carthage
+Carthage/Build
 
 .gitbackup
