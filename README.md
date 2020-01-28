@@ -19,11 +19,11 @@ A GeoJsonObject can be transformed to a bounding box.
 
 ### Carthage
 
-```github "MonsantoCo/GeospatialSwift" ~> 0.5.0```
+```github "MonsantoCo/GeospatialSwift" ~> 1.0.0```
 
 ### Package Manager
 
-```.package(url: "git@github.com:MonsantoCo/GeospatialSwift.git", from: "0.5.0")```
+```.package(url: "git@github.com:MonsantoCo/GeospatialSwift.git", from: "1.0.0")```
 
 ## Geospatial
 
