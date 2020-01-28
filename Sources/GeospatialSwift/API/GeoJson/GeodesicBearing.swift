@@ -1,4 +1,4 @@
 public struct GeodesicBearing {
-    let bearing: Double
-    let back: Double
+    public let bearing: Double
+    public let back: Double
 }
