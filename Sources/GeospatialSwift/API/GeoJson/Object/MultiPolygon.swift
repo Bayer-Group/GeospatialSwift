@@ -45,7 +45,57 @@ extension GeoJson.MultiPolygon {
     
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPolygons.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     
-    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPolygons.first { $0.contains(point, tolerance: tolerance) } != nil }
+    public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPolygons.contains { $0.contains(point, tolerance: tolerance) } }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+        let polygonSimpleViolation = geoJsonPolygons.map { $0.simpleViolations(tolerance: tolerance) }.filter { !$0.isEmpty }.flatMap { $0 }
+        
+        guard polygonSimpleViolation.isEmpty else {
+            return polygonSimpleViolation
+        }
+        
+        let polygonContainedIndices = Calculator.simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from: polygons, tolerance: tolerance)
+        
+        guard polygonContainedIndices.isEmpty else {
+            var violations = [GeoJsonSimpleViolation]()
+            polygonContainedIndices.forEach { index in
+                var geometries = [GeoJsonCoordinatesGeometry]()
+                polygons[index].mainRing.segments.forEach { segment in
+                    let point1 = GeoJson.Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
+                    let point2 = GeoJson.Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
+                    geometries.append(point1)
+                    geometries.append(GeoJson.LineString(points: [point1, point2]))
+                }
+                violations += [GeoJsonSimpleViolation(problems: geometries, reason: .multiPolygonContained)]
+            }
+            return violations
+        }
+        
+        let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: polygons, tolerance: tolerance)
+        
+        guard simpleViolationIntersectionIndices.isEmpty else {
+            var violations = [GeoJsonSimpleViolation]()
+            simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
+                let segment1 = polygons[lineSegmentIndex1.key.lineIndex].mainRing.segments[lineSegmentIndex1.key.segmentIndex]
+                let point1 = GeoJson.Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
+                let point2 = GeoJson.Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
+                let line1 = GeoJson.LineString(points: [point1, point2])
+                
+                lineSegmentIndex1.value.forEach { lineSegmentIndex2 in
+                    let segment2 = polygons[lineSegmentIndex2.lineIndex].mainRing.segments[lineSegmentIndex2.segmentIndex]
+                    let point3 = GeoJson.Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
+                    let point4 = GeoJson.Point(longitude: segment2.endPoint.longitude, latitude: segment2.endPoint.latitude)
+                    let line2 = GeoJson.LineString(points: [point3, point4])
+                    
+                    violations += [GeoJsonSimpleViolation(problems: [point1, point2, line1, point3, point4, line2], reason: .multiPolygonIntersection)]
+                }
+            }
+            
+            return violations
+        }
+        
+        return []
+    }
 }
 
 extension GeoJson.MultiPolygon {

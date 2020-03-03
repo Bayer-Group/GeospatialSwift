@@ -5,6 +5,10 @@ import XCTest
 class MultiPolygonTests: XCTestCase {
     var polygons: [Polygon]!
     var multiPolygon: MultiPolygon!
+    var touchingMultiPolygon: MultiPolygon!
+    var sharingEdgeMultiPolygons: MultiPolygon!
+    var containingMultiPolygons: MultiPolygon!
+    
     var distancePoint: SimplePoint!
     
     var point: GeoJson.Point!
@@ -19,6 +23,12 @@ class MultiPolygonTests: XCTestCase {
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
         point = GeoTestHelper.point(0, 0, 0)
+        
+        touchingMultiPolygon = GeoTestHelper.multiPolygon(MockData.touchingPolygons)
+        
+        sharingEdgeMultiPolygons = GeoTestHelper.multiPolygon(MockData.sharingEdgePolygons)
+        
+        containingMultiPolygons = GeoTestHelper.multiPolygon(MockData.containingPolygons)
     }
     
     // GeoJsonObject Tests
@@ -36,6 +46,48 @@ class MultiPolygonTests: XCTestCase {
         XCTAssertEqual(multiPolygon.coordinatesGeometries.count, 1)
         XCTAssertEqual(multiPolygon.linearGeometries.count, 0)
         XCTAssertEqual(multiPolygon.closedGeometries.count, 1)
+    }
+    
+    func testTouchingMultiPolygonsIsValid() {
+        XCTAssertEqual(touchingMultiPolygon.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testSharingEdgeMultiPolygonsIsInvalid() {
+        let simpleViolations = sharingEdgeMultiPolygons.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiPolygonIntersection)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[1] as? Point, let point3 = simpleViolations[0].problems[3] as? Point, let point4 = simpleViolations[0].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 21.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+            XCTAssertEqual(point2.longitude, 21.0)
+            XCTAssertEqual(point2.latitude, 20.0)
+            XCTAssertEqual(point3.longitude, 21.0)
+            XCTAssertEqual(point3.latitude, 21.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 20.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testContainedMultiPolygonsIsInvalid() {
+        let simpleViolations = containingMultiPolygons.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.multiPolygonContained)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[2] as? Point, let point3 = simpleViolations[0].problems[4] as? Point, let point4 = simpleViolations[0].problems[6] as? Point {
+            XCTAssertEqual(point1.longitude, 21.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+            XCTAssertEqual(point2.longitude, 22.0)
+            XCTAssertEqual(point2.latitude, 21.0)
+            XCTAssertEqual(point3.longitude, 22.0)
+            XCTAssertEqual(point3.latitude, 22.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 22.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
     }
     
     func testObjectBoundingBox() {
@@ -111,7 +163,7 @@ class MultiPolygonTests: XCTestCase {
     }
     
     func testArea() {
-        XCTAssertEqual(multiPolygon.area, 37490216.3337727, accuracy: 10)
+        XCTAssertEqual(multiPolygon.area, 98455858999.07483, accuracy: 10)
     }
     
     // SOMEDAY: Test Edge Distance

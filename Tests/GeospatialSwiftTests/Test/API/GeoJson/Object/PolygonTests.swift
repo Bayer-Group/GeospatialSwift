@@ -9,6 +9,23 @@ class PolygonTests: XCTestCase {
     var linearRings: [LineString]!
     var polygon: Polygon!
     var polygonDistance: Polygon!
+    var sharingCornerLinearRings: [LineString]!
+    var sharingCornerPolygon: Polygon!
+    var sharingCornerAndOverlappingLinearRings: [LineString]!
+    var sharingCornerAndOverlappingPolygon: Polygon!
+    var ringIntersectingLinearRings: [LineString]!
+    var ringIntersectingPolygon: Polygon!
+    var holeOutsideLinearRings: [LineString]!
+    var holeOutsidePolygon: Polygon!
+    var holeContainedLinearRings: [LineString]!
+    var holeContainedPolygon: Polygon!
+    var mShapeMainRingLinearRings: [LineString]!
+    var mShapeMainRingPolygon: Polygon!
+    var doubleMNegativeRingsLinearRings: [LineString]!
+    var doubleMNegativeRingsPolygon: Polygon!
+    var diamondNegativeRingLinearRings: [LineString]!
+    var diamondNegativeRingPolygon: Polygon!
+    
     var distancePoint: SimplePoint!
     
     var point: GeoJson.Point!
@@ -40,6 +57,30 @@ class PolygonTests: XCTestCase {
         
         polygon = GeoTestHelper.polygon(mainRing, negativeRings)
         
+        sharingCornerLinearRings = MockData.sharingCornerLinearRings
+        sharingCornerPolygon = GeoTestHelper.polygon(sharingCornerLinearRings.first!, Array(sharingCornerLinearRings.dropFirst()))
+        
+        sharingCornerAndOverlappingLinearRings = MockData.sharingCornerAndOverlappingRings
+        sharingCornerAndOverlappingPolygon = GeoTestHelper.polygon(sharingCornerAndOverlappingLinearRings.first!, Array(sharingCornerAndOverlappingLinearRings.dropFirst()))
+        
+        ringIntersectingLinearRings = MockData.ringIntersectingLinearRings
+        ringIntersectingPolygon =  GeoTestHelper.polygon(ringIntersectingLinearRings.first!, Array(ringIntersectingLinearRings.dropFirst()))
+        
+        holeOutsideLinearRings = MockData.holeOutsideLinearRings
+        holeOutsidePolygon =  GeoTestHelper.polygon(holeOutsideLinearRings.first!, Array(holeOutsideLinearRings.dropFirst()))
+        
+        holeContainedLinearRings = MockData.holeContainedLinearRings
+        holeContainedPolygon =  GeoTestHelper.polygon(holeContainedLinearRings.first!, Array(holeContainedLinearRings.dropFirst()))
+        
+        mShapeMainRingLinearRings = MockData.mShapeMainRingLinearRings
+        mShapeMainRingPolygon =  GeoTestHelper.polygon(mShapeMainRingLinearRings.first!, Array(mShapeMainRingLinearRings.dropFirst()))
+        
+        doubleMNegativeRingsLinearRings = MockData.doubleMNegativeRingsLinearRings
+        doubleMNegativeRingsPolygon =  GeoTestHelper.polygon(doubleMNegativeRingsLinearRings.first!, Array(doubleMNegativeRingsLinearRings.dropFirst()))
+        
+        diamondNegativeRingLinearRings = MockData.diamondNegativeRingLinearRings
+        diamondNegativeRingPolygon =  GeoTestHelper.polygon(diamondNegativeRingLinearRings.first!, Array(diamondNegativeRingLinearRings.dropFirst()))
+        
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
         point = GeoTestHelper.point(0, 0, 0)
@@ -68,13 +109,249 @@ class PolygonTests: XCTestCase {
         XCTAssertEqual(polygon.closedGeometries.count, 1)
     }
     
+    func testPolygonIsValid() {
+        XCTAssertEqual(polygon.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testPolygonSharingCorner_IsValid() {
+        XCTAssertEqual(sharingCornerPolygon.simpleViolations(tolerance: 0).count, 0)
+    }
+    
+    func testPolygonSharingCornerAndOverlappingEdge_IsInvalid() {
+        let simpleViolations = sharingCornerAndOverlappingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 2)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[1] as? Point, let point3 = simpleViolations[0].problems[3] as? Point, let point4 = simpleViolations[0].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 20.0)
+            XCTAssertEqual(point1.latitude, 0.0)
+            XCTAssertEqual(point2.longitude, 23.0)
+            XCTAssertEqual(point2.latitude, 0.0)
+            XCTAssertEqual(point3.longitude, 20.0)
+            XCTAssertEqual(point3.latitude, 0.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 0.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[1].problems[0] as? Point, let point2 = simpleViolations[1].problems[1] as? Point, let point3 = simpleViolations[1].problems[3] as? Point, let point4 = simpleViolations[1].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 20.0)
+            XCTAssertEqual(point1.latitude, 3.0)
+            XCTAssertEqual(point2.longitude, 20.0)
+            XCTAssertEqual(point2.latitude, 0.0)
+            XCTAssertEqual(point3.longitude, 20.0)
+            XCTAssertEqual(point3.latitude, 1.0)
+            XCTAssertEqual(point4.longitude, 20.0)
+            XCTAssertEqual(point4.latitude, 0.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygonringIntersecting_IsInvalid() {
+        let simpleViolations = ringIntersectingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 4)
+        
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[0].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[1].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[1].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 21.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[2].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[2].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 22.0)
+            
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[3].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        if let point1 = simpleViolations[3].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 22.0)
+            
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygonWithHoleOutside_IsInvalid() {
+        let simpleViolations = holeOutsidePolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 8)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        XCTAssertEqual(simpleViolations[1].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        XCTAssertEqual(simpleViolations[2].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        XCTAssertEqual(simpleViolations[3].reason, GeoJsonSimpleViolationReason.polygonHoleOutside)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 25.0)
+            XCTAssertEqual(point1.latitude, 25.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[1].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 26.0)
+            XCTAssertEqual(point1.latitude, 25.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[2].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 26.0)
+            XCTAssertEqual(point1.latitude, 25.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[3].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 26.0)
+            XCTAssertEqual(point1.latitude, 26.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[4].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 26.0)
+            XCTAssertEqual(point1.latitude, 26.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[5].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 25.0)
+            XCTAssertEqual(point1.latitude, 26.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[6].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 25.0)
+            XCTAssertEqual(point1.latitude, 26.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point1 = simpleViolations[7].problems[0] as? Point {
+            XCTAssertEqual(point1.longitude, 25.0)
+            XCTAssertEqual(point1.latitude, 25.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygonWithHoleContainingHole_IsInvalid() {
+        let simpleViolations = holeContainedPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonNegativeRingContained)
+        
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[2] as? Point, let point3 = simpleViolations[0].problems[4] as? Point, let point4 = simpleViolations[0].problems[6] as? Point {
+            XCTAssertEqual(point1.longitude, 22.0)
+            XCTAssertEqual(point1.latitude, 22.0)
+            XCTAssertEqual(point2.longitude, 23.0)
+            XCTAssertEqual(point2.latitude, 22.0)
+            XCTAssertEqual(point3.longitude, 23.0)
+            XCTAssertEqual(point3.latitude, 23.0)
+            XCTAssertEqual(point4.longitude, 22.0)
+            XCTAssertEqual(point4.latitude, 23.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testMShapePolygon_WithNegativeRingEdgeOutside_IsInvalid() {
+        let simpleViolations = mShapeMainRingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 2)
+        
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonSelfIntersection)
+        if let point1 = simpleViolations[0].problems[0] as? Point, let point2 = simpleViolations[0].problems[1] as? Point, let point3 = simpleViolations[0].problems[3] as? Point, let point4 = simpleViolations[0].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 24.0)
+            XCTAssertEqual(point1.latitude, 26.0)
+            XCTAssertEqual(point2.longitude, 22.0)
+            XCTAssertEqual(point2.latitude, 22.0)
+            XCTAssertEqual(point3.longitude, 23.0)
+            XCTAssertEqual(point3.latitude, 23.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 23.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        XCTAssertEqual(simpleViolations[1].reason, GeoJsonSimpleViolationReason.polygonSelfIntersection)
+        if let point1 = simpleViolations[1].problems[0] as? Point, let point2 = simpleViolations[1].problems[1] as? Point, let point3 = simpleViolations[1].problems[3] as? Point, let point4 = simpleViolations[1].problems[4] as? Point {
+            XCTAssertEqual(point1.longitude, 22.0)
+            XCTAssertEqual(point1.latitude, 22.0)
+            XCTAssertEqual(point2.longitude, 20.0)
+            XCTAssertEqual(point2.latitude, 26.0)
+            XCTAssertEqual(point3.longitude, 23.0)
+            XCTAssertEqual(point3.latitude, 23.0)
+            XCTAssertEqual(point4.longitude, 21.0)
+            XCTAssertEqual(point4.latitude, 23.0)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygon_WithDoubleMNegativeRing_IsInvalid() {
+        let simpleViolations = doubleMNegativeRingsPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 8)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
+        
+        if let point = simpleViolations[0].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 23)
+            XCTAssertEqual(point.latitude, 21)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point = simpleViolations[4].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 23)
+            XCTAssertEqual(point.latitude, 23)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygon_WithDiamondNegativeRing_IsInvalid() {
+        let simpleViolations = diamondNegativeRingPolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 8)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonMultipleVertexIntersection)
+        
+        if let point = simpleViolations[0].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 20)
+            XCTAssertEqual(point.latitude, 20)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+        
+        if let point = simpleViolations[4].problems[3] as? Point {
+            XCTAssertEqual(point.longitude, 24)
+            XCTAssertEqual(point.latitude, 24)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    
     func testObjectBoundingBox() {
         XCTAssertEqual(polygon.objectBoundingBox, polygon.boundingBox)
     }
     
     func testGeoJson() {
         XCTAssertEqual(polygon.geoJson["type"] as? String, "Polygon")
-        XCTAssertEqual(polygon.geoJson["coordinates"] as? [[[Double]]], MockData.linearRingsCoordinatesJson)
+        XCTAssertEqual(polygon.geoJson["coordinates"] as? [[[Double]]], MockData.polygonsCoordinatesJson[0])
     }
     
     func testObjectDistance() {
@@ -367,7 +644,7 @@ class PolygonTests: XCTestCase {
     
     // SOMEDAY: Verify
     func testArea() {
-        XCTAssertEqual(polygon.area, 11301732.6333942, accuracy: 10)
+        XCTAssertEqual(polygon.area, 98429670515.37445, accuracy: 10)
     }
     
     // Polygon Tests

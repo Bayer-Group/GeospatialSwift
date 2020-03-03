@@ -67,8 +67,16 @@ class FeatureCollectionTests: XCTestCase {
         XCTAssertEqual(features?[2]["type"] as? String, "Feature")
         XCTAssertEqual(features?[2]["properties"] as? NSNull, NSNull())
         let feature3 = features?[2]["geometry"] as? [String: Any]
+        
+        let feature3Coordinates = feature3?["coordinates"] as? [[[Double]]]
+        var feature3CoordinatesTrimmed = [[[Double]]]()
+        
+        feature3Coordinates?.forEach {
+            feature3CoordinatesTrimmed.append($0.dropLast())
+        }
+        
         XCTAssertEqual(feature3?["type"] as? String, "Polygon")
-        XCTAssertEqual(feature3?["coordinates"] as? [[[Double]]], MockData.linearRingsCoordinatesJson)
+        XCTAssertEqual(feature3CoordinatesTrimmed, MockData.linearRingsCoordinatesJson)
     }
     
     func testObjectDistance() {

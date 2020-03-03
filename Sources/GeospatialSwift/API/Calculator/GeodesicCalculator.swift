@@ -1,15 +1,5 @@
 import Foundation
 
-// SOMEDAY: Overlaps / Contains(Fully)? (Line to Line, Line in Multi/Polygon, Polygon in Multi/Polygon)
-//    func contains(_ lineSegment: GeodesicLineSegment, in polygon: GeodesicPolygon, tolerance: Double) -> Bool
-// SOMEDAY: Split Lines
-//    func canSplit(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Bool
-//    func split(_ polygon: GeodesicPolygon, from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> (GeodesicPolygon, GeodesicPolygon)
-
-// SOMEDAY: Altitude is not considered. Perhaps there should be 3D calculations as well.
-// SOMEDAY: Break this up into pieces.
-// swiftlint:disable file_length
-
 internal let Calculator = GeodesicCalculator()
 
 /**
@@ -69,7 +59,7 @@ public struct GeodesicCalculator {
 
 // SOMEDAY: Area calculations are not geodesic?
 extension GeodesicCalculator {
-    public func length(of line: GeodesicLine) -> Double { line.segments.reduce(0.0) { $0 + distance(from: $1.point, to: $1.otherPoint, tolerance: 0) } }
+    public func length(of line: GeodesicLine) -> Double { line.segments.reduce(0.0) { $0 + distance(from: $1.startPoint, to: $1.endPoint, tolerance: 0) } }
     
     public func area(of polygon: GeodesicPolygon) -> Double {
         let earthRadius = self.earthRadius(latitudeAverage: centroid(polygon: polygon).latitude)
@@ -139,20 +129,20 @@ extension GeodesicCalculator {
     
     public func distance(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
         let distance1 = distancePartialResult(from: point, to: lineSegment)
-        let reverseSegment = GeodesicLineSegment(point: lineSegment.otherPoint, otherPoint: lineSegment.point)
+        let reverseSegment = GeodesicLineSegment(startPoint: lineSegment.endPoint, endPoint: lineSegment.startPoint)
         let distance2 = distancePartialResult(from: point, to: reverseSegment)
         
         return max(min(distance1, distance2) - tolerance, 0.0)
     }
     
     public func distance(from lineSegment: GeodesicLineSegment, to otherLineSegment: GeodesicLineSegment, tolerance: Double) -> Double {
-        guard intersection(of: lineSegment, with: otherLineSegment) == nil else { return 0 }
+        guard intersectionPoint(of: lineSegment, with: otherLineSegment) == nil else { return 0 }
         
         return min(
-            distance(from: lineSegment.point, to: otherLineSegment, tolerance: tolerance),
-            distance(from: lineSegment.otherPoint, to: otherLineSegment, tolerance: tolerance),
-            distance(from: otherLineSegment.point, to: lineSegment, tolerance: tolerance),
-            distance(from: otherLineSegment.otherPoint, to: lineSegment, tolerance: tolerance)
+            distance(from: lineSegment.startPoint, to: otherLineSegment, tolerance: tolerance),
+            distance(from: lineSegment.endPoint, to: otherLineSegment, tolerance: tolerance),
+            distance(from: otherLineSegment.startPoint, to: lineSegment, tolerance: tolerance),
+            distance(from: otherLineSegment.endPoint, to: lineSegment, tolerance: tolerance)
         )
     }
     
@@ -214,21 +204,21 @@ extension GeodesicCalculator {
         return angularDistance * earthRadius
     }
     
-    // SOMEDAY: It was suggested this could be almost twice as fast - Run tests! Protect asin from NaN
-//    func haversineOptimized(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
-//        let p = 0.017453292519943295    // Math.PI / 180
-//        let a = 0.5 - (cos((otherPoint.latitude - point.latitude) * p) / 2) + (cos(point.latitude * p) * cos(otherPoint.latitude * p) * (1 - cos((otherPoint.longitude - point.longitude) * p)) / 2)
-//
-//        return 12742 * asin(sqrt(a)) // 2 * R; R = 6371 km
-//    }
+    // It was suggested this could be almost twice as fast - Run tests! Protect asin from NaN
+    //    func haversineOptimized(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double {
+    //        let p = 0.017453292519943295    // Math.PI / 180
+    //        let a = 0.5 - (cos((otherPoint.latitude - point.latitude) * p) / 2) + (cos(point.latitude * p) * cos(otherPoint.latitude * p) * (1 - cos((otherPoint.longitude - point.longitude) * p)) / 2)
+    //
+    //        return 12742 * asin(sqrt(a)) // 2 * R; R = 6371 km
+    //    }
     
     // SOMEDAY: It would be nice to understand this better as there seems to be too much to calling this twice but twice produces the correct result.
     private func distancePartialResult(from point: GeodesicPoint, to lineSegment: GeodesicLineSegment) -> Double {
-        let earthRadius = self.earthRadius(latitudeAverage: midpoint(from: lineSegment.point, to: lineSegment.otherPoint).latitude)
+        let earthRadius = self.earthRadius(latitudeAverage: midpoint(from: lineSegment.startPoint, to: lineSegment.endPoint).latitude)
         
-        let θ12 = initialBearing(from: lineSegment.point, to: lineSegment.otherPoint).degreesToRadians
-        let θ13 = initialBearing(from: lineSegment.point, to: point).degreesToRadians
-        let δ13 = distance(from: lineSegment.point, to: point, tolerance: 0)
+        let θ12 = initialBearing(from: lineSegment.startPoint, to: lineSegment.endPoint).degreesToRadians
+        let θ13 = initialBearing(from: lineSegment.startPoint, to: point).degreesToRadians
+        let δ13 = distance(from: lineSegment.startPoint, to: point, tolerance: 0)
         
         guard abs(θ13 - θ12) <= .pi / 2.0 else { return δ13 }
         
@@ -238,7 +228,7 @@ extension GeodesicCalculator {
             return partialCalculation > 1 || partialCalculation < -1 ? 0 : asin(partialCalculation) * earthRadius
         }()
         
-        let δ12 = distance(from: lineSegment.point, to: lineSegment.otherPoint, tolerance: 0)
+        let δ12 = distance(from: lineSegment.startPoint, to: lineSegment.endPoint, tolerance: 0)
         
         let δ14: Double = {
             let partialCalculation = cos(δ13 / earthRadius) / cos(δxt / earthRadius)
@@ -248,7 +238,7 @@ extension GeodesicCalculator {
         
         guard δ14 > δ12 else { return abs(δxt) }
         
-        let δ23 = distance(from: lineSegment.otherPoint, to: point, tolerance: 0)
+        let δ23 = distance(from: lineSegment.endPoint, to: point, tolerance: 0)
         
         return δ23
     }
@@ -258,6 +248,8 @@ extension GeodesicCalculator {
 
 extension GeodesicCalculator {
     public func contains(_ point: GeodesicPoint, in otherPoint: GeodesicPoint, tolerance: Double) -> Bool { distance(from: point, to: otherPoint, tolerance: tolerance) == 0 }
+    
+    public func contains(_ point: GeodesicPoint, in points: [GeodesicPoint], tolerance: Double) -> Bool { points.contains { contains(point, in: $0, tolerance: tolerance) } }
     
     public func contains(_ point: GeodesicPoint, in lineSegment: GeodesicLineSegment, tolerance: Double) -> Bool { distance(from: point, to: lineSegment, tolerance: tolerance) == 0 }
     
@@ -284,18 +276,33 @@ extension GeodesicCalculator {
     }
     
     // SOMEDAY: Not geodesic.
-    private func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
+    public func contains(point: GeodesicPoint, vertices: [GeodesicPoint]) -> Bool {
         guard !vertices.isEmpty else { return false }
         
         var contains = false
         var previousVertex = vertices.last!
         
-        vertices.forEach { vertex in
-            let partial1 = (vertex.latitude > point.latitude) != (previousVertex.latitude > point.latitude)
-            let partial2 = (previousVertex.longitude - vertex.longitude) * (point.latitude - vertex.latitude) / (previousVertex.latitude - vertex.latitude) + vertex.longitude
-            let partial3 = point.longitude < partial2
+        //shot a ray from point to right, parallel to latitude line
+        //After hitting a segment, the ray goes inside out or outside in
+        //If ray starts outside: out=>in=>...=>out
+        //If inside: in=>out=>in...=>out
+        //Thus, even number of hits: outside
+        //Odd number of hits: inside
+        for vertex in vertices {
+            let segment = GeodesicLineSegment(startPoint: previousVertex, endPoint: vertex)
+            guard !self.contains(point, in: segment, tolerance: 0) else { return true }
             
-            if partial1 && partial3 { contains = !contains }
+            //point.latitude is in [vertex.latitude, previousVertex.latitude], so ray will intersect segment
+            let latitudeIsInRange = (vertex.latitude > point.latitude) != (previousVertex.latitude > point.latitude)
+            //intersection with segment
+            //If segment is to the left of the point, the ray will go around the earth and hit the segment. Bad hit
+            //If segment is to the right, it will be a good hit
+            let intersectionOnSegment = (previousVertex.longitude - vertex.longitude) * (point.latitude - vertex.latitude) / (previousVertex.latitude - vertex.latitude) + vertex.longitude
+            //The intersection is to the right of point
+            let intersectionIsToTheRight = point.longitude < intersectionOnSegment
+            
+            //Hit once
+            if latitudeIsInRange && intersectionIsToTheRight { contains = !contains }
             
             previousVertex = vertex
         }
@@ -325,7 +332,7 @@ extension GeodesicCalculator {
             $0.contains { hasIntersection($0, with: lineSegment, tolerance: tolerance) }
         }
         
-        return polygonIntersects || contains(lineSegment.point, in: polygon, tolerance: tolerance)
+        return polygonIntersects || contains(lineSegment.startPoint, in: polygon, tolerance: tolerance)
     }
     
     public func hasIntersection(_ line: GeodesicLine, tolerance: Double) -> Bool {
@@ -334,7 +341,7 @@ extension GeodesicCalculator {
                 guard currentLineIndex < nextLineIndex else { return false }
                 
                 // If next line continues from previous ensure no overlapping
-                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
+                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.endPoint == nextLineSegment.startPoint { return contains(nextLineSegment.endPoint, in: currentLineSegment, tolerance: tolerance) }
                 
                 return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
             }
@@ -342,52 +349,368 @@ extension GeodesicCalculator {
     }
     
     public func hasIntersection(_ polygon: GeodesicPolygon, tolerance: Double) -> Bool { polygon.linearRings.contains { hasIntersection($0, tolerance: tolerance) } }
-    
-    public func equalsIndices(_ points: [GeodesicPoint], tolerance: Double) -> [Int] {
-        return points.enumerated().filter { currentIndex, currentPoint in
-            points.enumerated().contains { nextIndex, nextPoint in
-                guard currentIndex < nextIndex else { return false }
-                
-                return distance(from: currentPoint, to: nextPoint, tolerance: tolerance) == 0
+}
+
+// MARK: Violation Indicies
+
+extension GeodesicCalculator {
+    public func simpleViolationDuplicateIndices(points: [GeodesicPoint], tolerance: Double) -> [[Int]] {
+        var uniquePoints = [GeodesicPoint]()
+        var duplicateIndices = [[Int]]()
+        
+        points.enumerated().forEach { pointIndex, point in
+            var isUnique = true
+            for index in (0..<uniquePoints.count) {
+                if distance(from: point, to: uniquePoints[index], tolerance: tolerance) == 0 {
+                    duplicateIndices[index].append(pointIndex)
+                    isUnique = false
+                    break
+                }
             }
-            }.map { $0.offset }
-    }
-    
-    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
-    public func intersectionIndices(from line: GeodesicLine, tolerance: Double) -> [Int] {
-        return line.segments.enumerated().filter { currentLineIndex, currentLineSegment in
-            line.segments.enumerated().contains { nextLineIndex, nextLineSegment in
-                guard currentLineIndex < nextLineIndex else { return false }
-                
-                // If next line continues from previous ensure no overlapping
-                if currentLineIndex == nextLineIndex - 1 && currentLineSegment.otherPoint == nextLineSegment.point { return contains(nextLineSegment.otherPoint, in: currentLineSegment, tolerance: tolerance) }
-                
-                return hasIntersection(currentLineSegment, with: nextLineSegment, tolerance: tolerance)
-            }
-        }.map { $0.offset }
-    }
-    
-    // SOMEDAY: Add this intersection rule
-    // Polygon where hole intersects with same point as exterior edge point
-    // [Source Ring Index -> [Source Ring Segment Index -> [Compare Ring Intersecting Segement]]]
-    public func intersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [[[Int]]] {
-        return polygon.linearRings.map { $0.segments }.map { ringSegments in
-            return ringSegments.map { lineSegment in
-                ringSegments.enumerated().filter {
-                    intersection(of: $1, with: lineSegment) != nil
-                }.map { $0.offset }
+            if isUnique {
+                uniquePoints.append(point)
+                duplicateIndices.append([pointIndex])
             }
         }
+        
+        return duplicateIndices.filter { $0.count > 1 }
     }
     
-    // Does not return a point if overlaping the path
-    public func intersection(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
-        let longitudeDeltaSegment2 = otherLineSegment.otherPoint.longitude - otherLineSegment.point.longitude
-        let latitudeDeltaSegment2 = otherLineSegment.otherPoint.latitude - otherLineSegment.point.latitude
-        let longitudeDeltaSegment1 = lineSegment.otherPoint.longitude - lineSegment.point.longitude
-        let latitudeDeltaSegment1 = lineSegment.otherPoint.latitude - lineSegment.point.latitude
-        let longitudeSegmentsOffset = lineSegment.point.longitude - otherLineSegment.point.longitude
-        let latitudeSegmentsOffset = lineSegment.point.latitude - otherLineSegment.point.latitude
+    public func simpleViolationSelfIntersectionIndices(line: GeodesicLine, tolerance: Double) -> [Int: [Int]] {
+        func adjacentSegmentsOverlap(currentSegment: GeodesicLineSegment, nextSegment: GeodesicLineSegment) -> Bool {
+            return contains(currentSegment.startPoint, in: nextSegment, tolerance: tolerance) || contains(nextSegment.endPoint, in: currentSegment, tolerance: tolerance)
+        }
+
+        var allIntersectionIndices = [Int: [Int]]()
+        let lastSegmentIndex = line.segments.count - 1
+        //Compare current segment to each of the segments from next to last segment
+        line.segments.enumerated().forEach { currentIndex, currentSegment in
+            let nextSegmentIndex = currentIndex + 1
+            guard let nextSegment = line.segments.at(nextSegmentIndex) else { return }
+            
+            //Comparison of current segment and next segment is a special case
+            //They always share a point, which cause intersection. As long as they don't overlap, they are good
+            if adjacentSegmentsOverlap(currentSegment: currentSegment, nextSegment: nextSegment) {
+                allIntersectionIndices[currentIndex] = [nextSegmentIndex]
+            }
+            
+            let remainingSegmentsEnumerated = Array(line.segments.enumerated().drop { $0.offset <= nextSegmentIndex })
+            guard !remainingSegmentsEnumerated.isEmpty else { return }
+            
+            //Compare to the remaining segments
+            remainingSegmentsEnumerated.forEach { remainingIndex, remainingSegment in
+                if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) &&
+                    //An exception is that first segment is allowed to share a point with last segment
+                    !(currentIndex == 0 && remainingIndex == lastSegmentIndex && currentSegment.startPoint == remainingSegment.endPoint && !adjacentSegmentsOverlap(currentSegment: remainingSegment, nextSegment: currentSegment)) {
+                    allIntersectionIndices[currentIndex] = (allIntersectionIndices[currentIndex] ?? []) + [remainingIndex]
+                }
+            }
+        }
+        
+        return allIntersectionIndices
+    }
+    
+    public func simpleViolationIntersectionIndices(lines: [GeodesicLine], tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
+        var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]()
+        lines.enumerated().forEach { currentLineIndex, currentLine in
+            //Compare current LineString to each of the Linestring from next to last
+            let remainingLinesEnumerated = Array(lines.enumerated().drop { $0.offset <= currentLineIndex })
+            
+            remainingLinesEnumerated.forEach { remainingLineIndex, remainingLine in
+                
+                currentLine.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentLineSegmentIndex = LineIndexBySegmentIndex(lineIndex: currentLineIndex, segmentIndex: currentSegmentIndex)
+                    
+                    remainingLine.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        let remainingLineSegmentIndex = LineIndexBySegmentIndex(lineIndex: remainingLineIndex, segmentIndex: remainingSegmentIndex)
+                        
+                        if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) {
+                            if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: tolerance) {
+                                allIntersectionIndices[currentLineSegmentIndex] = allIntersectionIndices[currentLineSegmentIndex] ?? [] + [remainingLineSegmentIndex]
+                                return
+                            }
+                            
+                            //CurrentLine start and end is allowed to be shared with remainingLine start and end
+                            let currentIsLineStartPoint = currentSegmentIndex == 0
+                            let remainingIsLineStartPoint = remainingSegmentIndex == 0
+                            let currentIsLineEndPoint = currentSegmentIndex == currentLine.segments.count - 1
+                            let remainingIsLineEndPoint = remainingSegmentIndex == remainingLine.segments.count - 1
+                            
+                            if currentIsLineStartPoint, remainingIsLineStartPoint, currentSegment.startPoint == remainingSegment.startPoint {
+                                return
+                            }
+                            
+                            if currentIsLineStartPoint, remainingIsLineEndPoint, currentSegment.startPoint == remainingSegment.endPoint {
+                                return
+                            }
+                            
+                            if currentIsLineEndPoint, remainingIsLineStartPoint, currentSegment.endPoint == remainingSegment.startPoint {
+                                return
+                            }
+                            
+                            if currentIsLineEndPoint, remainingIsLineEndPoint, currentSegment.endPoint == remainingSegment.endPoint {
+                                return
+                            }
+                            
+                            allIntersectionIndices[currentLineSegmentIndex] = (allIntersectionIndices[currentLineSegmentIndex] ?? []) + [remainingLineSegmentIndex]
+                        }
+                    }
+                }
+            }
+        }
+        
+        return allIntersectionIndices
+    }
+    
+    public func simpleViolationNegativeRingPointsOutsideMainRingIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineIndexBySegmentIndexByPointIndex] {
+        let mainRing = polygon.mainRing
+        var outsideSegmentIndices = [LineIndexBySegmentIndexByPointIndex]()
+        polygon.negativeRings.enumerated().forEach { negativeRingIndex, negativeRing in
+            negativeRing.segments.enumerated().forEach { negativeSegmentIndex, negativeSegment in
+                if !contains(point: negativeSegment.startPoint, vertices: mainRing.points) {
+                    outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .startPoint))
+                }
+                if !contains(point: negativeSegment.endPoint, vertices: mainRing.points) {
+                    outsideSegmentIndices.append(LineIndexBySegmentIndexByPointIndex(lineIndex: negativeRingIndex, segmentIndex: negativeSegmentIndex, pointIndex: .endPoint))
+                }
+            }
+        }
+        
+        return outsideSegmentIndices
+    }
+    
+    //Ring intersecting and crossing another Ring
+    public func simpleViolationIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
+        var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]()
+        polygon.linearRings.enumerated().forEach { currentRingIndex, currentRing in
+            //Compare current ring to each of the ring from next to last
+            let remainingRingsEnumerated = Array(polygon.linearRings.enumerated().drop { $0.offset <= currentRingIndex })
+            
+            remainingRingsEnumerated.forEach { remainingRingIndex, remainingRing in
+                
+                currentRing.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentSegmentIndex = LineIndexBySegmentIndex(lineIndex: currentRingIndex, segmentIndex: currentSegmentIndex)
+                    
+                    remainingRing.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        let remainingSegmentIndex = LineIndexBySegmentIndex(lineIndex: remainingRingIndex, segmentIndex: remainingSegmentIndex)
+
+                        if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: tolerance) {
+                            allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            return
+                        }
+                        
+                        if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) {
+                            //Intersecting and crossing
+                            if  !contains(currentSegment.startPoint, in: remainingSegment, tolerance: tolerance) &&
+                                !contains(currentSegment.endPoint, in: remainingSegment, tolerance: tolerance) &&
+                                !contains(remainingSegment.startPoint, in: currentSegment, tolerance: tolerance) &&
+                                !contains(remainingSegment.endPoint, in: currentSegment, tolerance: tolerance) {
+                                allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return allIntersectionIndices
+    }
+
+    public func simpleViolationMultipleVertexIntersectionIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]] {
+        var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndexByPointIndex]]()
+        polygon.linearRings.enumerated().forEach { currentRingIndex, currentRing in
+            //Compare current ring to each of the ring from next to last
+            let remainingRingsEnumerated = polygon.linearRings.enumerated().filter { $0.offset != currentRingIndex }
+            
+            remainingRingsEnumerated.forEach { remainingRingIndex, remainingRing in
+                var intersectionPoints = [GeodesicPoint]()
+                currentRing.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentSegmentIndex = LineIndexBySegmentIndex(lineIndex: currentRingIndex, segmentIndex: currentSegmentIndex)
+                    
+                    remainingRing.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        //We have checked intersection and cross already, and will terminate if there is any
+                        //so we can assume that any intersection here is vertex intersection.
+                        if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) {
+                            //Vertex Intersection
+                            if contains(remainingSegment.startPoint, in: currentSegment, tolerance: tolerance) {
+                                let remainingPointIndex = LineIndexBySegmentIndexByPointIndex(lineIndex: remainingRingIndex, segmentIndex: remainingSegmentIndex, pointIndex: .startPoint)
+                                allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingPointIndex]
+                                if !contains(remainingSegment.startPoint, in: intersectionPoints, tolerance: tolerance) {
+                                    intersectionPoints.append(remainingSegment.startPoint)
+                                }
+                            } else {
+                                let remainingPointIndex = LineIndexBySegmentIndexByPointIndex(lineIndex: remainingRingIndex, segmentIndex: remainingSegmentIndex, pointIndex: .endPoint)
+                                allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingPointIndex]
+                                if !contains(remainingSegment.endPoint, in: intersectionPoints, tolerance: tolerance) {
+                                    intersectionPoints.append(remainingSegment.endPoint)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if intersectionPoints.count < 2 {
+                    allIntersectionIndices.forEach { lineIndexBySegmentIndex, _ in
+                        if lineIndexBySegmentIndex.lineIndex == currentRingIndex {
+                            allIntersectionIndices[lineIndexBySegmentIndex] = nil
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+        return allIntersectionIndices
+    }
+    
+    public func simpleViolationNegativeRingInsideAnotherNegativeRingIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [Int] {
+        let negativeRing = polygon.negativeRings
+        
+        var containedRingIndices = [Int]()
+        negativeRing.enumerated().forEach { ringIndex, ring in
+            let remainingNegativeRingsEnumerated = negativeRing.enumerated().filter { $0.offset != ringIndex }
+            remainingNegativeRingsEnumerated.forEach { remainingRingIndex, remainingRing in
+                //all point in remainingRing is contained in ring
+                let remainingRingPointsAreContained = remainingRing.points.map { contains(point: $0, vertices: ring.points) }
+                if !remainingRingPointsAreContained.contains(false) {
+                    containedRingIndices.append(remainingRingIndex)
+                }
+            }
+        }
+        
+        return containedRingIndices
+    }
+    
+    public func simpleViolationPolygonPointsContainedInAnotherPolygonIndices(from polygons: [GeodesicPolygon], tolerance: Double) -> [Int] {
+        func isOnEdge(point: GeodesicPoint, polygon: GeodesicPolygon, tolerance: Double) -> Bool {
+            let distanceToEdge = polygon.mainRing.segments.map { distance(from: point, to: $0, tolerance: tolerance) }
+            
+            return distanceToEdge.contains(0)
+        }
+        
+        var containedRingIndices = [Int]()
+        polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in
+            let currentMainRing = currentPolygon.mainRing
+            
+            let remainingPolygonEnumerated = polygons.enumerated().filter { $0.offset != currentPolygonIndex }
+            remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
+                let remainingMainRing = remainingPolygon.mainRing
+                let remainingMainRingPointsAreContained = remainingMainRing.points.map { contains(point: $0, vertices: currentMainRing.points) && !isOnEdge(point: $0, polygon: currentPolygon, tolerance: tolerance) }
+                if remainingMainRingPointsAreContained.contains(true) {
+                    containedRingIndices.append(remainingPolygonIndex)
+                }
+            }
+        }
+        
+        return containedRingIndices
+    }
+    
+    public func simpleViolationIntersectionIndices(from polygons: [GeodesicPolygon], tolerance: Double) -> [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]] {
+        var allIntersectionIndices = [LineIndexBySegmentIndex: [LineIndexBySegmentIndex]]()
+        polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in
+            let currentMainRing = currentPolygon.mainRing
+            
+            let remainingPolygonEnumerated = Array(polygons.enumerated().drop(while: { $0.offset <= currentPolygonIndex }))
+            remainingPolygonEnumerated.forEach { remainingPolygonIndex, remainingPolygon in
+                let remainingMainRing = remainingPolygon.mainRing
+                
+                currentMainRing.segments.enumerated().forEach { currentSegmentIndex, currentSegment in
+                    let currentSegmentIndex = LineIndexBySegmentIndex(lineIndex: currentPolygonIndex, segmentIndex: currentSegmentIndex)
+                    
+                    remainingMainRing.segments.enumerated().forEach { remainingSegmentIndex, remainingSegment in
+                        let remainingSegmentIndex = LineIndexBySegmentIndex(lineIndex: remainingPolygonIndex, segmentIndex: remainingSegmentIndex)
+                        //2 rings can intersect at a tangent point but never cross.
+                        //A second intersection is not allowed.
+                        if overlapping(segment: currentSegment, segmentOther: remainingSegment, tolerance: tolerance) {
+                            allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            return
+                        }
+                        
+                        if hasIntersection(currentSegment, with: remainingSegment, tolerance: tolerance) {
+                            //If the segments are not crossing each other, there is no violation
+                            if !(contains(currentSegment.startPoint, in: remainingSegment, tolerance: tolerance) ||
+                                contains(currentSegment.endPoint, in: remainingSegment, tolerance: tolerance) ||
+                                contains(remainingSegment.startPoint, in: currentSegment, tolerance: tolerance) ||
+                                contains(remainingSegment.endPoint, in: currentSegment, tolerance: tolerance)) {
+                                allIntersectionIndices[currentSegmentIndex] = (allIntersectionIndices[currentSegmentIndex] ?? []) + [remainingSegmentIndex]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return allIntersectionIndices
+    }
+    
+    // Overlapping returns true only if the lines are overlapping more than a single point.
+    private func overlapping(segment: GeodesicLineSegment, segmentOther: GeodesicLineSegment, tolerance: Double) -> Bool {
+        //segment inside segmentOther
+        if contains(segment.startPoint, in: segmentOther, tolerance: tolerance)
+            && contains(segment.endPoint, in: segmentOther, tolerance: tolerance) {
+            return true
+        }
+        
+        //segmentOther inside segment
+        if contains(segmentOther.startPoint, in: segment, tolerance: tolerance)
+            && contains(segmentOther.endPoint, in: segment, tolerance: tolerance) {
+            return true
+        }
+        
+        //sharing point
+        if contains(segment.startPoint, in: segmentOther.startPoint, tolerance: tolerance)
+            && !contains(segment.endPoint, in: segmentOther, tolerance: tolerance)
+            && !contains(segmentOther.endPoint, in: segment, tolerance: tolerance) {
+            return false
+        }
+        
+        if contains(segment.startPoint, in: segmentOther.endPoint, tolerance: tolerance)
+            && !contains(segment.endPoint, in: segmentOther, tolerance: tolerance)
+            && !contains(segmentOther.startPoint, in: segment, tolerance: tolerance) {
+            return false
+        }
+        
+        if contains(segment.endPoint, in: segmentOther.startPoint, tolerance: tolerance)
+            && !contains(segment.startPoint, in: segmentOther, tolerance: tolerance)
+            && !contains(segmentOther.endPoint, in: segment, tolerance: tolerance) {
+            return false
+        }
+        
+        if contains(segment.endPoint, in: segmentOther.endPoint, tolerance: tolerance)
+            && !contains(segment.startPoint, in: segmentOther, tolerance: tolerance)
+            && !contains(segmentOther.startPoint, in: segment, tolerance: tolerance) {
+            return false
+        }
+        
+        //part of segment is inside segmentOther, and part of segmentOther is inside segment
+        if contains(segment.startPoint, in: segmentOther, tolerance: tolerance) {
+            if contains(segmentOther.startPoint, in: segment, tolerance: tolerance) {
+                return true
+            }
+            if contains(segmentOther.endPoint, in: segment, tolerance: tolerance) {
+                return true
+            }
+        }
+        if contains(segment.endPoint, in: segmentOther, tolerance: tolerance) {
+            if contains(segmentOther.startPoint, in: segment, tolerance: tolerance) {
+                return true
+            }
+            if contains(segmentOther.endPoint, in: segment, tolerance: tolerance) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    // Does not return a point if overlaping the path OR if they simply only share a point
+    public func intersectionPoint(of lineSegment: GeodesicLineSegment, with otherLineSegment: GeodesicLineSegment) -> GeodesicPoint? {
+        let longitudeDeltaSegment2 = otherLineSegment.endPoint.longitude - otherLineSegment.startPoint.longitude
+        let latitudeDeltaSegment2 = otherLineSegment.endPoint.latitude - otherLineSegment.startPoint.latitude
+        let longitudeDeltaSegment1 = lineSegment.endPoint.longitude - lineSegment.startPoint.longitude
+        let latitudeDeltaSegment1 = lineSegment.endPoint.latitude - lineSegment.startPoint.latitude
+        let longitudeSegmentsOffset = lineSegment.startPoint.longitude - otherLineSegment.startPoint.longitude
+        let latitudeSegmentsOffset = lineSegment.startPoint.latitude - otherLineSegment.startPoint.latitude
         
         let denominator = (latitudeDeltaSegment2 * longitudeDeltaSegment1) - (longitudeDeltaSegment2 * latitudeDeltaSegment1)
         let numerator1 = (longitudeDeltaSegment2 * latitudeSegmentsOffset) - (latitudeDeltaSegment2 * longitudeSegmentsOffset)
@@ -400,8 +723,8 @@ extension GeodesicCalculator {
         
         guard case 0...1 = result1, case 0...1 = result2 else { return nil }
         
-        let resultLongitude = lineSegment.point.longitude + (result1 * longitudeDeltaSegment1)
-        let resultLatitude = lineSegment.point.latitude + (result1 * latitudeDeltaSegment1)
+        let resultLongitude = lineSegment.startPoint.longitude + (result1 * longitudeDeltaSegment1)
+        let resultLatitude = lineSegment.startPoint.latitude + (result1 * latitudeDeltaSegment1)
         
         return SimplePoint(longitude: resultLongitude, latitude: resultLatitude)
     }
@@ -462,7 +785,7 @@ extension GeodesicCalculator {
         let offsetLatitude = offset.latitude * (offset.latitude < 0 ? -1 : 1)
         
         let offsetSegments = linearRing.segments.map { lineSegment in
-            return (point: SimplePoint(longitude: lineSegment.point.longitude - offsetLongitude, latitude: lineSegment.point.latitude - offsetLatitude), otherPoint: SimplePoint(longitude: lineSegment.otherPoint.longitude - offsetLongitude, latitude: lineSegment.otherPoint.latitude - offsetLatitude))
+            return (point: SimplePoint(longitude: lineSegment.startPoint.longitude - offsetLongitude, latitude: lineSegment.startPoint.latitude - offsetLatitude), otherPoint: SimplePoint(longitude: lineSegment.endPoint.longitude - offsetLongitude, latitude: lineSegment.endPoint.latitude - offsetLatitude))
         }
         
         offsetSegments.forEach { point, otherPoint in
@@ -475,5 +798,37 @@ extension GeodesicCalculator {
         let area = 0.5 * sum
         
         return SimplePoint(longitude: sumX / 6 / area + offsetLongitude, latitude: sumY / 6 / area + offsetLatitude, altitude: offset.altitude)
+    }
+}
+
+public struct LineIndexBySegmentIndex: Hashable, Comparable, Equatable {
+    let lineIndex: Int
+    let segmentIndex: Int
+    
+    public static func < (lhs: LineIndexBySegmentIndex, rhs: LineIndexBySegmentIndex) -> Bool {
+        if lhs.lineIndex != rhs.lineIndex {
+            return lhs.lineIndex < rhs.lineIndex
+        } else {
+            return lhs.segmentIndex < rhs.segmentIndex
+        }
+    }
+}
+
+public struct LineIndexBySegmentIndexByPointIndex: Hashable, Comparable, Equatable {
+    enum PointIndex {
+        case startPoint
+        case endPoint
+    }
+    
+    let lineIndex: Int
+    let segmentIndex: Int
+    let pointIndex: PointIndex
+    
+    public static func < (lhs: LineIndexBySegmentIndexByPointIndex, rhs: LineIndexBySegmentIndexByPointIndex) -> Bool {
+        if lhs.lineIndex != rhs.lineIndex {
+            return lhs.lineIndex < rhs.lineIndex
+        } else {
+            return lhs.segmentIndex < rhs.segmentIndex
+        }
     }
 }

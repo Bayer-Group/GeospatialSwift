@@ -36,6 +36,14 @@ extension GeoJson.MultiPoint {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { geoJsonPoints.map { $0.distance(to: point, tolerance: tolerance) }.min()! }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geoJsonPoints.first { $0.contains(point, tolerance: tolerance) } != nil }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+        let duplicatePoints = Calculator.simpleViolationDuplicateIndices(points: points, tolerance: tolerance).map { geoJsonPoints[$0[0]] }
+        
+        guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .pointDuplication)] }
+        
+        return []
+    }
 }
 
 extension GeoJson.MultiPoint {

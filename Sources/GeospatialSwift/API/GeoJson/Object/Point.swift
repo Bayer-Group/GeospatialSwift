@@ -49,6 +49,8 @@ extension GeoJson.Point {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: self, to: point, tolerance: tolerance) }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { Calculator.distance(from: self, to: point, tolerance: tolerance) == 0 }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] { [] }
 }
 
 extension GeoJson.Point {

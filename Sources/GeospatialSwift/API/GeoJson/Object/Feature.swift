@@ -59,6 +59,8 @@ extension GeoJson.Feature {
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { geometry?.objectDistance(to: point, tolerance: tolerance) }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { geometry?.contains(point, tolerance: tolerance) ?? false }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] { geometry.flatMap { $0.simpleViolations(tolerance: tolerance) } ?? [] }
 }
 
 extension GeoJson.Feature {

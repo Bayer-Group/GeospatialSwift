@@ -16,7 +16,7 @@ public struct GeodesicBoundingBox {
     public var longitudeDelta: Double { maxLongitude - minLongitude }
     public var latitudeDelta: Double { maxLatitude - minLatitude }
     
-    public var segments: [GeodesicLineSegment] { [.init(point: points[0], otherPoint: points[1]), .init(point: points[1], otherPoint: points[2]), .init(point: points[2], otherPoint: points[3]), .init(point: points[3], otherPoint: points[0])] }
+    public var segments: [GeodesicLineSegment] { [.init(startPoint: points[0], endPoint: points[1]), .init(startPoint: points[1], endPoint: points[2]), .init(startPoint: points[2], endPoint: points[3]), .init(startPoint: points[3], endPoint: points[0])] }
     
     public var box: GeodesicPolygon { SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
     

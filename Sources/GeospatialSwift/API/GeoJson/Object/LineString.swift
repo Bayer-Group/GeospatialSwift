@@ -11,7 +11,7 @@ extension GeoJson {
     public struct LineString: GeoJsonLinearGeometry, GeodesicLine {
         public let type: GeoJsonObjectType = .lineString
         
-        private let geoJsonPoints: [Point]
+        internal let geoJsonPoints: [Point]
         
         internal init(coordinatesJson: [Any]) {
             // swiftlint:disable:next force_cast
@@ -20,7 +20,7 @@ extension GeoJson {
             geoJsonPoints = pointsJson.map { Point(coordinatesJson: $0) }
         }
         
-        fileprivate init(points: [Point]) {
+        internal init(points: [Point]) {
             geoJsonPoints = points
         }
     }
@@ -35,7 +35,7 @@ extension GeoJson.LineString {
         points.enumerated().compactMap { (offset, point) in
             if points.count == offset + 1 { return nil }
             
-            return .init(point: point, otherPoint: points[offset + 1])
+            return .init(startPoint: point, endPoint: points[offset + 1])
         }
     }
     
@@ -48,6 +48,37 @@ extension GeoJson.LineString {
     public func distance(to point: GeodesicPoint, tolerance: Double) -> Double { Calculator.distance(from: point, to: self, tolerance: tolerance) }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { Calculator.contains(point, in: self, tolerance: tolerance) }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] {
+        let duplicatePoints = Calculator.simpleViolationDuplicateIndices(points: points, tolerance: tolerance).map { geoJsonPoints[$0[0]] }
+        
+        guard duplicatePoints.isEmpty else { return [GeoJsonSimpleViolation(problems: duplicatePoints, reason: .pointDuplication)] }
+        
+        let selfIntersectsIndices = Calculator.simpleViolationSelfIntersectionIndices(line: self, tolerance: tolerance)
+        
+        guard selfIntersectsIndices.isEmpty else {
+            var simpleViolationGeometries = [GeoJsonCoordinatesGeometry]()
+            selfIntersectsIndices.forEach { firstIndex, secondIndices in
+                var point = GeoJson.Point(longitude: segments[firstIndex].startPoint.longitude, latitude: segments[firstIndex].startPoint.latitude)
+                var otherPoint = GeoJson.Point(longitude: segments[firstIndex].endPoint.longitude, latitude: segments[firstIndex].endPoint.latitude)
+                simpleViolationGeometries.append(point)
+                simpleViolationGeometries.append(otherPoint)
+                simpleViolationGeometries.append(GeoJson.LineString(points: [point, otherPoint]))
+                
+                secondIndices.forEach {
+                    point = GeoJson.Point(longitude: segments[$0].startPoint.longitude, latitude: segments[$0].startPoint.latitude)
+                    otherPoint = GeoJson.Point(longitude: segments[$0].endPoint.longitude, latitude: segments[$0].endPoint.latitude)
+                    simpleViolationGeometries.append(point)
+                    simpleViolationGeometries.append(otherPoint)
+                    simpleViolationGeometries.append(GeoJson.LineString(points: [point, otherPoint]))
+                }
+            }
+            
+            return [GeoJsonSimpleViolation(problems: simpleViolationGeometries, reason: .lineIntersection)]
+        }
+        
+        return []
+    }
 }
 
 extension GeoJson.LineString {

@@ -5,17 +5,17 @@ import XCTest
 class GeodesicLineSegmentTests: XCTestCase {
     private var lineSegment: GeodesicLineSegment!
     private var reversedLineSegment: GeodesicLineSegment!
-    private var point: GeodesicPoint!
-    private var otherPoint: GeodesicPoint!
+    private var startPoint: GeodesicPoint!
+    private var endPoint: GeodesicPoint!
     
     override func setUp() {
         super.setUp()
         
-        point = SimplePoint(longitude: 1, latitude: 2, altitude: 3)
-        otherPoint = SimplePoint(longitude: 10, latitude: 10, altitude: 10)
+        startPoint = SimplePoint(longitude: 1, latitude: 2, altitude: 3)
+        endPoint = SimplePoint(longitude: 10, latitude: 10, altitude: 10)
         
-        lineSegment = .init(point: point, otherPoint: otherPoint)
-        reversedLineSegment = .init(point: otherPoint, otherPoint: point)
+        lineSegment = .init(startPoint: startPoint, endPoint: endPoint)
+        reversedLineSegment = .init(startPoint: endPoint, endPoint: startPoint)
     }
     
     func testInitialBearing() {
