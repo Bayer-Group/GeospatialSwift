@@ -77,14 +77,15 @@ extension GeoJson.Polygon {
         guard ringSimpleViolations.isEmpty else { return ringSimpleViolations }
         
         //Any negative ring points are outside of the main ring
-        let outsidePointsIndices = Calculator.simpleViolationNegativeRingPointsOutsideMainRingIndices(from: self, tolerance: tolerance)
+        let outsideLineSegmentPointIndexs = Calculator.simpleViolationNegativeRingPointsOutsideMainRingIndices(from: self, tolerance: tolerance)
         
-        guard outsidePointsIndices.isEmpty else {
-            return outsidePointsIndices.map { outsideSegmentIndex in
-                let segment = negativeRings[outsideSegmentIndex.lineIndex].segments[outsideSegmentIndex.segmentIndex]
-                let point1: GeoJson.Point
+        guard outsideLineSegmentPointIndexs.isEmpty else {
+            return outsideLineSegmentPointIndexs.map { outsideLineSegmentPointIndex in
+                let lineSegmentIndex = outsideLineSegmentPointIndex.lineSegmentIndex
+                let segment = negativeRings[lineSegmentIndex.lineIndex].segments[lineSegmentIndex.segmentIndex]
                 
-                if outsideSegmentIndex.pointIndex == .startPoint {
+                let point1: GeoJson.Point
+                if outsideLineSegmentPointIndex.pointIndex == .startPoint {
                     point1 = GeoJson.Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude)
                 } else {
                     point1 = GeoJson.Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude)
@@ -139,23 +140,24 @@ extension GeoJson.Polygon {
         
         guard simpleViolationMultipleVertexIntersectionIndices.isEmpty else {
             var violations = [GeoJsonSimpleViolation]()
-            simpleViolationMultipleVertexIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
-                let segment1 = linearRings[lineSegmentIndex1.key.lineIndex].segments[lineSegmentIndex1.key.segmentIndex]
+            simpleViolationMultipleVertexIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentPointIndiciesIndex in
+                let segment1 = linearRings[lineSegmentPointIndiciesIndex.key.lineIndex].segments[lineSegmentPointIndiciesIndex.key.segmentIndex]
                 let point1 = GeoJson.Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
                 let point2 = GeoJson.Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
                 let line1 = GeoJson.LineString(points: [point1, point2])
                 
-                for lineSegmentIndex2ByPointIndex in lineSegmentIndex1.value {
+                let lineSegmentIndex1 = lineSegmentPointIndiciesIndex.key
+                for lineSegmentPointIndex in lineSegmentPointIndiciesIndex.value {
                     //remove duplicacy
-                    let lineSegmentIndex2 = LineIndexBySegmentIndex(lineIndex: lineSegmentIndex2ByPointIndex.lineIndex, segmentIndex: lineSegmentIndex2ByPointIndex.segmentIndex)
-                    let lineSegmentIndex1StartPoint = LineIndexBySegmentIndexByPointIndex(lineIndex: lineSegmentIndex1.key.lineIndex, segmentIndex: lineSegmentIndex1.key.segmentIndex, pointIndex: .startPoint)
-                    let lineSegmentIndex1EndPoint = LineIndexBySegmentIndexByPointIndex(lineIndex: lineSegmentIndex1.key.lineIndex, segmentIndex: lineSegmentIndex1.key.segmentIndex, pointIndex: .endPoint)
-                    if let lineSegment2Indices = simpleViolationMultipleVertexIntersectionIndices[lineSegmentIndex2], lineSegmentIndex2 < lineSegmentIndex1.key {
-                        guard !lineSegment2Indices.contains(lineSegmentIndex1StartPoint) && !lineSegment2Indices.contains(lineSegmentIndex1EndPoint) else { continue }
+                    let lineSegmentIndex2 = lineSegmentPointIndex.lineSegmentIndex
+                    let lineSegmentStartPointIndex = LineSegmentPointIndex(lineSegmentIndex: lineSegmentIndex1, pointIndex: .startPoint)
+                    let lineSegmentEndPointIndex = LineSegmentPointIndex(lineSegmentIndex: lineSegmentIndex1, pointIndex: .endPoint)
+                    if let lineSegmentPointIndices = simpleViolationMultipleVertexIntersectionIndices[lineSegmentIndex2], lineSegmentIndex2 < lineSegmentPointIndiciesIndex.key {
+                        guard !lineSegmentPointIndices.contains(lineSegmentStartPointIndex) && !lineSegmentPointIndices.contains(lineSegmentEndPointIndex) else { continue }
                     }
                     
-                    let segment2 = linearRings[lineSegmentIndex2ByPointIndex.lineIndex].segments[lineSegmentIndex2ByPointIndex.segmentIndex]
-                    if lineSegmentIndex2ByPointIndex.pointIndex == .startPoint {
+                    let segment2 = linearRings[lineSegmentIndex2.lineIndex].segments[lineSegmentIndex2.segmentIndex]
+                    if lineSegmentPointIndex.pointIndex == .startPoint {
                         let point3 = GeoJson.Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
                         violations += [GeoJsonSimpleViolation(problems: [point1, point2, line1, point3], reason: .polygonMultipleVertexIntersection)]
                     } else {

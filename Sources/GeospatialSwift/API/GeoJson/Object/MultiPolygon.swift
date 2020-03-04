@@ -71,18 +71,18 @@ extension GeoJson.MultiPolygon {
             return violations
         }
         
-        let simpleViolationIntersectionIndices = Calculator.simpleViolationIntersectionIndices(from: polygons, tolerance: tolerance)
+        let polygonLineSegmentIndiciesByIndex = Calculator.simpleViolationIntersectionIndices(from: polygons, tolerance: tolerance)
         
-        guard simpleViolationIntersectionIndices.isEmpty else {
+        guard polygonLineSegmentIndiciesByIndex.isEmpty else {
             var violations = [GeoJsonSimpleViolation]()
-            simpleViolationIntersectionIndices.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndex1 in
-                let segment1 = polygons[lineSegmentIndex1.key.lineIndex].mainRing.segments[lineSegmentIndex1.key.segmentIndex]
+            polygonLineSegmentIndiciesByIndex.sorted(by: { $0.key < $1.key }).forEach { lineSegmentIndicies in
+                let segment1 = polygons[lineSegmentIndicies.key.lineIndex].mainRing.segments[lineSegmentIndicies.key.segmentIndex]
                 let point1 = GeoJson.Point(longitude: segment1.startPoint.longitude, latitude: segment1.startPoint.latitude)
                 let point2 = GeoJson.Point(longitude: segment1.endPoint.longitude, latitude: segment1.endPoint.latitude)
                 let line1 = GeoJson.LineString(points: [point1, point2])
                 
-                lineSegmentIndex1.value.forEach { lineSegmentIndex2 in
-                    let segment2 = polygons[lineSegmentIndex2.lineIndex].mainRing.segments[lineSegmentIndex2.segmentIndex]
+                lineSegmentIndicies.value.forEach { lineSegmentIndex in
+                    let segment2 = polygons[lineSegmentIndex.lineIndex].mainRing.segments[lineSegmentIndex.segmentIndex]
                     let point3 = GeoJson.Point(longitude: segment2.startPoint.longitude, latitude: segment2.startPoint.latitude)
                     let point4 = GeoJson.Point(longitude: segment2.endPoint.longitude, latitude: segment2.endPoint.latitude)
                     let line2 = GeoJson.LineString(points: [point3, point4])

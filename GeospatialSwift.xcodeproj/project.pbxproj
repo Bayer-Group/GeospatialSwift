@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		60944696240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */; };
 		OBJ_100 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* GeodesicCalculator.swift */; };
 		OBJ_101 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* GeoJson.swift */; };
 		OBJ_102 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* GeoJsonDictionary.swift */; };
@@ -100,6 +101,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonSimpleViolation.swift; sourceTree = "<group>"; };
 		"GeospatialSwift::GeospatialSwift::Product" /* GeospatialSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"GeospatialSwift::GeospatialSwiftTests::Product" /* GeospatialSwiftTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = GeospatialSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* GeodesicCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicCalculator.swift; sourceTree = "<group>"; };
@@ -187,6 +189,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		60944697240FE4130021D3A6 /* Geodesic */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_15 /* GeodesicBearing.swift */,
+				OBJ_16 /* GeodesicBoundingBox.swift */,
+				OBJ_17 /* GeodesicLine.swift */,
+				OBJ_18 /* GeodesicLineSegment.swift */,
+				OBJ_19 /* GeodesicPoint.swift */,
+				OBJ_20 /* GeodesicPolygon.swift */,
+			);
+			path = Geodesic;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Calculator */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,12 +215,7 @@
 			children = (
 				OBJ_13 /* GeoJson.swift */,
 				OBJ_14 /* GeoJsonDictionary.swift */,
-				OBJ_15 /* GeodesicBearing.swift */,
-				OBJ_16 /* GeodesicBoundingBox.swift */,
-				OBJ_17 /* GeodesicLine.swift */,
-				OBJ_18 /* GeodesicLineSegment.swift */,
-				OBJ_19 /* GeodesicPoint.swift */,
-				OBJ_20 /* GeodesicPolygon.swift */,
+				60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */,
 				OBJ_21 /* Object */,
 			);
 			path = GeoJson;
@@ -272,7 +282,7 @@
 			path = Parser;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -286,7 +296,6 @@
 				OBJ_93 /* README.md */,
 				OBJ_94 /* CONTRIBUTING.md */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_52 /* Tests */ = {
@@ -439,8 +448,9 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_10 /* Calculator */,
-				OBJ_12 /* GeoJson */,
+				60944697240FE4130021D3A6 /* Geodesic */,
 				OBJ_39 /* Geohash */,
+				OBJ_12 /* GeoJson */,
 				OBJ_42 /* Geospatial.swift */,
 			);
 			path = API;
@@ -512,7 +522,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_86 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -578,6 +588,7 @@
 				OBJ_108 /* GeodesicPolygon.swift in Sources */,
 				OBJ_109 /* Feature.swift in Sources */,
 				OBJ_110 /* FeatureCollection.swift in Sources */,
+				60944696240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift in Sources */,
 				OBJ_111 /* GeometryCollection.swift in Sources */,
 				OBJ_112 /* LineString.swift in Sources */,
 				OBJ_113 /* LinearRing.swift in Sources */,

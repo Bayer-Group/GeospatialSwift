@@ -26,23 +26,6 @@ public protocol GeoJsonObject {
     //func overlaps(geoJsonObject: GeoJsonObject, tolerance: Double) -> Bool
 }
 
-public struct GeoJsonSimpleViolation {
-    public let problems: [GeoJsonCoordinatesGeometry]
-    public let reason: GeoJsonSimpleViolationReason
-}
-
-public enum GeoJsonSimpleViolationReason {
-    case lineIntersection
-    case multiLineIntersection
-    case pointDuplication
-    case polygonHoleOutside
-    case polygonNegativeRingContained
-    case polygonSelfIntersection
-    case polygonMultipleVertexIntersection
-    case multiPolygonContained
-    case multiPolygonIntersection
-}
-
 extension GeoJsonObject {
     public func contains(_ point: GeodesicPoint) -> Bool { contains(point, tolerance: 0) }
     
