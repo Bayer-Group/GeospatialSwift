@@ -20,6 +20,8 @@ public protocol GeoJsonObject {
     
     func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool
     
+    func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation]
+    
     // SOMEDAY: More fun!
     //func overlaps(geoJsonObject: GeoJsonObject, tolerance: Double) -> Bool
 }

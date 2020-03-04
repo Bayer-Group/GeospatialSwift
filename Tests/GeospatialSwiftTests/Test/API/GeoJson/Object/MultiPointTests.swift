@@ -5,14 +5,19 @@ import XCTest
 class MultiPointTests: XCTestCase {
     var points: [Point]!
     var multiPoint: MultiPoint!
+    var pointsWithDuplicate: [Point]!
+    var multiPointWithDuplicate: MultiPoint!
+    
     var distancePoint: SimplePoint!
     
     override func setUp() {
         super.setUp()
         
-        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 3)]
+        pointsWithDuplicate = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(1, 3, 3), GeoTestHelper.point(1, 2, 3)]
         
         multiPoint = GeoTestHelper.multiPoint(points)
+        multiPointWithDuplicate = GeoTestHelper.multiPoint(pointsWithDuplicate)
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
     }
@@ -32,6 +37,16 @@ class MultiPointTests: XCTestCase {
         XCTAssertEqual(multiPoint.coordinatesGeometries.count, 1)
         XCTAssertEqual(multiPoint.linearGeometries.count, 0)
         XCTAssertEqual(multiPoint.closedGeometries.count, 0)
+    }
+    
+    func testMultiPoints_AllUnique_IsValid() {
+        let simpleViolations = multiPoint.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 0)
+    }
+    
+    func testMultiPoints_WithDuplicate_IsInvalid() {
+        let simpleViolations = multiPointWithDuplicate.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
     }
     
     func testObjectBoundingBox() {
@@ -141,7 +156,7 @@ class MultiPointTests: XCTestCase {
     }
     
     func testDistance_ChooseCorrectPointForDistance() {
-//        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
+        //        points = [GeoTestHelper.point(1, 2, 3), GeoTestHelper.point(2, 2, 4), GeoTestHelper.point(2, 3, 5)]
         
         let distance1 = multiPoint.distance(to: GeoTestHelper.simplePoint(1, 2.1, 0), tolerance: 11000)
         let distance2 = multiPoint.distance(to: GeoTestHelper.simplePoint(2, 3.1, 0), tolerance: 11000)

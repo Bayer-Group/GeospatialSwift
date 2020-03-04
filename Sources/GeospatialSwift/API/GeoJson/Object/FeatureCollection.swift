@@ -36,6 +36,8 @@ extension GeoJson.FeatureCollection {
     public func objectDistance(to point: GeodesicPoint, tolerance: Double) -> Double? { features.compactMap { $0.objectDistance(to: point, tolerance: tolerance) }.min() }
     
     public func contains(_ point: GeodesicPoint, tolerance: Double) -> Bool { features.first { $0.contains(point, tolerance: tolerance) } != nil }
+    
+    public func simpleViolations(tolerance: Double) -> [GeoJsonSimpleViolation] { features.flatMap { $0.simpleViolations(tolerance: tolerance) } }
 }
 
 extension GeoJson.FeatureCollection {
