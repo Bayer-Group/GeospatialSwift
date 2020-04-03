@@ -81,7 +81,7 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .featureCollection:
         guard let lhs = lhs as? GeoJson.FeatureCollection, let rhs = rhs as? GeoJson.FeatureCollection, lhs.features.count == rhs.features.count else { return false }
         
-        for feature in lhs.features where !rhs.features.contains { $0 == feature } { return false }
+        for feature in lhs.features where !rhs.features.contains(where: { $0 == feature }) { return false }
         
         return true
     case .feature:
@@ -93,13 +93,13 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
         
         guard lhs.objectGeometries.count == rhs.objectGeometries.count else { return false }
         
-        for geometry in lhs.objectGeometries where !rhs.objectGeometries.contains { $0 == geometry } { return false }
+        for geometry in lhs.objectGeometries where !rhs.objectGeometries.contains(where: { $0 == geometry }) { return false }
         
         return true
     case .multiPolygon:
         guard let lhs = lhs as? GeoJson.MultiPolygon, let rhs = rhs as? GeoJson.MultiPolygon, lhs.polygons.count == rhs.polygons.count else { return false }
         
-        for polygon in lhs.polygons where !rhs.polygons.contains { $0 == polygon } { return false }
+        for polygon in lhs.polygons where !rhs.polygons.contains(where: { $0 == polygon }) { return false }
         
         return true
     case .polygon:
@@ -109,7 +109,7 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .multiLineString:
         guard let lhs = lhs as? GeoJson.MultiLineString, let rhs = rhs as? GeoJson.MultiLineString, lhs.lines.count == rhs.lines.count else { return false }
         
-        for line in lhs.lines where !rhs.lines.contains { $0 == line } { return false }
+        for line in lhs.lines where !rhs.lines.contains(where: { $0 == line }) { return false }
         
         return true
     case .lineString:
@@ -119,7 +119,7 @@ public func == (lhs: GeoJsonObject?, rhs: GeoJsonObject?) -> Bool {
     case .multiPoint:
         guard let lhs = lhs as? GeoJson.MultiPoint, let rhs = rhs as? GeoJson.MultiPoint, lhs.points.count == rhs.points.count else { return false }
         
-        for point in lhs.points where !rhs.points.contains { $0 == point } { return false }
+        for point in lhs.points where !rhs.points.contains(where: { $0 == point }) { return false }
         
         return true
     case .point:
@@ -134,7 +134,7 @@ public func == (lhs: [GeoJsonObject]?, rhs: [GeoJsonObject]?) -> Bool {
     
     guard let lhs = lhs, let rhs = rhs, lhs.count == rhs.count else { return false }
     
-    for geoJsonObject in lhs where !rhs.contains { $0 == geoJsonObject } { return false }
+    for geoJsonObject in lhs where !rhs.contains(where: { $0 == geoJsonObject }) { return false }
     
     return true
 }

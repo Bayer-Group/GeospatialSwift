@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		60944696240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */; };
+		60A857EF24360DB6008554C6 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_47 /* Result.swift */; };
 		OBJ_100 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* GeodesicCalculator.swift */; };
 		OBJ_101 /* GeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* GeoJson.swift */; };
 		OBJ_102 /* GeoJsonDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* GeoJsonDictionary.swift */; };
@@ -53,7 +54,6 @@
 		OBJ_128 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_44 /* Array.swift */; };
 		OBJ_129 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_45 /* Bundle.swift */; };
 		OBJ_130 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_46 /* FloatingPoint.swift */; };
-		OBJ_131 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_47 /* Result.swift */; };
 		OBJ_132 /* GeoJsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_49 /* GeoJsonParser.swift */; };
 		OBJ_133 /* InvalidGeoJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_50 /* InvalidGeoJson.swift */; };
 		OBJ_134 /* WktParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_51 /* WktParser.swift */; };
@@ -202,6 +202,14 @@
 			path = Geodesic;
 			sourceTree = "<group>";
 		};
+		60A857EE24360D9C008554C6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_47 /* Result.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Calculator */ = {
 			isa = PBXGroup;
 			children = (
@@ -267,7 +275,6 @@
 				OBJ_44 /* Array.swift */,
 				OBJ_45 /* Bundle.swift */,
 				OBJ_46 /* FloatingPoint.swift */,
-				OBJ_47 /* Result.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -310,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_54 /* Data */,
+				60A857EE24360D9C008554C6 /* Extensions */,
 				OBJ_59 /* Performance */,
 				OBJ_61 /* Test */,
 			);
@@ -561,6 +569,7 @@
 				OBJ_162 /* GeometryCollectionTests.swift in Sources */,
 				OBJ_163 /* LineStringTests.swift in Sources */,
 				OBJ_164 /* MultiLineStringTests.swift in Sources */,
+				60A857EF24360DB6008554C6 /* Result.swift in Sources */,
 				OBJ_165 /* MultiPointTests.swift in Sources */,
 				OBJ_166 /* MultiPolygonTests.swift in Sources */,
 				OBJ_167 /* PointTests.swift in Sources */,
@@ -609,7 +618,6 @@
 				OBJ_128 /* Array.swift in Sources */,
 				OBJ_129 /* Bundle.swift in Sources */,
 				OBJ_130 /* FloatingPoint.swift in Sources */,
-				OBJ_131 /* Result.swift in Sources */,
 				OBJ_132 /* GeoJsonParser.swift in Sources */,
 				OBJ_133 /* InvalidGeoJson.swift in Sources */,
 				OBJ_134 /* WktParser.swift in Sources */,

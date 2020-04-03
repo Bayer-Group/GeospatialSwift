@@ -1,4 +1,4 @@
-extension Result {
+internal extension Result {
     var succeeded: Bool {
         switch self {
         case .success: return true

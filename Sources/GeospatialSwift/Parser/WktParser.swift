@@ -111,3 +111,12 @@ fileprivate extension NumberFormatter {
         return formatter
     }()
 }
+
+fileprivate extension Result {
+    var success: Success? {
+        switch self {
+        case .success(let success): return success
+        case .failure: return nil
+        }
+    }
+}
