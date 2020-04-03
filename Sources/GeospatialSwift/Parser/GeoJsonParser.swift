@@ -54,7 +54,7 @@ internal struct GeoJsonParser {
     }
     
     func geoJsonObject(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonObject {
-        return geoJsonObject(validatedGeoJson: geoJson, type: geoJsonObjectTypeResult(geoJson: geoJson).success!)
+        return geoJsonObject(validatedGeoJson: geoJson, type: geoJsonObjectType(validatedGeoJson: geoJson))
     }
     
     func geoJsonGeometry(fromGeoJson geoJson: GeoJsonDictionary) -> Result<GeoJsonGeometry, InvalidGeoJson> {
@@ -70,7 +70,7 @@ internal struct GeoJsonParser {
     }
     
     func geoJsonGeometry(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonGeometry {
-        return geoJsonGeometry(validatedGeoJson: geoJson, type: geoJsonObjectTypeResult(geoJson: geoJson).success!)
+        return geoJsonGeometry(validatedGeoJson: geoJson, type: geoJsonObjectType(validatedGeoJson: geoJson))
     }
     
     func geoJsonCoordinatesGeometry(fromGeoJson geoJson: GeoJsonDictionary) -> Result<GeoJsonCoordinatesGeometry, InvalidGeoJson> {
@@ -86,7 +86,7 @@ internal struct GeoJsonParser {
     }
     
     func geoJsonCoordinatesGeometry(fromValidatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonCoordinatesGeometry {
-        return geoJsonCoordinatesGeometry(validatedGeoJson: geoJson, type: geoJsonObjectTypeResult(geoJson: geoJson).success!)
+        return geoJsonCoordinatesGeometry(validatedGeoJson: geoJson, type: geoJsonObjectType(validatedGeoJson: geoJson))
     }
 }
 
@@ -133,6 +133,10 @@ extension GeoJsonParser {
         return GeoJsonObjectType(name: typeName).flatMap { .success($0) } ?? .failure(InvalidGeoJson(reason: "Invalid GeoJson Geometry type: \(typeName)"))
     }
     
+    private func geoJsonObjectType(validatedGeoJson geoJson: GeoJsonDictionary) -> GeoJsonObjectType {
+        return GeoJsonObjectType(name: geoJson["type"] as! String)!
+    }
+    
     private func geoJsonObject(validatedGeoJson geoJson: GeoJsonDictionary, type: GeoJsonObjectType) -> GeoJsonObject {
         switch type {
         case .feature: return GeoJson.Feature(geoJson: geoJson)
@@ -152,7 +156,7 @@ extension GeoJsonParser {
     }
     
     private func geoJsonCoordinatesGeometry(validatedGeoJson geoJson: GeoJsonDictionary, type: GeoJsonObjectType) -> GeoJsonCoordinatesGeometry {
-        let coordinatesJson = self.coordinatesJson(geoJson: geoJson).success!
+        let coordinatesJson = self.coordinatesJson(validatedGeoJson: geoJson)
         
         switch type {
         case .point: return GeoJson.Point(coordinatesJson: coordinatesJson)
@@ -167,5 +171,9 @@ extension GeoJsonParser {
     
     private func coordinatesJson(geoJson: GeoJsonDictionary) -> Result<[Any], InvalidGeoJson> {
         (geoJson["coordinates"] as? [Any]).flatMap { .success($0) } ?? .failure(.init(reason: "A valid GeoJson Coordinates Geometry must have a valid \"coordinates\" array"))
+    }
+    
+    private func coordinatesJson(validatedGeoJson geoJson: GeoJsonDictionary) -> [Any] {
+        geoJson["coordinates"] as! [Any]
     }
 }

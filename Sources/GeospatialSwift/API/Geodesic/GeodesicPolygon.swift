@@ -36,7 +36,7 @@ public func == (lhs: GeodesicPolygon, rhs: GeodesicPolygon) -> Bool {
     
     guard lhs.mainRing == rhs.mainRing else { return false }
     
-    for linearRing in lhs.negativeRings where !(rhs.negativeRings).contains { $0 == linearRing } { return false }
+    for linearRing in lhs.negativeRings where !(rhs.negativeRings).contains(where: { $0 == linearRing }) { return false }
     
     return true
 }
