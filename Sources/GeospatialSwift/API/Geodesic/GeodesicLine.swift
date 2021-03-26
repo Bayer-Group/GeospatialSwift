@@ -24,7 +24,7 @@ public struct SimpleLine: GeodesicLine {
         self.points = points
     }
     
-    init?(segments: [GeodesicLineSegment]) {
+    public init?(segments: [GeodesicLineSegment]) {
         guard segments.count >= 1 else { return nil }
         
         for (index, segment) in segments.enumerated() {
