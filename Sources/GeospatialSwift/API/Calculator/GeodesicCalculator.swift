@@ -55,29 +55,29 @@ public struct GeodesicCalculator {
     public func finalBearing(from point: GeodesicPoint, to otherPoint: GeodesicPoint) -> Double { (bearing(from: otherPoint, to: point) + 180).truncatingRemainder(dividingBy: 360) }
     
     public func destinationPoint(origin: GeodesicPoint, bearing: Double, distance: Double) -> GeodesicPoint {
-        let earthRadius = self.earthRadius(latitudeAverage: origin.latitude)
+        let distance = distance / earthRadius(latitudeAverage: origin.latitude)
         
         let bearing = bearing.degreesToRadians
         let latitude1 = origin.latitude.degreesToRadians
         let longitude1 = origin.longitude.degreesToRadians
-        let centralAngle = distance / earthRadius
         
-        let partialCalculation = sin(latitude1) * cos(centralAngle) + cos(latitude1) * sin(centralAngle) * cos(bearing)
+        // partialCalculation to avoid asin math error
+        let partialCalculation = sin(latitude1) * cos(distance) + cos(latitude1) * sin(distance) * cos(bearing)
         let latitude2 = partialCalculation > 1 || partialCalculation < -1 ? 0 : asin(partialCalculation)
+        let longitude2 = longitude1 + atan2(sin(bearing) * sin(distance) * cos(latitude1), cos(distance) - sin(latitude1) * sin(latitude2))
         
-        let longitude2 = longitude1 + atan2(sin(bearing) * sin(centralAngle) * cos(latitude1), cos(centralAngle) - sin(latitude1) * sin(latitude2))
-        
-        let point = SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
-        
-        return point
+        return SimplePoint(longitude: longitude2.radiansToDegrees, latitude: latitude2.radiansToDegrees, altitude: origin.altitude)
     }
     
     public func bisectingBearing(point1: GeodesicPoint, point2: GeodesicPoint, point3: GeodesicPoint) -> Double {
-        return (averageBearing(from: point2, to: point3) + averageBearing(from: point2, to: point1)) / 2
+        // The bearing which bisects the angle
+        return (averageBearing(from: point2, to: point1) + averageBearing(from: point2, to: point3)) / 2
     }
     
     public func bisectingCross(point1: GeodesicPoint, point2: GeodesicPoint, point3: GeodesicPoint, distance: Double) -> [GeodesicPoint] {
         let bisectingBearing = self.bisectingBearing(point1: point1, point2: point2, point3: point3)
+        // The distance needed to create a box x meters in all directions
+        let distance = distance * sqrt(2)
         
         return [
             destinationPoint(origin: point2, bearing: bisectingBearing, distance: distance),
