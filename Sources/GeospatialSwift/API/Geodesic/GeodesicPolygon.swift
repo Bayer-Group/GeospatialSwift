@@ -1,3 +1,5 @@
+import Foundation
+
 public protocol GeodesicPolygon {
     var points: [GeodesicPoint] { get }
     var mainRing: GeodesicLine { get }
@@ -28,6 +30,19 @@ public struct SimplePolygon: GeodesicPolygon {
         
         self.mainRing = mainRing
         self.negativeRings = negativeRings
+    }
+    
+    public init?(centroid: GeodesicPoint, width: Double, height: Double) {
+        guard width > 0, height > 0 else { return nil }
+        
+        let distance = sqrt(pow(width / 2, 2) + pow(height / 2, 2))
+        
+        let point1 = Calculator.destinationPoint(origin: centroid, bearing: 45, distance: distance)
+        let point2 = Calculator.destinationPoint(origin: centroid, bearing: 135, distance: distance)
+        let point3 = Calculator.destinationPoint(origin: centroid, bearing: 225, distance: distance)
+        let point4 = Calculator.destinationPoint(origin: centroid, bearing: 315, distance: distance)
+        
+        self.init(mainRing: SimpleLine(points: [point1, point2, point3, point4, point1])!)!
     }
 }
 
