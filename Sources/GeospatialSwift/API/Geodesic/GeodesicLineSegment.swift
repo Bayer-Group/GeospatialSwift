@@ -2,6 +2,11 @@ public struct GeodesicLineSegment {
     public let startPoint: GeodesicPoint
     public let endPoint: GeodesicPoint
     
+    public init(startPoint: GeodesicPoint, endPoint: GeodesicPoint) {
+        self.startPoint = startPoint
+        self.endPoint = endPoint
+    }
+    
     public var midpoint: GeodesicPoint { Calculator.midpoint(from: startPoint, to: endPoint) }
     
     public var initialBearing: GeodesicBearing {

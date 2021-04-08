@@ -4,14 +4,14 @@
  A bounding box intended to exactly fit a GeoJsonObject. Also known as a "Minimum Bounding Box", "Bounding Envelope".
  */
 public struct GeodesicBoundingBox {
-    public var points: [GeodesicPoint] { [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)] }
-    
-    public var centroid: GeodesicPoint { SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2)) }
-    
     public let minLongitude: Double
     public let minLatitude: Double
     public let maxLongitude: Double
     public let maxLatitude: Double
+    
+    public var points: [GeodesicPoint] { [SimplePoint(longitude: minLongitude, latitude: minLatitude), SimplePoint(longitude: minLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: maxLatitude), SimplePoint(longitude: maxLongitude, latitude: minLatitude)] }
+    
+    public var centroid: GeodesicPoint { SimplePoint(longitude: maxLongitude - (longitudeDelta / 2), latitude: maxLatitude - (latitudeDelta / 2)) }
     
     public var longitudeDelta: Double { maxLongitude - minLongitude }
     public var latitudeDelta: Double { maxLatitude - minLatitude }
@@ -19,6 +19,8 @@ public struct GeodesicBoundingBox {
     public var segments: [GeodesicLineSegment] { [.init(startPoint: points[0], endPoint: points[1]), .init(startPoint: points[1], endPoint: points[2]), .init(startPoint: points[2], endPoint: points[3]), .init(startPoint: points[3], endPoint: points[0])] }
     
     public var box: GeodesicPolygon { SimplePolygon(mainRing: SimpleLine(segments: segments)!)! }
+    
+    public var bbox: String { "\(minLongitude),\(minLatitude),\(maxLongitude),\(maxLatitude)" }
     
     public init(minLongitude: Double, minLatitude: Double, maxLongitude: Double, maxLatitude: Double) {
         self.minLongitude = minLongitude
@@ -70,7 +72,11 @@ public struct GeodesicBoundingBox {
     }
     public func insetBoundingBox(percent: Double) -> GeodesicBoundingBox { insetBoundingBox(widthPercent: percent, heightPercent: percent) }
     public func insetBoundingBox(widthPercent: Double, heightPercent: Double) -> GeodesicBoundingBox { insetBoundingBox(topPercent: heightPercent, leftPercent: widthPercent, bottomPercent: heightPercent, rightPercent: widthPercent) }
-
+    
+    public func insetBoundingBox(top: Double, left: Double, bottom: Double, right: Double) -> GeodesicBoundingBox {
+        return GeodesicBoundingBox(minLongitude: minLongitude - left, minLatitude: minLatitude - bottom, maxLongitude: maxLongitude + right, maxLatitude: maxLatitude + top)
+    }
+    public func insetBoundingBox(all: Double) -> GeodesicBoundingBox { insetBoundingBox(top: all, left: all, bottom: all, right: all) }
 }
 
 public extension GeodesicBoundingBox {

@@ -286,4 +286,76 @@ class GeodesicCalculatorTests: XCTestCase {
         XCTAssertEqual(Calculator.contains(point: pointToTest56, vertices: points), true)
         XCTAssertEqual(Calculator.contains(point: pointToTest57, vertices: points), false)
     }
+    
+    func testBisectingCross_FirstQuadrant() {
+        let point1 = SimplePoint(longitude: 1, latitude: 2)
+        let point2 = SimplePoint(longitude: 0, latitude: 0)
+        let point3 = SimplePoint(longitude: 1, latitude: 1)
+        
+        let bisectingCross = Calculator.bisectingCross(point1: point1, point2: point2, point3: point3, distance: 10)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point1), 26.56, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point3), 45.0, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.bisectingBearing(point1: point1, point2: point2, point3: point3), 35.78, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[0]), 35.78, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[1]), 125.78, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[2]), 215.78, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[3]), 305.78, accuracy: 0.01)
+    }
+    
+    func testBisectingCross_ThirdQuadrant() {
+        let point1 = SimplePoint(longitude: -1, latitude: 1)
+        let point2 = SimplePoint(longitude: 0, latitude: 0)
+        let point3 = SimplePoint(longitude: -1, latitude: 2)
+        
+        let bisectingCross = Calculator.bisectingCross(point1: point1, point2: point2, point3: point3, distance: 10)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point1), 315.0, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point3), 333.45, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.bisectingBearing(point1: point1, point2: point2, point3: point3), 324.22, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[0]), 324.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[1]), 54.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[2]), 144.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[3]), 234.22, accuracy: 0.01)
+    }
+    
+    func testBisectingCross_FirstAndThirdQuadrant() {
+        let point1 = SimplePoint(longitude: 1, latitude: 1)
+        let point2 = SimplePoint(longitude: 0, latitude: 0)
+        let point3 = SimplePoint(longitude: -1, latitude: 2)
+        
+        let bisectingCross = Calculator.bisectingCross(point1: point1, point2: point2, point3: point3, distance: 10)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point1), 45.0, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point3), 333.45, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.bisectingBearing(point1: point1, point2: point2, point3: point3), 189.22, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[0]), 189.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[1]), 279.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[2]), 9.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[3]), 99.22, accuracy: 0.01)
+    }
+    
+    func testBisectingCross_ThirdAndFirstQuadrant() {
+        let point1 = SimplePoint(longitude: -1, latitude: 2)
+        let point2 = SimplePoint(longitude: 0, latitude: 0)
+        let point3 = SimplePoint(longitude: 1, latitude: 1)
+        
+        let bisectingCross = Calculator.bisectingCross(point1: point1, point2: point2, point3: point3, distance: 10)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point1), 333.45, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: point3), 45.0, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.bisectingBearing(point1: point1, point2: point2, point3: point3), 189.22, accuracy: 0.01)
+        
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[0]), 189.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[1]), 279.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[2]), 9.22, accuracy: 0.01)
+        XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[3]), 99.22, accuracy: 0.01)
+    }
 }
