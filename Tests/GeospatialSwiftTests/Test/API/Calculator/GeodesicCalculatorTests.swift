@@ -358,4 +358,53 @@ class GeodesicCalculatorTests: XCTestCase {
         XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[2]), 9.22, accuracy: 0.01)
         XCTAssertEqual(Calculator.averageBearing(from: point2, to: bisectingCross[3]), 99.22, accuracy: 0.01)
     }
+    
+    func testSpikeIndices_OneOrMoreSpikes() {
+        let point1 = SimplePoint(longitude: -2, latitude: -2)
+        let point2 = SimplePoint(longitude: 0, latitude: -2)
+        let point3 = SimplePoint(longitude: 0, latitude: 0)
+        let point4 = SimplePoint(longitude: -0.5, latitude: 15)
+        let point5 = SimplePoint(longitude: -1, latitude: 0)
+        let point6 = SimplePoint(longitude: -2, latitude: 0)
+        let point7 = SimplePoint(longitude: -30, latitude: -1)
+        var points = [point1, point2, point3, point4, point5, point6, point1]
+
+        guard let mainRingOneSpike = SimpleLine(points: points) else { return }
+        
+        guard let polygonOneSpike = SimplePolygon(mainRing: mainRingOneSpike) else { return }
+        var expected = [LineSegmentPointIndex]()
+        expected.append(LineSegmentPointIndex(lineSegmentIndex: LineSegmentIndex(lineIndex: 0, segmentIndex: 2), pointIndex: .endPoint))
+        var result = Calculator.simpleViolationSpikeIndices(from: polygonOneSpike as GeodesicPolygon, tolerance: 0)
+
+        XCTAssertEqual(result, expected)
+        
+        points.removeLast()
+        points.append(point7)
+        points.append(point1)
+        
+        guard let mainRingTwoSpikes = SimpleLine(points: points) else { return }
+        
+        guard let polygonTwoSpikes = SimplePolygon(mainRing: mainRingTwoSpikes) else { return }
+        expected.append(LineSegmentPointIndex(lineSegmentIndex: LineSegmentIndex(lineIndex: 0, segmentIndex: 5), pointIndex: .endPoint))
+        result = Calculator.simpleViolationSpikeIndices(from: polygonTwoSpikes as GeodesicPolygon, tolerance: 0)
+
+        XCTAssertEqual(result, expected)
+
+    }
+    
+    func testSpikeIndices_NoSpikes() {
+        let point1 = SimplePoint(longitude: -2, latitude: -2)
+        let point2 = SimplePoint(longitude: 0, latitude: -2)
+        let point3 = SimplePoint(longitude: 0, latitude: 0)
+        let point4 = SimplePoint(longitude: -2, latitude: 0)
+        let points = [point1, point2, point3, point4, point1]
+
+        guard let mainRing = SimpleLine(points: points) else { return }
+        
+        guard let polygon = SimplePolygon(mainRing: mainRing) else { return }
+        let expected = [LineSegmentPointIndex]()
+        let result = Calculator.simpleViolationSpikeIndices(from: polygon as GeodesicPolygon, tolerance: 0)
+
+        XCTAssertEqual(result, expected)
+    }
 }
