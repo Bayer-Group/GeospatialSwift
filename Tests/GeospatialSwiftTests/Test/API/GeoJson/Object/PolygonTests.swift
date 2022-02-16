@@ -25,6 +25,8 @@ class PolygonTests: XCTestCase {
     var doubleMNegativeRingsPolygon: Polygon!
     var diamondNegativeRingLinearRings: [LineString]!
     var diamondNegativeRingPolygon: Polygon!
+    var spikeLinearRing: [LineString]!
+    var spikePolygon: Polygon!
     
     var distancePoint: SimplePoint!
     
@@ -80,6 +82,9 @@ class PolygonTests: XCTestCase {
         
         diamondNegativeRingLinearRings = MockData.diamondNegativeRingLinearRings
         diamondNegativeRingPolygon =  GeoTestHelper.polygon(diamondNegativeRingLinearRings.first!, Array(diamondNegativeRingLinearRings.dropFirst()))
+        
+        spikeLinearRing = MockData.spikeLinearRings
+        spikePolygon = GeoTestHelper.polygon(spikeLinearRing.first!, [])
         
         distancePoint = GeoTestHelper.simplePoint(10, 10, 10)
         
@@ -339,6 +344,19 @@ class PolygonTests: XCTestCase {
         if let point = simpleViolations[4].problems[3] as? Point {
             XCTAssertEqual(point.longitude, 24)
             XCTAssertEqual(point.latitude, 24)
+        } else {
+            XCTFail("Geometry not valid")
+        }
+    }
+    
+    func testPolygon_WithSpike_IsInvalid() {
+        let simpleViolations = spikePolygon.simpleViolations(tolerance: 0)
+        XCTAssertEqual(simpleViolations.count, 1)
+        XCTAssertEqual(simpleViolations[0].reason, GeoJsonSimpleViolationReason.polygonSpikeIndices)
+
+        if let point = simpleViolations[0].problems[0] as? Point {
+            XCTAssertEqual(point.longitude, -5.0)
+            XCTAssertEqual(point.latitude, 150.0)
         } else {
             XCTFail("Geometry not valid")
         }

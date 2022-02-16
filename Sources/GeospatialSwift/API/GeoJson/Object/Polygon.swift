@@ -169,6 +169,24 @@ extension GeoJson.Polygon {
             return violations
         }
         
+        //Ring has one or more spikes (0.1 <= angle <= 5)
+        let simpleViolationSpikeIndices = Calculator.simpleViolationSpikeIndices(from: self, tolerance: tolerance)
+        
+        guard simpleViolationSpikeIndices.isEmpty else {
+             return simpleViolationSpikeIndices.map { spikeLineSegmentPointIndex in
+                let lineSegmentIndex = spikeLineSegmentPointIndex.lineSegmentIndex
+                let segment = mainRing.segments[lineSegmentIndex.segmentIndex]
+                
+                let point1: GeoJson.Point
+                if spikeLineSegmentPointIndex.pointIndex == .endPoint {
+                    point1 = GeoJson.Point(longitude: segment.endPoint.longitude, latitude: segment.endPoint.latitude, altitude: segment.endPoint.altitude)
+                } else {
+                    point1 = GeoJson.Point(longitude: segment.startPoint.longitude, latitude: segment.startPoint.latitude, altitude: segment.startPoint.altitude)
+                }
+                 return GeoJsonSimpleViolation(problems: [point1], reason: .polygonSpikeIndices)
+            }
+        }
+        
         return []
     }
 }

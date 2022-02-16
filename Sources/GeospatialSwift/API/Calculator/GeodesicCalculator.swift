@@ -640,6 +640,31 @@ extension GeodesicCalculator {
         return containedRingIndices
     }
     
+    internal func simpleViolationSpikeIndices(from polygon: GeodesicPolygon, tolerance: Double) -> [LineSegmentPointIndex] {
+        
+        var spikePoints = [LineSegmentPointIndex]()
+        let mainRingSegments = polygon.mainRing.segments
+        mainRingSegments.enumerated().forEach { currentLineSegmentIndex, currentLineSegment in
+            var nextLineSegment: GeodesicLineSegment
+            if (currentLineSegmentIndex == mainRingSegments.endIndex-1) {
+                nextLineSegment = mainRingSegments[0]
+            } else {
+                nextLineSegment = mainRingSegments[currentLineSegmentIndex + 1]
+            }
+            let smallerAngle = abs(abs(currentLineSegment.initialBearing.bearing - nextLineSegment.initialBearing.bearing) - 180)
+            if case 0.1 ... 5.0 = smallerAngle {
+                let lineSegmentIndex = LineSegmentIndex(lineIndex: 0, segmentIndex: currentLineSegmentIndex)
+            
+                if (currentLineSegment.endPoint == nextLineSegment.startPoint || currentLineSegment.endPoint == nextLineSegment.endPoint) {
+                    spikePoints.append(LineSegmentPointIndex(lineSegmentIndex: lineSegmentIndex, pointIndex: .endPoint))
+                } else if (currentLineSegment.startPoint == nextLineSegment.startPoint || currentLineSegment.startPoint == nextLineSegment.endPoint) {
+                    spikePoints.append(LineSegmentPointIndex(lineSegmentIndex: lineSegmentIndex, pointIndex: .startPoint))
+                }
+            }
+        }
+        return spikePoints
+    }
+    
     internal func simpleViolationIntersectionIndices(from polygons: [GeodesicPolygon], tolerance: Double) -> LineSegmentIndiciesByLineSegmentIndex {
         var allIntersectionIndices = LineSegmentIndiciesByLineSegmentIndex()
         polygons.enumerated().forEach { currentPolygonIndex, currentPolygon in

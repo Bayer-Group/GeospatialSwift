@@ -33,6 +33,7 @@ final class MockData {
     static let mShapeMainRingLinearRings: [GeoJson.LineString] = mShapeMainRingRingsList.first!
     static let doubleMNegativeRingsLinearRings: [GeoJson.LineString] = doubleMNegativeRingsRingsList.first!
     static let diamondNegativeRingLinearRings: [GeoJson.LineString] = diamondNegativeRingRingsList.first!
+    static let spikeLinearRings: [GeoJson.LineString] = spikeRingList.first!
     
     static let touchingPolygons: [GeoJson.Polygon] = touchingLinearRingsList.map { geoJson.polygon(mainRing: $0.first!, negativeRings: Array($0.dropFirst())).success! }
     static let sharingEdgePolygons: [GeoJson.Polygon] = sharingEdgeLinearRingsList.map { geoJson.polygon(mainRing: $0.first!, negativeRings: Array($0.dropFirst())).success! }
@@ -190,6 +191,14 @@ extension MockData {
     ]
     
     private static let diamondNegativeRingRingsList: [[GeoJson.LineString]] = diamondNegativeRingPolygonPointsList.map { $0.map { geoJson.lineString(points: $0).success! } }
+    
+    private static let spikePolygonPointsList: [[[GeoJson.Point]]] = [
+        [
+            [GeoTestHelper.point(-20, -20), GeoTestHelper.point(0, -20), GeoTestHelper.point(0, 0), GeoTestHelper.point(-5, 150), GeoTestHelper.point(-10, 0), GeoTestHelper.point(-20, 0), GeoTestHelper.point(-20, -20)]
+        ]
+    ]
+    
+    private static let spikeRingList: [[GeoJson.LineString]] = spikePolygonPointsList.map { $0.map { geoJson.lineString(points: $0).success! } }
     
     private static let touchingPolygonPointsList: [[[GeoJson.Point]]] = [
         [

@@ -11,6 +11,7 @@ public enum GeoJsonSimpleViolationReason {
     case polygonNegativeRingContained
     case polygonSelfIntersection
     case polygonMultipleVertexIntersection
+    case polygonSpikeIndices
     case multiPolygonContained
     case multiPolygonIntersection
 }
