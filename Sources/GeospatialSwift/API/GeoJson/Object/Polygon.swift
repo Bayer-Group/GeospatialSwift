@@ -1,3 +1,5 @@
+import geos
+
 extension GeoJson {
     /**
      Creates a Polygon
@@ -189,6 +191,25 @@ extension GeoJson.Polygon {
         
         return []
     }
+    
+    public func buffer(by width: Double) throws -> GeoJson.Polygon? {
+        let context = try GEOSContext()
+        
+        let geosObject = try self.geosObject(with: context)
+        // the last parameter in GEOSBuffer_r is called `quadsegs` and in other places in GEOS, it defaults to
+        // 8, which seems to produce an "expected" result. See https://github.com/GEOSwift/GEOSwift/issues/216
+        //
+        // returns nil on exception
+        guard let resultPointer = GEOSBuffer_r(context.handle, geosObject.pointer, width, 8) else {
+            throw GEOSError.libraryError(errorMessages: context.errors)
+        }
+        do {
+            let geosObject = GEOSObject(context: context, pointer: resultPointer)
+            return try GeoJson.Polygon(geosObject: geosObject)
+        } catch {
+            throw error
+        }
+    }
 }
 
 extension GeoJson.Polygon {
@@ -200,5 +221,58 @@ extension GeoJson.Polygon {
         let validateLinearRings = linearRingsCoordinatesJson.reduce(nil) { $0 + GeoJson.LinearRing.validate(coordinatesJson: $1) }
         
         return validateLinearRings.flatMap { .init(reason: "Invalid LinearRing(s) in Polygon") + $0 }
+    }
+}
+
+extension GeoJson.Polygon: GEOSObjectConvertible {
+    func geosObject(with context: GEOSContext) throws -> GEOSObject {
+        let exterior = try self.geoJsonMainRing.geosObject(with: context)
+        let holes = try self.geoJsonNegativeRings.map { try $0.geosObject(with: context) }
+        let holesArray = UnsafeMutablePointer<OpaquePointer?>.allocate(capacity: holes.count)
+        defer { holesArray.deallocate() }
+        holes.enumerated().forEach { (i, hole) in
+            holesArray[i] = hole.pointer
+        }
+        guard let polygonPointer = GEOSGeom_createPolygon_r(
+            context.handle, exterior.pointer, holesArray, UInt32(holes.count)) else {
+                throw GEOSError.libraryError(errorMessages: context.errors)
+        }
+        // upon success, exterior and holes are now owned by the polygon
+        // it's essential to set their parent properties so that they
+        // do not destory their geometries upon deinit.
+        let polygon = GEOSObject(context: context, pointer: polygonPointer)
+        exterior.parent = polygon
+        holes.forEach { $0.parent = polygon }
+        return polygon
+    }
+}
+
+extension GeoJson.Polygon: GEOSObjectInitializable {
+    init(geosObject: GEOSObject) throws {
+        guard case .some(.polygon) = geosObject.type else {
+            throw GEOSError.typeMismatch(actual: geosObject.type, expected: .polygon)
+        }
+        // returns null on exception
+        guard let exteriorRing = GEOSGetExteriorRing_r(geosObject.context.handle, geosObject.pointer) else {
+            throw GEOSError.libraryError(errorMessages: geosObject.context.errors)
+        }
+        let exteriorRingObject = GEOSObject(parent: geosObject, pointer: exteriorRing)
+        let exterior = try GeoJson.LineString(geosObject: exteriorRingObject)
+        // returns -1 on exception
+        let numInteriorRings = GEOSGetNumInteriorRings_r(geosObject.context.handle, geosObject.pointer)
+        guard numInteriorRings >= 0 else {
+            throw GEOSError.libraryError(errorMessages: geosObject.context.errors)
+        }
+        let holes = try Array(0..<numInteriorRings).map { (index) -> GeoJson.LineString in
+            // returns null on exception
+            guard let interiorRing = GEOSGetInteriorRingN_r(
+                geosObject.context.handle, geosObject.pointer, index) else {
+                    throw GEOSError.libraryError(errorMessages: geosObject.context.errors)
+            }
+            let interiorRingObject = GEOSObject(parent: geosObject, pointer: interiorRing)
+            return try GeoJson.LineString(geosObject: interiorRingObject)
+        }
+        
+        self.init(mainRing: exterior, negativeRings: holes)
     }
 }

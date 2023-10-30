@@ -14,8 +14,8 @@ extension GeoJson {
     public struct Point: GeodesicPoint, GeoJsonCoordinatesGeometry {
         public let type: GeoJsonObjectType = .point
         
-        public let longitude: Double
-        public let latitude: Double
+        public var longitude: Double
+        public var latitude: Double
         // SOMEDAY: Need a better way to know when to include and exclude altitude in calculations. Currently excluded.
         // SOMEDAY: Maybe a new type for altitude, Point3D?
         public var altitude: Double?

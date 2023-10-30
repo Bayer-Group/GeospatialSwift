@@ -1,3 +1,5 @@
+import geos
+
 extension GeoJson {
     /**
      Creates a LineString
@@ -90,5 +92,22 @@ extension GeoJson.LineString {
         let validatePoints = pointsCoordinatesJson.reduce(nil) { $0 + GeoJson.Point.validate(coordinatesJson: $1) }
         
         return validatePoints.flatMap { .init(reason: "Invalid Point(s) in LineString") + $0 }
+    }
+}
+
+extension GeoJson.LineString: GEOSObjectConvertible {
+    func geosObject(with context: GEOSContext) throws -> GEOSObject {
+        try makeGEOSObject(with: context, points: geoJsonPoints) { (context, sequence) in
+            GEOSGeom_createLinearRing_r(context.handle, sequence)
+        }
+    }
+}
+
+extension GeoJson.LineString: GEOSObjectInitializable {
+    init(geosObject: GEOSObject) throws {
+        guard case .some(.linearRing) = geosObject.type else {
+            throw GEOSError.typeMismatch(actual: geosObject.type, expected: .linearRing)
+        }
+        try self.init(points: makePoints(from: geosObject))
     }
 }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -21,6 +21,12 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		475F66362AEFA42200803135 /* geos in Frameworks */ = {isa = PBXBuildFile; productRef = 475F66352AEFA42200803135 /* geos */; };
+		475F66392AEFA5F300803135 /* GEOSContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475F66382AEFA5F300803135 /* GEOSContext.swift */; };
+		475F663B2AEFA6FD00803135 /* GEOSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475F663A2AEFA6FD00803135 /* GEOSObject.swift */; };
+		475F663D2AEFA72D00803135 /* GEOSObjectType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475F663C2AEFA72D00803135 /* GEOSObjectType.swift */; };
+		475F663F2AEFA84100803135 /* GEOSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475F663E2AEFA84100803135 /* GEOSHelper.swift */; };
+		475F66412AEFA8C700803135 /* GEOSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475F66402AEFA8C700803135 /* GEOSError.swift */; };
 		60944696240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */; };
 		60A857EF24360DB6008554C6 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_47 /* Result.swift */; };
 		OBJ_100 /* GeodesicCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* GeodesicCalculator.swift */; };
@@ -101,8 +107,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		475F66382AEFA5F300803135 /* GEOSContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEOSContext.swift; sourceTree = "<group>"; };
+		475F663A2AEFA6FD00803135 /* GEOSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEOSObject.swift; sourceTree = "<group>"; };
+		475F663C2AEFA72D00803135 /* GEOSObjectType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEOSObjectType.swift; sourceTree = "<group>"; };
+		475F663E2AEFA84100803135 /* GEOSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEOSHelper.swift; sourceTree = "<group>"; };
+		475F66402AEFA8C700803135 /* GEOSError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEOSError.swift; sourceTree = "<group>"; };
 		60944695240FE3B70021D3A6 /* GeoJsonSimpleViolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJsonSimpleViolation.swift; sourceTree = "<group>"; };
-		"GeospatialSwift::GeospatialSwift::Product" /* GeospatialSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"GeospatialSwift::GeospatialSwift::Product" /* GeospatialSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GeospatialSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"GeospatialSwift::GeospatialSwiftTests::Product" /* GeospatialSwiftTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = GeospatialSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* GeodesicCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeodesicCalculator.swift; sourceTree = "<group>"; };
 		OBJ_13 /* GeoJson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJson.swift; sourceTree = "<group>"; };
@@ -175,6 +186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				475F66362AEFA42200803135 /* geos in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +201,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		475F66372AEFA5E500803135 /* GEOS */ = {
+			isa = PBXGroup;
+			children = (
+				475F66382AEFA5F300803135 /* GEOSContext.swift */,
+				475F663A2AEFA6FD00803135 /* GEOSObject.swift */,
+				475F663C2AEFA72D00803135 /* GEOSObjectType.swift */,
+				475F663E2AEFA84100803135 /* GEOSHelper.swift */,
+				475F66402AEFA8C700803135 /* GEOSError.swift */,
+			);
+			path = GEOS;
+			sourceTree = "<group>";
+		};
 		60944697240FE4130021D3A6 /* Geodesic */ = {
 			isa = PBXGroup;
 			children = (
@@ -417,6 +441,7 @@
 		OBJ_8 /* GeospatialSwift */ = {
 			isa = PBXGroup;
 			children = (
+				475F66372AEFA5E500803135 /* GEOS */,
 				OBJ_9 /* API */,
 				OBJ_43 /* Extensions */,
 				OBJ_48 /* Parser */,
@@ -479,6 +504,9 @@
 			dependencies = (
 			);
 			name = GeospatialSwift;
+			packageProductDependencies = (
+				475F66352AEFA42200803135 /* geos */,
+			);
 			productName = GeospatialSwift;
 			productReference = "GeospatialSwift::GeospatialSwift::Product" /* GeospatialSwift.framework */;
 			productType = "com.apple.product-type.framework";
@@ -531,6 +559,9 @@
 				en,
 			);
 			mainGroup = OBJ_5;
+			packageReferences = (
+				475F66342AEFA42200803135 /* XCRemoteSwiftPackageReference "geos" */,
+			);
 			productRefGroup = OBJ_86 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -588,6 +619,7 @@
 			files = (
 				OBJ_100 /* GeodesicCalculator.swift in Sources */,
 				OBJ_101 /* GeoJson.swift in Sources */,
+				475F66412AEFA8C700803135 /* GEOSError.swift in Sources */,
 				OBJ_102 /* GeoJsonDictionary.swift in Sources */,
 				OBJ_103 /* GeodesicBearing.swift in Sources */,
 				OBJ_104 /* GeodesicBoundingBox.swift in Sources */,
@@ -604,6 +636,7 @@
 				OBJ_114 /* MultiLineString.swift in Sources */,
 				OBJ_115 /* MultiPoint.swift in Sources */,
 				OBJ_116 /* MultiPolygon.swift in Sources */,
+				475F663B2AEFA6FD00803135 /* GEOSObject.swift in Sources */,
 				OBJ_117 /* Point.swift in Sources */,
 				OBJ_118 /* Polygon.swift in Sources */,
 				OBJ_119 /* GeoJsonClosedGeometry.swift in Sources */,
@@ -619,7 +652,10 @@
 				OBJ_129 /* Bundle.swift in Sources */,
 				OBJ_130 /* FloatingPoint.swift in Sources */,
 				OBJ_132 /* GeoJsonParser.swift in Sources */,
+				475F66392AEFA5F300803135 /* GEOSContext.swift in Sources */,
 				OBJ_133 /* InvalidGeoJson.swift in Sources */,
+				475F663F2AEFA84100803135 /* GEOSHelper.swift in Sources */,
+				475F663D2AEFA72D00803135 /* GEOSObjectType.swift in Sources */,
 				OBJ_134 /* WktParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -682,7 +718,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GeospatialSwift.xcodeproj/GeospatialSwiftTests_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -707,7 +747,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GeospatialSwift.xcodeproj/GeospatialSwiftTests_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -766,7 +810,8 @@
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				USE_HEADERMAP = NO;
 			};
 			name = Release;
@@ -782,8 +827,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GeospatialSwift.xcodeproj/GeospatialSwift_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -810,8 +858,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GeospatialSwift.xcodeproj/GeospatialSwift_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -876,6 +927,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		475F66342AEFA42200803135 /* XCRemoteSwiftPackageReference "geos" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GEOSwift/geos.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		475F66352AEFA42200803135 /* geos */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 475F66342AEFA42200803135 /* XCRemoteSwiftPackageReference "geos" */;
+			productName = geos;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
