@@ -192,7 +192,7 @@ extension GeoJson.Polygon {
         return []
     }
     
-    public func buffer(by width: Double) throws -> GeoJson.Polygon? {
+    public func buffer(by width: Double) throws -> GeoJson.Polygon {
         let context = try GEOSContext()
         
         let geosObject = try self.geosObject(with: context)

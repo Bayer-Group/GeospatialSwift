@@ -96,6 +96,18 @@ extension GeoJson.MultiPolygon {
         
         return []
     }
+    
+    public func buffer(by width: Double) throws -> GeoJson.MultiPolygon {
+        do {
+            let polygons: [GeoJson.Polygon] = try geoJsonPolygons.map { polygon in
+                return try polygon.buffer(by: width)
+            }
+            
+            return GeoJson.MultiPolygon(polygons: polygons)
+        } catch {
+            throw error
+        }
+    }
 }
 
 extension GeoJson.MultiPolygon {
