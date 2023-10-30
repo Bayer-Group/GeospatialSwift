@@ -845,6 +845,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = GeospatialSwift;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -876,6 +877,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = GeospatialSwift;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
