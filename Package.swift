@@ -5,16 +5,15 @@ import PackageDescription
 let package = Package(
     name: "GeospatialSwift",
     products: [
-        .library(
-            name: "GeospatialSwift",
-            targets:  ["GeospatialSwift"]
-        )
+        .library(name: "GeospatialSwift",targets:  ["GeospatialSwift"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/GEOSwift/geos.git", from: "8.1.0")
+    ],
     targets: [
         .target(
             name: "GeospatialSwift",
-            dependencies: []
+            dependencies: ["geos"]
         ),
         .testTarget(
             name: "GeospatialSwiftTests",
