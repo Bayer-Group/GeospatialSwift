@@ -192,6 +192,12 @@ extension GeoJson.Polygon {
         return []
     }
     
+    /// Calculates the buffer (a polygon being the spatial point set collection within a specified maximum distance from a geometry) of a geometry.
+    /// - Parameters:
+    ///    - distance: width in latitude degree (uom)
+    ///    - uom: Unit of measurement (m/ft)
+    ///    - Returns: buffered Polygon Geometry
+    
     public func buffer(by width: Double) throws -> GeoJson.Polygon {
         let context = try GEOSContext()
         
