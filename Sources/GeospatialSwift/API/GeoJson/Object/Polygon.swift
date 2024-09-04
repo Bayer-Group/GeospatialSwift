@@ -202,19 +202,14 @@ extension GeoJson.Polygon {
         let context = try GEOSContext()
         
         var polygon = self
-        var distance = distance
+        var distance: Double = distance
         
         print("orinal distance: \(distance)")
         
         if isEarthCoordinates {
-            
-            func distanceAfterMercatorProjection(distance: Double, atLatitude latitude: Double) -> Double {
-                return 
-            }
-            
-            let polygonLatitude = polygon.mainRing.points.first?.latitude {
+            if let polygonLatitude = polygon.mainRing.points.first?.latitude {
                 // Take any oryginal polygon any point latitude to convert distance into Mercator distance
-                let distanceAfterMercatorProjection  = distance / cos(latitude * .pi / 180)
+                let distanceAfterMercatorProjection = distance / cos(polygonLatitude * .pi / 180)
                 print("distanceAfterMercatorProjection: \(distanceAfterMercatorProjection)")
                 distance = distanceAfterMercatorProjection
             }
