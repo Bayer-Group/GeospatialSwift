@@ -208,13 +208,14 @@ extension GeoJson.Polygon {
             let externalPoints = polygon.mainRing.points
             let originalDistanceBetweenPoints = externalPoints[0].distance(to: externalPoints[1])
             let projectedPolygon = mercatorProjectedPolygon(isInverse: false)
+            polygon = projectedPolygon
             let projectedExternalPoints = projectedPolygon.mainRing.points
             let projectedlDistanceBetweenPoints = projectedExternalPoints[0].distance(to: projectedExternalPoints[1])
             
             distance = distance * (projectedlDistanceBetweenPoints / originalDistanceBetweenPoints)
         }
         
-        let geosObject = try self.geosObject(with: context)
+        let geosObject = try polygon.geosObject(with: context)
         // the last parameter in GEOSBuffer_r is called `quadsegs` and in other places in GEOS, it defaults to
         // 8, which seems to produce an "expected" result. See https://github.com/GEOSwift/GEOSwift/issues/216
         //
