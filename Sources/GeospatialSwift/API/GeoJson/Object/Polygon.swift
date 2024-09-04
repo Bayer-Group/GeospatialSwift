@@ -206,11 +206,11 @@ extension GeoJson.Polygon {
         
         if isEarthCoordinates {
             let externalPoints = polygon.mainRing.points
-            let originalDistanceBetweenPoints = externalPoints[0].distance(to: externalPoints[1])
+            let originalDistanceBetweenPoints = externalPoints[0].distance(toOther: externalPoints[1])
             let projectedPolygon = mercatorProjectedPolygon(isInverse: false)
             polygon = projectedPolygon
             let projectedExternalPoints = projectedPolygon.mainRing.points
-            let projectedlDistanceBetweenPoints = projectedExternalPoints[0].distance(to: projectedExternalPoints[1])
+            let projectedlDistanceBetweenPoints = projectedExternalPoints[0].distance(toOther: projectedExternalPoints[1])
             
             distance = distance * (projectedlDistanceBetweenPoints / originalDistanceBetweenPoints)
         }

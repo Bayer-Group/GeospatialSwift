@@ -40,7 +40,7 @@ public extension GeodesicPoint {
         return SimplePoint(longitude: longitude, latitude: latitude, altitude: altitude)
     }
     
-    func distance(to point: GeodesicPoint) -> Double {
+    func distance(toOther point: GeodesicPoint) -> Double {
         let lhs = CLLocation(latitude: self.latitude, longitude: self.longitude)
         let rhs = CLLocation(latitude: point.latitude, longitude: point.longitude)
         return rhs.distance(from: lhs)
