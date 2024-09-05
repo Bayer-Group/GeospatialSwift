@@ -204,16 +204,11 @@ extension GeoJson.Polygon {
         var polygon = self
         var distance: Double = distance
         
-        print("orinal distance: \(distance)")
-        
-        if isEarthCoordinates {
-            if let polygonLatitude = polygon.mainRing.points.first?.latitude {
-                // Take any oryginal polygon any point latitude to convert distance into Mercator distance
-                let distanceAfterMercatorProjection = distance / cos(polygonLatitude * .pi / 180)
-                print("distanceAfterMercatorProjection: \(distanceAfterMercatorProjection)")
-                distance = distanceAfterMercatorProjection
-            }
+        if isEarthCoordinates, if let polygonLatitude = polygon.mainRing.points.first?.latitude { {
+                // Convert Location distance into 2d Mercator distance
+                distance = distance / cos(polygonLatitude * .pi / 180)
             
+            // For Earth Coordinate we need convert polygon into Mercator projectd 2d coordinate system
             polygon = mercatorProjectedPolygon(isInverse: false)
         }
         
@@ -231,6 +226,7 @@ extension GeoJson.Polygon {
             let resultPolygon = try GeoJson.Polygon(geosObject: geosObject)
             
             if isEarthCoordinates {
+                // Convert back 2d coordinate system into cylindrical map projection
                 return resultPolygon.mercatorProjectedPolygon(isInverse: true)
             } else {
                 return resultPolygon
