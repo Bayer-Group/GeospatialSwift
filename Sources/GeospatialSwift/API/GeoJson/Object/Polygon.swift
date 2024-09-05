@@ -249,7 +249,7 @@ extension GeoJson.Polygon {
     }
     
     internal func mercatorProjectedPolygon(isInverse: Bool) -> GeoJson.Polygon {
-        let mainRingpoints = mainRing.points.map { point in
+        let mainRingPoints = mainRing.points.map { point in
             let projection = isInverse ? point.mercatorInverseProjection : point.mercatorProjection
             return GeoJson.Point(
                 longitude: projection.longitude,
@@ -272,7 +272,7 @@ extension GeoJson.Polygon {
         }
         
         return GeoJson.Polygon(
-            mainRing: GeoJson.LineString(points: mainRingpoints),
+            mainRing: GeoJson.LineString(points: mainRingPoints),
             negativeRings: negativeRings
         )
     }
