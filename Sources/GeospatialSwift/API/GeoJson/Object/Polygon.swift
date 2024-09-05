@@ -204,7 +204,7 @@ extension GeoJson.Polygon {
         var polygon = self
         var distance: Double = distance
         
-        if isEarthCoordinates, if let polygonLatitude = polygon.mainRing.points.first?.latitude { {
+        if isEarthCoordinates, let polygonLatitude = polygon.mainRing.points.first?.latitude {
                 // Convert Location distance into 2d Mercator distance
                 distance = distance / cos(polygonLatitude * .pi / 180)
             
