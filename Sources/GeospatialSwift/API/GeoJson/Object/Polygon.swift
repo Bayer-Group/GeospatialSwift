@@ -1,4 +1,5 @@
 import geos
+import Foundation
 
 extension GeoJson {
     /**
