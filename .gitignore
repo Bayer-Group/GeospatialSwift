@@ -40,3 +40,4 @@ playground.xcworkspace
 Carthage/Build
 
 .gitbackup
+Package.resolved
