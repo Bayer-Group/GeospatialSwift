@@ -194,24 +194,43 @@ extension GeoJson.Polygon {
     
     /// Calculates the buffer (a polygon being the spatial point set collection within a specified maximum distance from a geometry) of a geometry.
     /// - Parameters:
-    ///    - distance: width in latitude degree (uom)
+    ///    - distance: distance in (meeters if isEarthCoordinates) or any other
     ///    - uom: Unit of measurement (m/ft)
     ///    - Returns: buffered Polygon Geometry
     
-    public func buffer(by width: Double) throws -> GeoJson.Polygon {
+    public func buffer(distance: Double, isEarthCoordinates: Bool = true) throws -> GeoJson.Polygon {
         let context = try GEOSContext()
         
-        let geosObject = try self.geosObject(with: context)
+        var polygon = self
+        var distance: Double = distance
+        
+        if isEarthCoordinates, let polygonLatitude = polygon.mainRing.points.first?.latitude {
+                // Convert Location distance into 2d Mercator distance
+                distance = distance / cos(polygonLatitude * .pi / 180)
+            
+            // For Earth Coordinate we need convert polygon into Mercator projectd 2d coordinate system
+            polygon = mercatorProjectedPolygon(isInverse: false)
+        }
+        
+        let geosObject = try polygon.geosObject(with: context)
         // the last parameter in GEOSBuffer_r is called `quadsegs` and in other places in GEOS, it defaults to
         // 8, which seems to produce an "expected" result. See https://github.com/GEOSwift/GEOSwift/issues/216
         //
         // returns nil on exception
-        guard let resultPointer = GEOSBuffer_r(context.handle, geosObject.pointer, width, 8) else {
+        guard let resultPointer = GEOSBuffer_r(context.handle, geosObject.pointer, distance, 8) else {
             throw GEOSError.libraryError(errorMessages: context.errors)
         }
+        
         do {
             let geosObject = GEOSObject(context: context, pointer: resultPointer)
-            return try GeoJson.Polygon(geosObject: geosObject)
+            let resultPolygon = try GeoJson.Polygon(geosObject: geosObject)
+            
+            if isEarthCoordinates {
+                // Convert back 2d coordinate system into cylindrical map projection
+                return resultPolygon.mercatorProjectedPolygon(isInverse: true)
+            } else {
+                return resultPolygon
+            }
         } catch {
             throw error
         }
@@ -227,6 +246,35 @@ extension GeoJson.Polygon {
         let validateLinearRings = linearRingsCoordinatesJson.reduce(nil) { $0 + GeoJson.LinearRing.validate(coordinatesJson: $1) }
         
         return validateLinearRings.flatMap { .init(reason: "Invalid LinearRing(s) in Polygon") + $0 }
+    }
+    
+    internal func mercatorProjectedPolygon(isInverse: Bool) -> GeoJson.Polygon {
+        let mainRingPoints = mainRing.points.map { point in
+            let projection = isInverse ? point.mercatorInverseProjection : point.mercatorProjection
+            return GeoJson.Point(
+                longitude: projection.longitude,
+                latitude: projection.latitude,
+                altitude: projection.altitude
+            )
+        }
+        
+        let negativeRings = negativeRings.compactMap { line in
+            let projectedPoints = line.points.map { point in
+                let projection = point.mercatorProjection
+                return GeoJson.Point(
+                    longitude: projection.longitude,
+                    latitude: projection.latitude,
+                    altitude: projection.altitude
+                )
+            }
+            
+            return GeoJson.LineString(points: projectedPoints)
+        }
+        
+        return GeoJson.Polygon(
+            mainRing: GeoJson.LineString(points: mainRingPoints),
+            negativeRings: negativeRings
+        )
     }
 }
 

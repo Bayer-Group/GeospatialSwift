@@ -97,10 +97,10 @@ extension GeoJson.MultiPolygon {
         return []
     }
     
-    public func buffer(by width: Double) throws -> GeoJson.MultiPolygon {
+    public func buffer(distance: Double, isEarthCoordinates: Bool = true) throws -> GeoJson.MultiPolygon {
         do {
             let polygons: [GeoJson.Polygon] = try geoJsonPolygons.map { polygon in
-                return try polygon.buffer(by: width)
+                return try polygon.buffer(distance: distance, isEarthCoordinates: isEarthCoordinates)
             }
             
             return GeoJson.MultiPolygon(polygons: polygons)
